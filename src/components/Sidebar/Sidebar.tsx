@@ -3,19 +3,21 @@ import { QuerySection } from '../QuerySection/QuerySection';
 import { DatabaseTreeSection } from '../DatabaseTreeSection/DatabaseTreeSection';
 import { AppInfo } from '../AppInfo/AppInfo';
 import { History } from '../History/History';
+import { SidebarOption } from '../SidebarOption/SidebarOption';
+import { Contact, Settings } from 'lucide-react';
 
 export const Sidebar = () => {
   return (
     <>
-      <Flex direction="column" gap="xs" p="sm" h="100%">
-        {/* <br /> */}
+      <Flex direction="column" gap="xs" p="sm" h="100vh">
         <AppInfo />
-        <Divider/>
+        <Divider />
         <QuerySection />
-        <Divider/>
+        <Divider />
         <DatabaseTreeSection />
-        <History /> 
-        {/* <QuerySection /> */}
+        <History />
+        <SidebarOption title="Settings" icon={<Settings />} />
+        <SidebarOption title="Contact Us" icon={<Contact />} />
       </Flex>
     </>
   );

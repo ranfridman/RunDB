@@ -11,7 +11,7 @@ export const DatabaseTreeSection = () => {
   });
   return (
     <>
-      <Group justify="space-between" align="center">
+      <Group justify="space-between" align="center" h="md">
         <Text size="sm" c="dimmed">
           Structure
         </Text>

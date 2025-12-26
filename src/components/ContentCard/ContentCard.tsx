@@ -8,18 +8,19 @@ interface ContentCardProps {
     children: React.ReactNode;
     isStreaming: boolean;
     type?: string;
+    icon?: React.ReactNode;
 
 }
 
 
-export const ContentCard = ({ children, isStreaming, type }: ContentCardProps) => {
+export const ContentCard = ({ children, isStreaming, type, icon }: ContentCardProps) => {
     return (
         <Box p="md">
             <Card withBorder p="md" radius="md" >
                 <Card.Section variant="" p="xs" pt="xs" withBorder>
                     <Group justify="space-between" align="center"  >
                         <Group gap="xs" align="center">
-                            {getIconByType(type ?? '', 22)}
+                            {icon ?? getIconByType(type ?? '', 22)}
                             <Text fz="md">{type}</Text>
                         </Group>
                         <Group gap="xs">
@@ -37,7 +38,7 @@ export const ContentCard = ({ children, isStreaming, type }: ContentCardProps) =
                         </Group>
                     </Group>
                 </Card.Section>
-                <Card.Section p="md" withBorder bg="gray.9">
+                <Card.Section p="xs" withBorder bg="gray.9">
                     {
                         isStreaming ? (
                             <Text> Loading </Text>

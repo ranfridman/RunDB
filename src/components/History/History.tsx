@@ -3,7 +3,7 @@ import { ActionIcon, Center, Divider, Flex, Group, Text } from '@mantine/core';
 
 export const History: React.FC = () => {
   return (
-    <Flex direction="column" mt="auto" gap="xs" mah="500" mih="300">
+    <Flex direction="column" mt="auto" gap="xs" mah="500" mih="200">
       <Divider />
       <Group justify="space-between" align="center">
         <Text size="sm" c="dimmed">
@@ -16,8 +16,8 @@ export const History: React.FC = () => {
         </Group>
       </Group>
       <Center c="dimmed" fz="xs" p="lg">
-        No recent history   
-        </Center>
+        No recent history
+      </Center>
     </Flex>
   );
 };

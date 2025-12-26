@@ -1,0 +1,93 @@
+.tableContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    width: 100%;
+}
+
+.headerRow {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+    position: sticky;
+    top: 0;
+    z-index: 1;
+}
+
+.headerCell {
+    flex: 1;
+    padding: var(--mantine-spacing-xs);
+    cursor: pointer;
+    transition: background-color 100ms ease;
+    min-width: 0;
+}
+
+.headerCell:hover {
+    background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6));
+}
+
+.headerText {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dataRow {
+    min-height: 36px;
+    transition: background-color 100ms ease;
+    width: 100%;
+}
+
+.dataRow:hover {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+}
+
+.dataCell {
+    flex: 1;
+    padding: var(--mantine-spacing-xs);
+    min-width: 0;
+    display: flex;
+    align-items: center;
+}
+
+.cellContent {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    width: 100%;
+}
+
+.footer {
+    padding: var(--mantine-spacing-xs);
+    border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
+    font-size: var(--mantine-font-size-xs);
+    color: var(--mantine-color-dimmed);
+    text-align: right;
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+}
+
+.simpleTableContainer {
+    width: 100%;
+}
+
+.simpleTableContainer table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: var(--mantine-font-size-xs);
+}
+
+.simpleTableContainer th {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+    padding: var(--mantine-spacing-xs);
+    text-align: left;
+    font-weight: 700;
+    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+}
+
+.simpleTableContainer td {
+    padding: var(--mantine-spacing-xs);
+    border-bottom: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
+}
+
+.simpleTableContainer tr:hover {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+}

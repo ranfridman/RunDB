@@ -1,0 +1,8 @@
+/* Using Mantine's standard scrollbar sizing via scrollbarSize prop */
+.scrollbar {
+    /* No need to set width/height here as they are managed by scrollbarSize prop */
+}
+
+.thumb {
+    background-color: var(--mantine-color-dark-4);
+}

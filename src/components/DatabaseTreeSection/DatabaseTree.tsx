@@ -1,8 +1,8 @@
 import { IconTable } from '@tabler/icons-react';
 import { ChevronDown, Columns2, Database } from 'lucide-react';
-import { Divider, Group, Pill, RenderTreeNodePayload, Text, Tree, TreeNodeData } from '@mantine/core';
-import {  DatabaseTreeNodeData } from './data';
-
+import { Divider, Group, Pill, RenderTreeNodePayload, ScrollArea, Text, Tree, TreeNodeData } from '@mantine/core';
+import { DatabaseTreeNodeData } from './data';
+import classes from './DatabaseTree.module.css';
 // import classes from './Demo.module.css';
 
 // 1. Extend the default TreeNodeData to include your custom 'type'
@@ -40,29 +40,29 @@ function Leaf({ node, expanded, hasChildren, elementProps }: RenderTreeNodePaylo
   const customNode = node as CustomTreeNode;
 
   return (
-    <Group gap={0}  {...elementProps}  p={0} my={0} c="dimmed" align='center'  preventGrowOverflow wrap='nowrap'>
+    <Group gap={0}  {...elementProps} p={0} my={0} c="dimmed" align='center' preventGrowOverflow wrap='nowrap'>
       {customNode.type !== 'database' && (
-    <Divider orientation="vertical" ml={5}/>
-    )}
-          <Group gap={5}  {...elementProps} align='center'   preventGrowOverflow wrap='nowrap'>
-      {hasChildren && (
-        <ChevronDown
-          size={14}
-          style={{
-            transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
-            transition: 'transform 0.1s ease',
-          }}
-          />
+        <Divider orientation="vertical" ml={5} />
       )}
-      <DatabaseTreeIcon  isFolder={hasChildren} expanded={expanded} type={customNode.type} />
-    </Group>
+      <Group gap={5}  {...elementProps} align='center' preventGrowOverflow wrap='nowrap'>
+        {hasChildren && (
+          <ChevronDown
+            size={14}
+            style={{
+              transform: expanded ? 'rotate(0deg)' : 'rotate(-90deg)',
+              transition: 'transform 0.1s ease',
+            }}
+          />
+        )}
+        <DatabaseTreeIcon isFolder={hasChildren} expanded={expanded} type={customNode.type} />
+      </Group>
       <Text ml={10} mr={10} truncate="end" component='p'>{customNode.label} </Text>
       {customNode.type === 'database' && (
-          <Pill ml="auto" mr={0} size="xs" {...elementProps} variant="contrast" c="gray">
+        <Pill ml="auto" mr={0} size="xs" {...elementProps} variant="contrast" c="gray">
           {node.children?.length}
         </Pill>
       )}
-            </Group>
+    </Group>
   );
 }
 
@@ -74,11 +74,13 @@ interface DatabaseTreeProps {
 
 export const DatabaseTree: React.FC<DatabaseTreeProps> = ({ data }) => {
   return (
-    <Tree
-      selectOnClick
-      clearSelectionOnOutsideClick
-      data={data}
-      renderNode={(payload) => <Leaf {...payload} />}
-    />
+    <ScrollArea scrollbarSize={4} offsetScrollbars={false} classNames={classes}>
+      <Tree
+        selectOnClick
+        clearSelectionOnOutsideClick
+        data={data}
+        renderNode={(payload) => <Leaf {...payload} />}
+      />
+    </ScrollArea>
   );
 };
