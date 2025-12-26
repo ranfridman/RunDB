@@ -1,6 +1,6 @@
 import React, { memo, type ComponentProps, useContext, useEffect } from 'react';
 import { Streamdown } from 'streamdown';
-import { Text, Box, Anchor } from '@mantine/core';
+import { Text, Box, Anchor, Table } from '@mantine/core';
 import { MarkdownCode } from '../MarkdownCode/MarkdownCode';
 import { ContentCard } from '../ContentCard/ContentCard';
 import { ComplexTable } from '../ComplexTable/ComplexTable';
@@ -65,7 +65,7 @@ const ResponseComponent = memo(
                     },
                     li: (props) => <Box component="li" {...props} />,
                     table: ({ children }) => (
-                        <ContentCard isStreaming={isAnimating ?? false} type={"Table"}>
+                        <ContentCard isStreaming={isAnimating ?? false} type={"Table"} padding={0}>
                             <ComplexTable maxRows={10}>
                                 {children}
                             </ComplexTable>

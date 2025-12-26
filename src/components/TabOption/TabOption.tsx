@@ -16,7 +16,7 @@ export const TabOption: React.FC<TabOptionProps> = ({ option, index, isActive })
 
     return (
         <>
-            <Tabs.Tab key={index} px="xs" color={typeToColor[option.type ?? '']}
+            <Tabs.Tab key={index} px="xs" bg={isActive ? "dark.9" : ""} color={typeToColor[option.type ?? '']}
                 rightSection={
                     <ActionIcon size="xs" ref={ref} variant="transparent" c="dimmed" className={classes.closeIcon}>
                         {(isActive || hovered) && < X />}

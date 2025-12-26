@@ -1,5 +1,5 @@
 import { Plus, X } from 'lucide-react';
-import { ActionIcon, Divider, Tabs } from '@mantine/core';
+import { ActionIcon, Divider, ScrollArea, Tabs } from '@mantine/core';
 import { typeToColor, typeToIcon } from '../TypesTheme/TypesTheme';
 import { Response } from '../Response/Response';
 import { useEffect, useState } from 'react';
@@ -8,8 +8,8 @@ import { TabOption } from '../TabOption/TabOption';
 
 const options = [
   { label: 'Table', id: '1', type: 'Table' },
-  { label: 'Test', id: '2', type: 'Graph' },
-  { label: 'SQL', id: '3', type: 'SQL' },
+  // { label: 'Test', id: '2', type: 'Graph' },
+  // { label: 'SQL', id: '3', type: 'SQL' },
 ];
 
 
@@ -123,19 +123,21 @@ export const InfoArea = () => {
       <Tabs defaultValue="pluse" value={activeTab} onChange={setActiveTab} >
         <Tabs.List color="red">
           {...tabs}
-          <Tabs.Tab value="pluse" px={12}>
+          <Tabs.Tab value="pluse" px={12} bg={activeTab === "pluse" ? "dark.9" : ""}>
             <Plus size={16} />
           </Tabs.Tab>
           <Divider orientation="vertical" mx={0} />
         </Tabs.List>
 
-        <Tabs.Panel value="pluse" h="100%">
-          <NewTabOptions />
-          {/* <Response isAnimating={isStreaming}>
+        <ScrollArea h="90vh" offsetScrollbars>
+          <Tabs.Panel value="pluse" h="100%">
+            <NewTabOptions />
+            {/* <Response isAnimating={isStreaming}>
           {content}
         </Response> */}
-        </Tabs.Panel>
-        {panels}
+          </Tabs.Panel>
+          {panels}
+        </ScrollArea>
       </Tabs>
     </>
   );

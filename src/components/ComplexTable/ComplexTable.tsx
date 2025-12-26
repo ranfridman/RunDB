@@ -197,7 +197,7 @@ export function ComplexTable({
 
       <Divider />
 
-      <ScrollArea h="50vh" offsetScrollbars>
+      <ScrollArea scrollbarSize={4} h="50vh" offsetScrollbars>
         <Table
           verticalSpacing="xs"
           horizontalSpacing="md"
@@ -261,20 +261,25 @@ export function ComplexTable({
         </Table>
       </ScrollArea>
       <Divider />
-      <Pagination
-        mt="xs"
-        mb="xs"
-        px="md"
-        classNames={{
-          root: classes.pagination,
-          control: classes.paginationControl
-        }}
-        size="xs"
-        total={Math.ceil(sortedData.length / maxRows)}
-        value={currentPage}
-        onChange={setCurrentPage}
-        variant="subtle"
-      />
+      <Group justify="space-between" align="center" px="md">
+
+        <Pagination
+          mt="xs"
+          mb="xs"
+          classNames={{
+            root: classes.pagination,
+            control: classes.paginationControl
+          }}
+          size="xs"
+          total={Math.max(1, Math.ceil(sortedData.length / maxRows))}
+          value={currentPage}
+          onChange={setCurrentPage}
+          variant="subtle"
+        />
+        <Text size="xs" c="dimmed" ta="center">
+          {displayData.length} / {sortedData.length} rows
+        </Text>
+      </Group>
 
       {/* {displayData.length < sortedData.length && (
         <Box p="xs" className={classes.footer}>

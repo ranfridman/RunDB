@@ -9,11 +9,12 @@ interface ContentCardProps {
     isStreaming: boolean;
     type?: string;
     icon?: React.ReactNode;
+    padding?: string | number;
 
 }
 
 
-export const ContentCard = ({ children, isStreaming, type, icon }: ContentCardProps) => {
+export const ContentCard = ({ children, isStreaming, type, icon, padding = "md" }: ContentCardProps) => {
     return (
         <Box p="md">
             <Card withBorder p="md" radius="md" >
@@ -38,7 +39,7 @@ export const ContentCard = ({ children, isStreaming, type, icon }: ContentCardPr
                         </Group>
                     </Group>
                 </Card.Section>
-                <Card.Section p="xs" withBorder bg="gray.9">
+                <Card.Section p={padding} withBorder bg="gray.9">
                     {
                         isStreaming ? (
                             <Text> Loading </Text>
