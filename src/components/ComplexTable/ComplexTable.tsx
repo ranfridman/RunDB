@@ -1,212 +1,288 @@
 import { useMemo, useState } from 'react'
-import { ArrowUpDown, ArrowUp, ArrowDown } from 'lucide-react'
+import {
+  ArrowUpDown,
+  ArrowUp,
+  ArrowDown,
+  Search,
+  Download,
+  Filter,
+  X
+} from 'lucide-react'
 import {
   Box,
   Text,
   ScrollArea,
   Group,
-  Center,
   Flex,
   Divider,
   Card,
+  Table,
+  TextInput,
+  ActionIcon,
+  Tooltip,
+  Badge,
+  Stack,
+  Pagination
 } from '@mantine/core'
 import classes from './ComplexTable.module.css'
+import { TableParser, ParsedTableData } from './TableParser'
 
-import { parseTableChildren } from './TableDataUtils'
-
-interface TableWidgetConfig {
-  maxRows: number
-  columns?: string[]
-  sortBy?: {
-    column: string
-    direction: 'asc' | 'desc'
-  }
+export interface ColumnConfig {
+  key: string
+  label?: string
+  sortable?: boolean
+  align?: 'left' | 'center' | 'right'
+  width?: string | number
+  render?: (value: any, row: any) => React.ReactNode
 }
 
-interface ComplexTableProps {
-  config?: Partial<TableWidgetConfig>
-  data?: Record<string, unknown>[]
+export interface ComplexTableProps {
+  data?: any[]
+  columns?: ColumnConfig[]
   children?: React.ReactNode
+  title?: string
+  searchable?: boolean
+  maxRows?: number
 }
 
-/**
- * Format a table cell value into a human-readable string.
- */
-function formatCellValue(value: unknown): string {
-  if (value === null || value === undefined) return '—'
-  if (typeof value === 'boolean') return value ? 'Yes' : 'No'
-  if (typeof value === 'number') {
-    return value.toLocaleString(undefined, { maximumFractionDigits: 4 })
-  }
-  if (value instanceof Date) {
-    return value.toLocaleString()
-  }
-  if (typeof value === 'object') {
-    return JSON.stringify(value)
-  }
-  const str = String(value)
-  if (str.length > 50) {
-    return str.slice(0, 47) + '...'
-  }
-  return str
-}
+export function ComplexTable({
+  data: propsData,
+  columns: propsColumns,
+  children,
+  title,
+  searchable = true,
+  maxRows = 10
+}: ComplexTableProps) {
+  const [search, setSearch] = useState('')
+  const [sortField, setSortField] = useState<string | null>(null)
+  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>('asc')
+  const [currentPage, setCurrentPage] = useState<number>(1)
 
-/**
- * Render a sortable table widget using custom Mantine components.
- */
-export function ComplexTable({ config = {}, data: propsData, children }: ComplexTableProps) {
-  const { maxRows = 10, columns: configColumns, sortBy: initialSort } = config
+  // 1. Parse or use provided data
+  const { data, columns } = useMemo(() => {
+    let finalData: any[] = []
+    let finalColumns: ColumnConfig[] = []
 
-  const { extractedData, extractedColumns } = useMemo(() => {
     if (children) {
-      try {
-        const { data, columns } = parseTableChildren(children);
-        if (data.length > 0 && columns.length > 0) {
-          return { extractedData: data, extractedColumns: columns };
-        }
-      } catch (error) {
-        console.warn('Failed to parse table children:', error);
+      const parsed = TableParser.parse(children)
+      finalData = parsed.rows
+      finalColumns = parsed.columns.map(col => ({
+        key: col,
+        label: col,
+        sortable: true
+      }))
+    } else if (propsData) {
+      finalData = propsData
+      if (propsColumns) {
+        finalColumns = propsColumns
+      } else if (propsData.length > 0) {
+        finalColumns = Object.keys(propsData[0]).map(key => ({
+          key,
+          label: key.replace(/_/g, ' ').replace(/\b\w/g, l => l.toUpperCase()),
+          sortable: true
+        }))
       }
     }
-    return { extractedData: propsData || [], extractedColumns: [] };
-  }, [children, propsData])
 
-  const [sortColumn, setSortColumn] = useState<string | null>(initialSort?.column ?? null)
-  const [sortDirection, setSortDirection] = useState<'asc' | 'desc'>(
-    initialSort?.direction ?? 'asc'
-  )
+    // Merge with propsColumns if they exist to allow overriding labels/renderers
+    if (propsColumns) {
+      finalColumns = finalColumns.map(col => {
+        const override = propsColumns.find(pc => pc.key === col.key)
+        return override ? { ...col, ...override } : col
+      })
+    }
 
-  const columns = useMemo(() => {
-    if (configColumns && configColumns.length > 0) {
-      return configColumns
-    }
-    if (extractedColumns.length > 0) {
-      return extractedColumns
-    }
-    if (extractedData.length > 0) {
-      return Object.keys(extractedData[0])
-    }
-    return []
-  }, [configColumns, extractedColumns, extractedData])
+    return { data: finalData, columns: finalColumns }
+  }, [children, propsData, propsColumns])
 
+  // 2. Filter data
+  const filteredData = useMemo(() => {
+    setCurrentPage(1)
+    if (!search) return data
+    const s = search.toLowerCase()
+    return data.filter(row => {
+      return Object.values(row).some(val => {
+        const anyVal = val as any;
+        const text = typeof anyVal === 'object' && anyVal !== null && 'text' in anyVal ? String(anyVal.text) : String(anyVal)
+        return text.toLowerCase().includes(s)
+      })
+    })
+  }, [data, search])
+
+  // 3. Sort data
   const sortedData = useMemo(() => {
-    if (!sortColumn) return extractedData
+    if (!sortField) return filteredData
 
-    return [...extractedData].sort((a, b) => {
-      const aVal = a[sortColumn]
-      const bVal = b[sortColumn]
+    return [...filteredData].sort((a, b) => {
+      const aVal = a[sortField] as any
+      const bVal = b[sortField] as any
 
-      if (aVal === null || aVal === undefined) return sortDirection === 'asc' ? 1 : -1
-      if (bVal === null || bVal === undefined) return sortDirection === 'asc' ? -1 : 1
+      const aText = typeof aVal === 'object' && aVal !== null && 'text' in aVal ? String(aVal.text) : String(aVal)
+      const bText = typeof bVal === 'object' && bVal !== null && 'text' in bVal ? String(bVal.text) : String(bVal)
 
-      if (typeof aVal === 'number' && typeof bVal === 'number') {
-        return sortDirection === 'asc' ? aVal - bVal : bVal - aVal
+      // Try numeric sort
+      const aNum = parseFloat(aText)
+      const bNum = parseFloat(bText)
+      if (!isNaN(aNum) && !isNaN(bNum)) {
+        return sortDirection === 'asc' ? aNum - bNum : bNum - aNum
       }
 
-      const aStr = String(aVal).toLowerCase()
-      const bStr = String(bVal).toLowerCase()
-      const comparison = aStr.localeCompare(bStr)
+      // Default string sort
+      const comparison = aText.localeCompare(bText, undefined, { numeric: true, sensitivity: 'base' })
       return sortDirection === 'asc' ? comparison : -comparison
     })
-  }, [extractedData, sortColumn, sortDirection])
+  }, [filteredData, sortField, sortDirection])
 
-  const displayData = useMemo(() => {
-    return sortedData.slice(0, maxRows)
-  }, [sortedData, maxRows])
+  // 4. Handle sorting
+  const handleSort = (key: string) => {
+    const col = columns.find(c => c.key === key)
+    if (!col || col.sortable === false) return
 
-  const handleSort = (column: string) => {
-    if (sortColumn === column) {
-      setSortDirection((prev) => (prev === 'asc' ? 'desc' : 'asc'))
+    if (sortField === key) {
+      setSortDirection(prev => prev === 'asc' ? 'desc' : 'asc')
     } else {
-      setSortColumn(column)
+      setSortField(key)
       setSortDirection('asc')
     }
   }
+  const displayData = maxRows ? sortedData.slice((currentPage - 1) * maxRows, currentPage * maxRows) : sortedData
 
-  // If no data was extracted but we have children, render them as-is
-  if (extractedData.length === 0 && children) {
+  if (data.length === 0) {
     return (
-      <ScrollArea h="100%">
-        <Box className={classes.simpleTableContainer}>
-          {children}
-        </Box>
-      </ScrollArea>
-    )
-  }
-
-  // If no data at all
-  if (extractedData.length === 0) {
-    return (
-      <Center h="100%">
-        <Text size="sm" c="dimmed">
-          No data available
-        </Text>
-      </Center>
-    )
-  }
-
-  // Render custom sortable table
-  return (
-    <Box className={classes.tableContainer}>
-      <Card>
-
-        <ScrollArea h="100%">
-          {/* Header Row */}
-          <Flex className={classes.headerRow}>
-            {columns.map((column) => (
-              <Box
-                key={column}
-                className={classes.headerCell}
-                onClick={() => handleSort(column)}
-              >
-                <Group gap={4} wrap="nowrap">
-                  <Text size="xs" fw={700} className={classes.headerText}>
-                    {column.replace(/_/g, ' ').replace(/\b\w/g, (c) => c.toUpperCase())}
-                  </Text>
-                  {sortColumn === column ? (
-                    sortDirection === 'asc' ? (
-                      <ArrowUp size={12} style={{ flexShrink: 0 }} />
-                    ) : (
-                      <ArrowDown size={12} style={{ flexShrink: 0 }} />
-                    )
-                  ) : (
-                    <ArrowUpDown size={12} style={{ opacity: 0.3, flexShrink: 0 }} />
-                  )}
-                </Group>
-              </Box>
-            ))}
-          </Flex>
-
-          <Divider />
-
-          {/* Data Rows */}
-          {displayData.map((row, rowIndex) => (
-            <Box key={rowIndex}>
-              <Flex className={classes.dataRow}>
-                {columns.map((column) => (
-                  <Box key={column} className={classes.dataCell}>1
-                    <Text
-                      size="xs"
-                      className={classes.cellContent}
-                      c={row[column] === null || row[column] === undefined ? 'dimmed' : undefined}
-                      title={String(row[column] ?? '')}
-                    >
-                      {formatCellValue(row[column])}
-                    </Text>
-                  </Box>
-                ))}
-              </Flex>
-              {rowIndex < displayData.length - 1 && <Divider />}
-            </Box>
-          ))}
-        </ScrollArea>
-
-        {extractedData.length > maxRows && (
-          <Box className={classes.footer}>
-            Showing {maxRows} of {extractedData.length} rows
-          </Box>
-        )}
+      <Card withBorder radius="md" p="xl" bg="transparent">
+        <Stack align="center" gap="xs">
+          <Text c="dimmed" size="sm">No data found in table</Text>
+        </Stack>
       </Card>
-    </Box>
+    )
+  }
+
+  return (
+    <Card radius="md" p={0} className={classes.tableCard} bg="transparent">
+      {(title || searchable) && (
+        <Box p="sm" className={classes.tableHeader}>
+          <Flex justify="space-between" align="center" gap="md">
+            {title && <Text fw={600} size="sm">{title}</Text>}
+            {searchable && (
+              <TextInput
+                placeholder="Search table..."
+                size="xs"
+                variant="filled"
+                leftSection={<Search size={14} />}
+                value={search}
+                rightSection={
+                  search ? (
+                    <ActionIcon variant="subtle" size="xs" c="dimmed" onClick={() => setSearch('')}>
+                      <X size={14} />
+                    </ActionIcon>
+                  ) : null
+                }
+                onChange={(e) => setSearch(e.currentTarget.value)}
+                style={{ flex: 1, maxWidth: 300 }}
+              />
+            )}
+            <Group gap={8}>
+              <Tooltip label="Export CSV">
+                <ActionIcon variant="subtle" size="sm" color="gray">
+                  <Download size={16} />
+                </ActionIcon>
+              </Tooltip>
+              <ActionIcon variant="subtle" size="sm" color="gray">
+                <Filter size={16} />
+              </ActionIcon>
+            </Group>
+          </Flex>
+        </Box>
+      )}
+
+      <Divider />
+
+      <ScrollArea h="50vh" offsetScrollbars>
+        <Table
+          verticalSpacing="xs"
+          horizontalSpacing="md"
+          highlightOnHover
+          className={classes.table}
+        // style={{ minWidth: columns.length * 120 }}
+        >
+          <Table.Thead className={classes.thead}>
+            <Table.Tr>
+              {columns.map(col => (
+                <Table.Th
+                  key={col.key}
+                  onClick={() => handleSort(col.key)}
+                  className={col.sortable !== false ? classes.sortableHeader : ''}
+                  style={{ width: col.width }}
+                >
+                  <Group gap={4} wrap="nowrap" justify={col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start'}>
+                    <Text size="xs" fw={700} className={classes.headerText}>
+                      {col.label || col.key}
+                    </Text>
+                    {col.sortable !== false && (
+                      <Box className={classes.sortIcon}>
+                        {sortField === col.key ? (
+                          sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+                        ) : (
+                          <ArrowUpDown size={12} style={{ opacity: 0.3 }} />
+                        )}
+                      </Box>
+                    )}
+                  </Group>
+                </Table.Th>
+              ))}
+            </Table.Tr>
+          </Table.Thead>
+
+          <Table.Tbody>
+            {displayData.map((row, i) => (
+              <Table.Tr key={i} >
+                {columns.map(col => {
+                  const cellData = row[col.key]
+                  const text = typeof cellData === 'object' && cellData !== null && 'text' in cellData ? cellData.text : String(cellData)
+                  const node = typeof cellData === 'object' && cellData !== null && 'node' in cellData ? cellData.node : cellData
+
+                  return (
+                    <Table.Td
+                      key={col.key}
+                      align={col.align}
+                      height={10}
+                    >
+                      <Box className={classes.cellContent} title={text}>
+                        {col.render ? col.render(cellData, row) : (
+                          node || <Text size="xs" c="dimmed">—</Text>
+                        )}
+                      </Box>
+                    </Table.Td>
+                  )
+                })}
+              </Table.Tr>
+            ))}
+          </Table.Tbody>
+        </Table>
+      </ScrollArea>
+      <Divider />
+      <Pagination
+        mt="xs"
+        mb="xs"
+        px="md"
+        classNames={{
+          root: classes.pagination,
+          control: classes.paginationControl
+        }}
+        size="xs"
+        total={Math.ceil(sortedData.length / maxRows)}
+        value={currentPage}
+        onChange={setCurrentPage}
+        variant="subtle"
+      />
+
+      {/* {displayData.length < sortedData.length && (
+        <Box p="xs" className={classes.footer}>
+          <Text size="xs" c="dimmed" ta="center">
+            Showing {displayData.length} of {sortedData.length} rows
+          </Text>
+        </Box>
+      )} */}
+    </Card>
   )
 }

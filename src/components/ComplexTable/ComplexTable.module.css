@@ -1,27 +1,34 @@
-.tableContainer {
+/* .tableCard {
+    height: 100%;
     display: flex;
     flex-direction: column;
-    height: 100%;
-    width: 100%;
+    overflow: hidden;
+    background-color: light-dark(var(--mantine-color-white), var(--mantine-color-dark-7));
 }
 
-.headerRow {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
-    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
+.tableHeader {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+}
+
+.table {
+    border-collapse: separate;
+    border-spacing: 0;
+}
+
+.thead {
+    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
     position: sticky;
     top: 0;
-    z-index: 1;
+    z-index: 10;
 }
 
-.headerCell {
-    flex: 1;
-    padding: var(--mantine-spacing-xs);
+.sortableHeader {
     cursor: pointer;
+    user-select: none;
     transition: background-color 100ms ease;
-    min-width: 0;
 }
 
-.headerCell:hover {
+.sortableHeader:hover {
     background-color: light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-6));
 }
 
@@ -29,65 +36,38 @@
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+    color: light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-0));
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
 }
 
-.dataRow {
-    min-height: 36px;
-    transition: background-color 100ms ease;
-    width: 100%;
-}
-
-.dataRow:hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
-}
-
-.dataCell {
-    flex: 1;
-    padding: var(--mantine-spacing-xs);
-    min-width: 0;
+.sortIcon {
     display: flex;
     align-items: center;
+    color: var(--mantine-color-blue-filled);
 }
 
 .cellContent {
+    max-width: 400px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-    width: 100%;
+    font-size: var(--mantine-font-size-xs);
 }
 
 .footer {
-    padding: var(--mantine-spacing-xs);
-    border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-4));
-    font-size: var(--mantine-font-size-xs);
-    color: var(--mantine-color-dimmed);
-    text-align: right;
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+    border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
+    text-align: center;
+} */
+
+
+.paginationControl[data-active] {
+    background-color: var(--mantine-color-dark-8);
+    color: var(--mantine-color-white);
 }
 
-.simpleTableContainer {
-    width: 100%;
-}
-
-.simpleTableContainer table {
-    width: 100%;
-    border-collapse: collapse;
-    font-size: var(--mantine-font-size-xs);
-}
-
-.simpleTableContainer th {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
-    padding: var(--mantine-spacing-xs);
-    text-align: left;
-    font-weight: 700;
-    border-bottom: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
-}
-
-.simpleTableContainer td {
-    padding: var(--mantine-spacing-xs);
-    border-bottom: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-5));
-}
-
-.simpleTableContainer tr:hover {
-    background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7));
+/* Custom scrollbar behavior */
+:global(.mantine-ScrollArea-viewport) {
+    scroll-behavior: smooth;
 }

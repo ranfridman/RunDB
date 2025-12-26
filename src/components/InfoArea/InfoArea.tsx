@@ -104,7 +104,7 @@ const url3 = "https://r.jina.ai/https://en.wikipedia.org/wiki/Markdown";
 const url4 = "https://r.jina.ai/https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams";
 export const InfoArea = () => {
   const [activeTab, setActiveTab] = useState<string | null>("1");
-  const { data, isLoading } = useMarkdownStream(url3);
+  const { data, isLoading } = useMarkdownStream(url);
 
   const tabs = options.map((option, index) => (
     <TabOption isActive={activeTab === option.id} option={option} index={index} />
