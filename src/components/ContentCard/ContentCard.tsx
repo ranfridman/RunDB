@@ -10,11 +10,12 @@ interface ContentCardProps {
     type?: string;
     icon?: React.ReactNode;
     padding?: string | number;
+    title?: string;
 
 }
 
 
-export const ContentCard = ({ children, isStreaming, type, icon, padding = "md" }: ContentCardProps) => {
+export const ContentCard = ({ children, isStreaming, type, icon, padding = "md", title }: ContentCardProps) => {
     return (
         <Box p="md">
             <Card withBorder p="md" radius="md" >
@@ -22,7 +23,7 @@ export const ContentCard = ({ children, isStreaming, type, icon, padding = "md" 
                     <Group justify="space-between" align="center"  >
                         <Group gap="xs" align="center">
                             {icon ?? getIconByType(type ?? '', 22)}
-                            <Text fz="md">{type}</Text>
+                            <Text fz="md">{title ?? type}</Text>
                         </Group>
                         <Group gap="xs">
                             <Text fz="xs" c="dimmed">{isStreaming ? "Loading" : "Copy"}</Text>

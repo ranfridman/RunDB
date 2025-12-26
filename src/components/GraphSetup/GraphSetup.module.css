@@ -1,0 +1,19 @@
+.input {
+    color: var(--mantine-color-dimmed);
+    background-color: var(--mantine-color-gray-9);
+}
+
+/*
+ * Hover over selectors to apply outline styles
+ *
+ */
+.indicator {
+    /* background-color: var(--mantine-color-gray-9);
+     */
+    color: var(--mantine-color-pink-6);
+    outline: 0.15em solid var(--mantine-color-pink-6);
+
+    & .innerLabel {
+        color: var(--mantine-color-pink-6);
+    }
+}

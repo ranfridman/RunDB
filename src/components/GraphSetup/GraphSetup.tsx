@@ -1,0 +1,56 @@
+import { Alert, Box, Button, Card, Group, SegmentedControl, Stack, Text, Textarea, Title } from "@mantine/core";
+import { ChartArea, Play } from "lucide-react";
+import { typeToColor } from "../TypesTheme/TypesTheme";
+import { Mermaid } from "../Mermaid/Mermaid";
+import { graphExamples } from "./GraphSetupExamples";
+import { useState } from "react";
+import { ContentCard } from "../ContentCard/ContentCard";
+import styles from "./GraphSetup.module.css";
+
+const graphTypes = [
+    { label: 'Flow Chart', value: 'flowchart' },
+    { label: 'Plot Graph', value: 'xychart' },
+    { label: 'Pie Chart', value: 'pie' },
+    { label: 'Timeline', value: 'timeline' },
+    { label: 'Area', value: 'area' },
+]
+const color = typeToColor["Graph"];
+
+export const GraphSetup: React.FC = () => {
+    const [graph, setGraph] = useState<string>("");
+    const [graphType, setGraphType] = useState<string>("pie");
+    return (
+        <>
+            <Card h="100%" w="100%" p="xs" >
+                <Stack p="sm" pt="0" gap="xs" w="100%" >
+                    <Title fz="h2">Graph Setup</Title>
+                    {/* <Text fz="xs">Enter your graph code here</Text> */}
+                    <Textarea classNames={{ ...styles }} color="red" placeholder="Enter your graph code here" />
+                </Stack>
+                <Group w="100%" justify="space-between" gap={0} px="sm" py="0">
+                    <SegmentedControl classNames={{ indicator: styles.indicator }} w="85%" variant="subtle"
+                        radius="lg" onChange={setGraphType} bg="gray.9" withItemsBorders={false} value={graphType} size="sm"
+                        data={graphTypes} />
+                    <Button leftSection={<Play size="15" />} w="15%" variant="filled" size="compact-md" color={color} radius="md" my="xs">
+                        Run
+                    </Button>
+                </Group>
+
+                <Box w="100%"  >
+                    <ContentCard type="Graph" padding="0" isStreaming={false} title={`Example ${graphTypes.find((type) => type.value === graphType)?.label}`}>
+                        <Group justify="center" align="center" w="100%" h="27em" display="flex" >
+                            <Mermaid
+                                chart={graphExamples[graphType as keyof typeof graphExamples] || ""}
+                                theme="dark"
+                            />
+                        </Group>
+                    </ContentCard>
+                    <Alert variant="light" my={0} py="xs" mx="md" color={color} title="Alert title" icon={<ChartArea />}>
+                        Lorem ipsum dolor sit, amet consectetur adipisicing elit. At officiis, quae tempore necessitatibus placeat saepe.
+                    </Alert>
+                </Box >
+            </Card>
+
+        </>
+    );
+}

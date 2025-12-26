@@ -1,5 +1,5 @@
 import { Plus, X } from 'lucide-react';
-import { ActionIcon, Divider, Group, ScrollArea, Tabs } from '@mantine/core';
+import { ActionIcon, Box, Divider, Group, ScrollArea, Tabs } from '@mantine/core';
 import { typeToColor, typeToIcon } from '../TypesTheme/TypesTheme';
 import { Response } from '../Response/Response';
 import { useEffect, useState } from 'react';
@@ -8,6 +8,7 @@ import { TabOption } from '../TabOption/TabOption';
 
 
 import { useQuery, experimental_streamedQuery as streamedQuery } from '@tanstack/react-query';
+import { GraphSetup } from '../GraphSetup/GraphSetup';
 
 const useMarkdownStream = (url: string) => {
   return useQuery({
@@ -79,10 +80,21 @@ export const InfoArea: React.FC<InfoAreaProps> = ({ tabsData, createNewTab, clos
 
   const panels = tabsData.map((option, index) => (
     <Tabs.Panel key={index} value={option.id}>
-      {/* <Response isAnimating={isLoading}>
-        {data}
-      </Response> */}
-      {option.id}    </Tabs.Panel>
+      <Group justify="space-between" w="100%" dir='row' gap="0" h="87vh" align="top" >
+        <Box w="30em">
+          {option.type === "Graph" && <GraphSetup />}
+        </Box>
+        <Divider orientation="vertical" mx={0} />
+        <Box w="calc(99% - 30em)">
+          <ScrollArea type="scroll" scrollbarSize={2} offsetScrollbars h="86vh">
+            <Response isAnimating={isLoading}>
+              {data}
+            </Response>
+          </ScrollArea>
+        </Box>
+      </Group>
+      {/* {option.id}  */}
+    </Tabs.Panel>
   ));
   return (
     <>

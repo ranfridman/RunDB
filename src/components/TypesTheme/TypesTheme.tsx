@@ -1,11 +1,12 @@
 import { ThemeIcon } from "@mantine/core";
-import { ChartArea, Table } from "lucide-react";
+import { ChartArea, CodeXml, FileText, Table } from "lucide-react";
 
 export const typeToColor: { [key: string]: string } = {
   Table: 'blue',
   Graph: 'pink',
   SQL: 'teal',
   Analysis: 'violet',
+  Text: 'orange',
 };
 
 export const getIconByType = (type: string, size: number = 16): React.ReactNode => {
@@ -22,12 +23,14 @@ export const typeToIcon2: { [key: string]: React.ReactNode } = {
     <ChartArea />
   ),
   SQL: (
-    <ChartArea />
+    <CodeXml />
   ),
   Analysis: (
     <ChartArea />
   ),
-
+  Text: (
+    <ChartArea />
+  ),
 };
 export const typeToIcon: { [key: string]: React.ReactNode } = {
   Table: (
@@ -42,12 +45,12 @@ export const typeToIcon: { [key: string]: React.ReactNode } = {
   ),
   SQL: (
     <ThemeIcon size={16} variant='transparent' p={0} c={typeToColor.SQL}>
-      <ChartArea />
+      <CodeXml />
     </ThemeIcon>
   ),
   Analysis: (
     <ThemeIcon size={16} variant='transparent' p={0} c={typeToColor.Analysis}>
-      <ChartArea />
+      <FileText />
     </ThemeIcon>
   ),
 
