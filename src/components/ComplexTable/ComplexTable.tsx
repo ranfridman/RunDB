@@ -160,7 +160,7 @@ export function ComplexTable({
   return (
     <Card radius="md" p={0} className={classes.tableCard} bg="transparent">
       {(title || searchable) && (
-        <Box p="sm" className={classes.tableHeader}>
+        <Box p="sm" className={classes.tableHeader} >
           <Flex justify="space-between" align="center" gap="md">
             {title && <Text fw={600} size="sm">{title}</Text>}
             {searchable && (
@@ -182,14 +182,11 @@ export function ComplexTable({
               />
             )}
             <Group gap={8}>
-              <Tooltip label="Export CSV">
-                <ActionIcon variant="subtle" size="sm" color="gray">
+              <Tooltip label="Export CSV" color="dark">
+                <ActionIcon variant="subtle" size="sm">
                   <Download size={16} />
                 </ActionIcon>
               </Tooltip>
-              <ActionIcon variant="subtle" size="sm" color="gray">
-                <Filter size={16} />
-              </ActionIcon>
             </Group>
           </Flex>
         </Box>
@@ -199,6 +196,7 @@ export function ComplexTable({
 
       <ScrollArea scrollbarSize={4} h="50vh" offsetScrollbars>
         <Table
+          c="gray.1"
           verticalSpacing="xs"
           horizontalSpacing="md"
           highlightOnHover
@@ -275,9 +273,11 @@ export function ComplexTable({
           value={currentPage}
           onChange={setCurrentPage}
           variant="subtle"
+          withEdges
+
         />
         <Text size="xs" c="dimmed" ta="center">
-          {displayData.length} / {sortedData.length} rows
+          {maxRows * (currentPage - 1) + 1} - {maxRows * (currentPage - 1) + displayData.length} / {sortedData.length}
         </Text>
       </Group>
 

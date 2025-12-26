@@ -9,9 +9,10 @@ interface TabOptionProps {
     option: any;
     index: number;
     isActive: boolean;
+    onClose: (id: string) => void;
 }
 
-export const TabOption: React.FC<TabOptionProps> = ({ option, index, isActive }) => {
+export const TabOption: React.FC<TabOptionProps> = ({ option, index, isActive, onClose }) => {
     const { hovered, ref } = useHover();
 
     return (
@@ -19,7 +20,7 @@ export const TabOption: React.FC<TabOptionProps> = ({ option, index, isActive })
             <Tabs.Tab key={index} px="xs" bg={isActive ? "dark.9" : ""} color={typeToColor[option.type ?? '']}
                 rightSection={
                     <ActionIcon size="xs" ref={ref} variant="transparent" c="dimmed" className={classes.closeIcon}>
-                        {(isActive || hovered) && < X />}
+                        {(isActive || hovered) && < X onClick={() => onClose(option.id)} />}
                     </ActionIcon>
                 }
                 leftSection={typeToIcon[option.type ?? '']} value={option.id} >

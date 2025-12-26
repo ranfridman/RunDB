@@ -3,14 +3,16 @@ import { alpha, Box, Button, Card, Center, darken, Flex, Grid, Group, Overlay, S
 import { getIconByType, typeToColor } from "../TypesTheme/TypesTheme";
 
 import styles from './NewTabOptions.module.css';
+import { tabData } from '../InfoArea/InfoArea';
 
 interface TabOptionButtonProps {
     label: string;
     description: string;
     type: string;
+    createNewTab: (tab: tabData) => void;
 }
 
-const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, type }) => {
+const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, type, createNewTab }) => {
     const color = typeToColor[type ?? '']
     return (
 
@@ -20,10 +22,9 @@ const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, t
             variant="gradient"
             gradient={{ from: `${color}.3`, to: `${color}.9`, deg: 135 }}
             p="0.2em"
-            // size="xl"
+            onClick={() => createNewTab({ label, id: Date.now().toString(), type })}
             w="20em"
             h="10em"
-        // w="15em"
         >
             <Card h="100%" w="20em" >
                 <Group gap="xs" h="5em">
@@ -39,9 +40,11 @@ const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, t
     )
 }
 
+interface NewTabOptionsProps {
+    createNewTab: (tab: tabData) => void;
+}
 
-
-export const NewTabOptions = () => {
+export const NewTabOptions: React.FC<NewTabOptionsProps> = ({ createNewTab }) => {
 
     return (
         <Group h="60vh" justify="center" w="100%" p="md" pos="relative">
@@ -57,6 +60,7 @@ export const NewTabOptions = () => {
                             label="Table"
                             description="Organize your raw data into a structured, sortable, and filterable table format for easy scanning."
                             type="Table"
+                            createNewTab={createNewTab}
                         />
                     </Grid.Col>
                     <Grid.Col span={1}>
@@ -64,6 +68,7 @@ export const NewTabOptions = () => {
                             label="Graph"
                             description="Visualize trends and patterns in your data with dynamic, interactive charts and graphs."
                             type="Graph"
+                            createNewTab={createNewTab}
                         />
                     </Grid.Col>
                     <Grid.Col span={1}>
@@ -71,6 +76,7 @@ export const NewTabOptions = () => {
                             label="SQL"
                             description="Generate optimized SQL queries to extract, transform, and analyze your data directly from your database."
                             type="SQL"
+                            createNewTab={createNewTab}
                         />
                     </Grid.Col>
                     <Grid.Col span={1}>
@@ -78,6 +84,7 @@ export const NewTabOptions = () => {
                             label="Analysis"
                             description="Perform a deep-dive analysis to uncover hidden insights, correlations, and actionable intelligence."
                             type="Analysis"
+                            createNewTab={createNewTab}
                         />
                     </Grid.Col>
                 </Grid>

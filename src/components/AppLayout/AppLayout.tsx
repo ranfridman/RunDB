@@ -1,11 +1,21 @@
 import { AppShell, Burger } from '@mantine/core';
-import { useDisclosure } from '@mantine/hooks';
+import { useDisclosure, useListState } from '@mantine/hooks';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Header } from '../Header/Header';
-import { InfoArea } from '../InfoArea/InfoArea';
+import { InfoArea, tabData } from '../InfoArea/InfoArea';
+import { useState } from 'react';
 
-export const AppLayout:React.FC = ()=> {
+
+const options: tabData[] = [
+  { label: 'Table', id: '1', type: 'Table' },
+  { label: 'Test', id: '2', type: 'Graph' },
+  { label: 'SQL', id: '3', type: 'SQL' },
+];
+
+export const AppLayout: React.FC = () => {
   const [opened, { toggle }] = useDisclosure();
+  // const [tabs, setTabs] = useState<any[]>(options);
+  const [tabs, tabHandlers] = useListState<tabData>(options);
 
   return (
     <AppShell
@@ -24,14 +34,18 @@ export const AppLayout:React.FC = ()=> {
           hiddenFrom="sm"
           size="sm"
         />
-        <Header/>
+        <Header />
       </AppShell.Header>
       <AppShell.Navbar>
-        <Sidebar/>
+        <Sidebar />
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <InfoArea/>
+        <InfoArea
+          tabsData={tabs}
+          createNewTab={(tab) => tabHandlers.append(tab)}
+          closeTab={(id) => tabHandlers.filter((tab) => tab.id !== id)}
+        />
       </AppShell.Main>
     </AppShell>
   );

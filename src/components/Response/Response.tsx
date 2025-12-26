@@ -46,15 +46,15 @@ const ResponseComponent = memo(
                 controls={{ mermaid: false }}
                 components={{
                     // Map Markdown tags to Mantine components
-                    code: (props) =>
-                        <ContentCard isStreaming={isAnimating ?? false} type={"Graph"}>
-                            <MarkdownCode {...props} />,
-                        </ContentCard>,
-                    h1: createHeadingComponent((props: any) => <Text size="xl" fw={700} mt="md" {...props} />),
-                    h2: createHeadingComponent((props: any) => <Text size="lg" fw={600} mt="md" {...props} />),
-                    h3: createHeadingComponent((props: any) => <Text size="md" fw={600} mt="sm" {...props} />),
-                    h4: createHeadingComponent((props: any) => <Text size="md" fw={500} mt="sm" {...props} />),
-                    p: (props) => <Text size="md" mb="sm" {...props} />,
+                    // code: (props) =>
+                    //     <ContentCard isStreaming={isAnimating ?? false} type={"Graph"}>
+                    //         <MarkdownCode {...props} />,
+                    //     </ContentCard>,
+                    h1: createHeadingComponent((props: any) => <Text size="xl" fw={700} px="md" mt="md" {...props} />),
+                    h2: createHeadingComponent((props: any) => <Text size="lg" fw={600} px="md" mt="md" {...props} />),
+                    h3: createHeadingComponent((props: any) => <Text size="md" fw={600} px="md" mt="sm" {...props} />),
+                    h4: createHeadingComponent((props: any) => <Text size="md" fw={500} px="md" mt="sm" {...props} />),
+                    p: (props) => <Text size="md" mb="sm" px="md" {...props} />,
                     ul: (props) => {
                         const title = lastHeading.current ?? undefined;
                         if (title) {
@@ -66,7 +66,7 @@ const ResponseComponent = memo(
                     li: (props) => <Box component="li" {...props} />,
                     table: ({ children }) => (
                         <ContentCard isStreaming={isAnimating ?? false} type={"Table"} padding={0}>
-                            <ComplexTable maxRows={10}>
+                            <ComplexTable maxRows={12}>
                                 {children}
                             </ComplexTable>
                         </ContentCard>

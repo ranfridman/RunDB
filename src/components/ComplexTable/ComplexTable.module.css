@@ -45,21 +45,24 @@
     display: flex;
     align-items: center;
     color: var(--mantine-color-blue-filled);
-}
+} */
 
 .cellContent {
-    max-width: 400px;
+    max-width: 10em;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--mantine-font-size-xs);
+    height: 2em;
+    display: flex;
+    align-items: center;
 }
 
 .footer {
     background-color: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
     border-top: 1px solid light-dark(var(--mantine-color-gray-2), var(--mantine-color-dark-6));
     text-align: center;
-} */
+}
 
 
 .paginationControl[data-active] {
