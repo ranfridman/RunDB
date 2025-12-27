@@ -9,6 +9,7 @@ import { TabOption } from '../TabOption/TabOption';
 
 import { useQuery, experimental_streamedQuery as streamedQuery } from '@tanstack/react-query';
 import { GraphSetup } from '../GraphSetup/GraphSetup';
+import { AIPanel } from '../AIPanel/AIPanel';
 
 const useMarkdownStream = (url: string) => {
   return useQuery({
@@ -38,7 +39,6 @@ const useMarkdownStream = (url: string) => {
     }),
   });
 };
-const url = "https://r.jina.ai/https://en.wikipedia.org/wiki/Comparison_of_Linux_distributions";
 const url2 = "https://raw.githubusercontent.com/mermaid-js/mermaid/develop/docs/syntax/flowchart.md";
 const url3 = "https://r.jina.ai/https://en.wikipedia.org/wiki/Markdown";
 const url4 = "https://r.jina.ai/https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams";
@@ -66,13 +66,6 @@ export const InfoArea: React.FC<InfoAreaProps> = ({ tabsData, createNewTab, clos
     setActiveTab(tab.id);
   }
 
-  const { data, isLoading } = useQuery({
-    queryKey: ['markdown', url],
-    queryFn: async () => {
-      const response = await fetch(url);
-      return response.text();
-    },
-  });
 
   const tabs = tabsData.map((option, index) => (
     <TabOption isActive={activeTab === option.id} option={option} onClose={closeTab} index={index} />
@@ -80,19 +73,7 @@ export const InfoArea: React.FC<InfoAreaProps> = ({ tabsData, createNewTab, clos
 
   const panels = tabsData.map((option, index) => (
     <Tabs.Panel key={index} value={option.id}>
-      <Group justify="space-between" w="100%" dir='row' gap="0" h="87vh" align="top" >
-        <Box w="30em">
-          {option.type === "Graph" && <GraphSetup />}
-        </Box>
-        <Divider orientation="vertical" mx={0} />
-        <Box w="calc(99% - 30em)">
-          <ScrollArea type="scroll" scrollbarSize={2} offsetScrollbars h="86vh">
-            <Response isAnimating={isLoading}>
-              {data}
-            </Response>
-          </ScrollArea>
-        </Box>
-      </Group>
+      <AIPanel label={option.label} type={option.type} id={option.id} />
       {/* {option.id}  */}
     </Tabs.Panel>
   ));
