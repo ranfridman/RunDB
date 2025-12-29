@@ -1,17 +1,29 @@
-import { Box, Card, Stack, Textarea } from "@mantine/core"
+import { Box, Card, Stack, Text, Textarea } from "@mantine/core"
 import { ComplexTable } from "../ComplexTable/ComplexTable"
 import { highlightSQL } from "../SQLPrewview/SQLPreview"
+import SQLEditor from "../SqlEditor/SqlEditor"
+import { useState } from "react"
+import { CodeHighlight } from "@mantine/code-highlight"
 
 
 export const TablePanel: React.FC = () => {
-    return (
-        <Stack justify="flex-end" bg="gray.9" h="90vh">
-            TablePanel
-            {highlightSQL("SELECT * FROM table")}d
-            <Textarea minRows={5} styles={{ wrapper: { bg: "red" } }} spellCheck={false} size="lg" autosize maxRows={5} placeholder="Enter your input here..." p="xs" itemType="text" />
-            <Card p={0} withBorder radius="md" mt="auto">
+    const [sqlValue, setSqlValue] = useState("UPDATE Customers\nSET ContactName = 'Alfred Schmidt', City = 'Frankfurt'\nWHERE CustomerID = 1;");
 
-                <ComplexTable maxRows={20} height="50vh" >
+    return (
+        <Stack justify="flex-end" bg="gray.9" h="89.7vh">
+
+            <Card m="xs" withBorder radius="md">
+
+                <SQLEditor
+                    value={sqlValue}
+                    onChange={setSqlValue}
+                    placeholder="Enter SQL query..."
+                    height={200}
+                />
+            </Card>
+            <Card m="xs" p={0} withBorder radius="md" mt="auto">
+
+                <ComplexTable maxRows={20} height="100%" >
                     <thead>
                         <tr>
                             <th>Column 1</th>

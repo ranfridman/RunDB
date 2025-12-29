@@ -37,8 +37,8 @@ export const InfoArea: React.FC = () => {
   ));
 
   const panels = tabs.map((option, index) => (
-    <Tabs.Panel key={index} value={option.id} p={0}>
-      {option.type !== 'Table' ? <AIPanel label={option.label} type={option.type} id={option.id} /> : <TablePanel />}
+    <Tabs.Panel key={index} value={option.id} p={0} keepMounted={false}>
+      {option.type !== '  ' ? <AIPanel label={option.label} type={option.type} id={option.id} /> : <TablePanel />}
     </Tabs.Panel>
   ));
   return (

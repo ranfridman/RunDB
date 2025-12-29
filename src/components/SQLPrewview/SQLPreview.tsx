@@ -9,8 +9,8 @@ import {
     Code2,
     Loader2
 } from 'lucide-react'
-import { Button } from '@mantine/core'
-import { useCopyToClipboard } from '@mantine/hooks'
+import { Button, Text } from '@mantine/core'
+// import { useCopyToClipboard } from '@mantine/hooks'
 
 interface AISQLPreviewProps {
     sql: string
@@ -35,9 +35,9 @@ export function highlightSQL(sql: string): React.ReactNode[] {
     return parts.map((part, partIndex) => {
         if (part.match(/^--/) || part.match(/^\/\*/)) {
             return (
-                <span key={partIndex} className="text-zinc-500 italic">
+                <Text span key={partIndex} c="red" className="text-zinc-500 italic">
                     {part}
-                </span>
+                </Text>
             )
         }
 
@@ -58,27 +58,27 @@ export function highlightSQL(sql: string): React.ReactNode[] {
             // Determine type and apply styling
             if (fullMatch.match(keywords)) {
                 tokens.push(
-                    <span key={`${partIndex}-${match.index}`} className="text-blue-400 font-semibold">
+                    <Text span key={`${partIndex}-${match.index}`} c="violet" className="text-blue-400 font-semibold">
                         {fullMatch}
-                    </span>
+                    </Text>
                 )
             } else if (fullMatch.startsWith("'")) {
                 tokens.push(
-                    <span key={`${partIndex}-${match.index}`} className="text-emerald-400">
+                    <Text span key={`${partIndex}-${match.index}`} c="teal" className="text-emerald-400">
                         {fullMatch}
-                    </span>
+                    </Text>
                 )
             } else if (fullMatch.match(/^\d+$/)) {
                 tokens.push(
-                    <span key={`${partIndex}-${match.index}`} className="text-amber-400">
+                    <Text span key={`${partIndex}-${match.index}`} c="indigo" className="text--400">
                         {fullMatch}
-                    </span>
+                    </Text>
                 )
             } else if (fullMatch.match(operators)) {
                 tokens.push(
-                    <span key={`${partIndex}-${match.index}`} className="text-purple-400">
+                    <Text span key={`${partIndex}-${match.index}`} c="pink" className="text-purple-400">
                         {fullMatch}
-                    </span>
+                    </Text>
                 )
             } else {
                 tokens.push(fullMatch)
@@ -104,7 +104,7 @@ export function AISQLPreview({
     isExecuting = false,
     requiresConfirmation = false
 }: AISQLPreviewProps) {
-    const { copied, copy } = useCopyToClipboard({ resetDelay: 1500 })
+    // const { copied, copy } = useCopyToClipboard({ resetDelay: 1500 })
     const [isExpanded, setIsExpanded] = React.useState(true)
 
     const lines = sql.split('\n')
@@ -139,10 +139,10 @@ export function AISQLPreview({
                 </div>
 
                 <button
-                    onClick={() => copy(sql)}
+                    // onClick={() => copy(sql)}
                     className="flex items-center gap-1 text-[10px] text-zinc-500 hover:text-zinc-300 transition-colors"
                 >
-                    {copied ? (
+                    {false ? (
                         <>
                             <Check className="size-3 text-green-500" />
                             <span className="text-green-500">Copied</span>
