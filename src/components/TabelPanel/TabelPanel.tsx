@@ -1,12 +1,14 @@
-import { Box, Card, Stack } from "@mantine/core"
+import { Box, Card, Stack, Textarea } from "@mantine/core"
 import { ComplexTable } from "../ComplexTable/ComplexTable"
+import { highlightSQL } from "../SQLPrewview/SQLPreview"
 
 
 export const TablePanel: React.FC = () => {
     return (
-        <Stack justify="flex-end" bg="dark.8" h="90vh">
+        <Stack justify="flex-end" bg="gray.9" h="90vh">
             TablePanel
-            <p>d</p>
+            {highlightSQL("SELECT * FROM table")}d
+            <Textarea minRows={5} styles={{ wrapper: { bg: "red" } }} spellCheck={false} size="lg" autosize maxRows={5} placeholder="Enter your input here..." p="xs" itemType="text" />
             <Card p={0} withBorder radius="md" mt="auto">
 
                 <ComplexTable maxRows={20} height="50vh" >

@@ -14,13 +14,13 @@ const DB_TEMPLATES: Record<DBType, { label: string; port: number; user: string }
 };
 
 export const AddDatabaseModal: React.FC = () => {
-    const onClose = useDBConnectionsStore((state) => state.toggleDBModal);
+    const onClose = useDBConnectionsStore((state) => state.setDBModal);
     const dbModalOpen = useDBConnectionsStore((state) => state.dbModalOpen);
     return (
         <Modal
             closeOnClickOutside
-            opened={dbModalOpen}
-            onClose={onClose}
+            opened={!!dbModalOpen}
+            onClose={() => onClose(null)}
             title={<Group gap="xs"><Database size={20} /> <Title order={4}>Add Database</Title></Group>}
             centered
             size="lg"

@@ -13,34 +13,6 @@ import { AIPanel } from '../AIPanel/AIPanel';
 import { useTabsStore } from '../../stores/useTabs';
 import { TablePanel } from '../TabelPanel/TabelPanel';
 
-const useMarkdownStream = (url: string) => {
-  return useQuery({
-    queryKey: ['markdown', url],
-    queryFn: streamedQuery({
-      streamFn: async () => {
-        const response = await fetch(url);
-        const reader = response.body?.getReader();
-        if (!reader) throw new Error('No response body');
-
-        // Convert ReadableStream to AsyncIterable
-        return (async function* () {
-          try {
-            while (true) {
-              const { done, value } = await reader.read();
-              if (done) break;
-              yield value;
-            }
-          } finally {
-            reader.releaseLock();
-          }
-        })();
-      },
-      // How to merge chunks. For Markdown, we usually append strings.
-      reducer: (acc, chunk) => acc + new TextDecoder().decode(chunk as Uint8Array),
-      initialValue: "",
-    }),
-  });
-};
 
 export interface tabData {
   label: string;

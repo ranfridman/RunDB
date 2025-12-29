@@ -8,7 +8,6 @@ import { ManageConnectionsMenuOption } from "./ManageConnectionsMenuOption"
 
 export const ManageConnectionsMenu = () => {
     const dbConnections = useDBConnectionsStore((state) => state.dbConnections)
-
     return (
         <Menu shadow="md" trigger="hover" width={200} closeOnClickOutside closeOnItemClick={false}>
             <Menu.Target >
