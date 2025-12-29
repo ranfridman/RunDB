@@ -20,7 +20,7 @@ const typeToSetup: { [key: string]: React.ReactNode } = {
 
 export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id }) => {
     const url = "https://r.jina.ai/https://en.wikipedia.org/wiki/Comparison_of_Linux_distributions";
-    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('loading');
+    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('setup');
     const { data, isLoading } = useQuery({
         queryKey: ['markdown', url],
         queryFn: async () => {

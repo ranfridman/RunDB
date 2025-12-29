@@ -10,6 +10,8 @@ import { TabOption } from '../TabOption/TabOption';
 import { useQuery, experimental_streamedQuery as streamedQuery } from '@tanstack/react-query';
 import { GraphSetup } from '../GraphSetup/GraphSetup';
 import { AIPanel } from '../AIPanel/AIPanel';
+import { useTabsStore } from '../../stores/useTabs';
+import { TablePanel } from '../TabelPanel/TabelPanel';
 
 const useMarkdownStream = (url: string) => {
   return useQuery({
@@ -39,10 +41,6 @@ const useMarkdownStream = (url: string) => {
     }),
   });
 };
-const url2 = "https://raw.githubusercontent.com/mermaid-js/mermaid/develop/docs/syntax/flowchart.md";
-const url3 = "https://r.jina.ai/https://en.wikipedia.org/wiki/Markdown";
-const url4 = "https://r.jina.ai/https://docs.github.com/en/get-started/writing-on-github/working-with-advanced-formatting/creating-diagrams";
-const url5 = "https://raw.githubusercontent.com/mxstbr/markdown-test-file/master/TEST.md";
 
 export interface tabData {
   label: string;
@@ -50,40 +48,34 @@ export interface tabData {
   type: string;
 }
 
-interface InfoAreaProps {
-  tabsData: tabData[];
-  createNewTab: (tabData: tabData) => void;
-  closeTab: (id: string) => void;
-}
 
 
 
-export const InfoArea: React.FC<InfoAreaProps> = ({ tabsData, createNewTab, closeTab }: InfoAreaProps) => {
-  const [activeTab, setActiveTab] = useState<string | null>("pluse");
-  // const { data, isLoading } = useMarkdownStream(url5);
+export const InfoArea: React.FC = () => {
+  const { tabs, addTab, removeTab, setActiveTab, activeTab } = useTabsStore();
+
   const handleNewTabCreated = (tab: tabData) => {
-    createNewTab(tab);
+    addTab(tab);
     setActiveTab(tab.id);
   }
 
 
-  const tabs = tabsData.map((option, index) => (
-    <TabOption isActive={activeTab === option.id} option={option} onClose={closeTab} index={index} />
+  const tabsList = tabs.map((option, index) => (
+    <TabOption option={option} index={index} />
   ));
 
-  const panels = tabsData.map((option, index) => (
-    <Tabs.Panel key={index} value={option.id}>
-      <AIPanel label={option.label} type={option.type} id={option.id} />
-      {/* {option.id}  */}
+  const panels = tabs.map((option, index) => (
+    <Tabs.Panel key={index} value={option.id} p={0}>
+      {option.type !== 'Table' ? <AIPanel label={option.label} type={option.type} id={option.id} /> : <TablePanel />}
     </Tabs.Panel>
   ));
   return (
     <>
-      <Tabs defaultValue="pluse" value={activeTab} onChange={setActiveTab} >
+      <Tabs defaultValue="pluse" value={activeTab} onChange={(value) => setActiveTab(value)} >
         <Tabs.List bg="dark.7" w="100%">
           <ScrollArea type="scroll" scrollbarSize={2} offsetScrollbars >
             <Group w="100%" gap="0" display="flex" style={{ flexWrap: "nowrap" }}>
-              {...tabs}
+              {...tabsList}
               <Tabs.Tab value="pluse" px={12} bg={activeTab === "pluse" ? "dark.9" : ""}>
                 <Plus size={16} />
               </Tabs.Tab>
@@ -92,9 +84,9 @@ export const InfoArea: React.FC<InfoAreaProps> = ({ tabsData, createNewTab, clos
           </ScrollArea>
         </Tabs.List>
 
-        <ScrollArea h="90vh" offsetScrollbars>
+        <ScrollArea h="90vh" offsetScrollbars p={0} scrollbarSize={2}>
           <Tabs.Panel value="pluse" h="100%">
-            <NewTabOptions createNewTab={handleNewTabCreated} />
+            <NewTabOptions />
           </Tabs.Panel>
           {panels}
         </ScrollArea>

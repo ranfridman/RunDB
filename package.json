@@ -29,7 +29,8 @@
     "react": "^19.2.0",
     "react-dom": "^19.2.0",
     "react-router-dom": "^7.9.4",
-    "streamdown": "^1.6.10"
+    "streamdown": "^1.6.10",
+    "zustand": "^5.0.9"
   },
   "devDependencies": {
     "@eslint/js": "^9.37.0",

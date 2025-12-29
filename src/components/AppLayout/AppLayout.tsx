@@ -15,7 +15,6 @@ const options: tabData[] = [
 export const AppLayout: React.FC = () => {
   const [opened, { toggle }] = useDisclosure();
   // const [tabs, setTabs] = useState<any[]>(options);
-  const [tabs, tabHandlers] = useListState<tabData>(options);
 
   return (
     <AppShell
@@ -41,11 +40,7 @@ export const AppLayout: React.FC = () => {
       </AppShell.Navbar>
 
       <AppShell.Main>
-        <InfoArea
-          tabsData={tabs}
-          createNewTab={(tab) => tabHandlers.append(tab)}
-          closeTab={(id) => tabHandlers.filter((tab) => tab.id !== id)}
-        />
+        <InfoArea />
       </AppShell.Main>
     </AppShell>
   );

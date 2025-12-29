@@ -43,6 +43,7 @@ export interface ComplexTableProps {
   title?: string
   searchable?: boolean
   maxRows?: number
+  height?: string | number
 }
 
 export function ComplexTable({
@@ -51,7 +52,8 @@ export function ComplexTable({
   children,
   title,
   searchable = true,
-  maxRows = 10
+  maxRows = 10,
+  height = '50vh'
 }: ComplexTableProps) {
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string | null>(null)
@@ -194,7 +196,7 @@ export function ComplexTable({
 
       <Divider />
 
-      <ScrollArea scrollbarSize={4} h="50vh" offsetScrollbars>
+      <ScrollArea scrollbarSize={4} h={height} offsetScrollbars>
         <Table
           c="gray.1"
           verticalSpacing="xs"

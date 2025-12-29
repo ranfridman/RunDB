@@ -4,6 +4,7 @@ import { getIconByType, typeToColor } from "../TypesTheme/TypesTheme";
 
 import styles from './NewTabOptions.module.css';
 import { tabData } from '../InfoArea/InfoArea';
+import { useTabsStore } from '../../stores/useTabs';
 
 interface TabOptionButtonProps {
     label: string;
@@ -40,12 +41,8 @@ const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, t
     )
 }
 
-interface NewTabOptionsProps {
-    createNewTab: (tab: tabData) => void;
-}
-
-export const NewTabOptions: React.FC<NewTabOptionsProps> = ({ createNewTab }) => {
-
+export const NewTabOptions: React.FC = () => {
+    const createNewTab = useTabsStore((state) => state.addTab);
     return (
         <Group h="60vh" justify="center" w="100%" p="md" pos="relative">
 

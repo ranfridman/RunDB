@@ -9,6 +9,12 @@ export const DatabaseTreeSection = () => {
   const treeExpandState = useTree({
     initialExpandedState: getTreeExpandedState(data, '*'),
   });
+  const toggleExpandAllNodes = () => {
+    if (Object.values(treeExpandState.expandedState).every((value) => value))
+      treeExpandState.collapseAllNodes();
+    else
+      treeExpandState.expandAllNodes();
+  };
   return (
     <>
       <Group justify="space-between" align="center" h="md">
@@ -16,7 +22,7 @@ export const DatabaseTreeSection = () => {
           Structure
         </Text>
         <Group gap={5}>
-          <ActionIcon size="xs" variant="transparent" c="dimmed">
+          <ActionIcon size="xs" variant="transparent" c="dimmed" onClick={toggleExpandAllNodes}>
             <FolderTree />
           </ActionIcon>
           <ActionIcon size="xs" variant="transparent" c="dimmed">
