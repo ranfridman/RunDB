@@ -1,15 +1,21 @@
 import { Database } from 'lucide-react';
-import { Code, Group, Text } from '@mantine/core';
+import { Button, Code, Group, Indicator, Stack, Text, Tooltip } from '@mantine/core';
 
 export const AppInfo = () => {
   return (
     <>
-      <Group justify="space-between" align="center" gap={5}>
-        <Group gap={5} align='center'>
-        <Database size={20} />
-        <Text size="md" fw={600} >
-          RunDB
-        </Text>
+      <Group justify="space-between" c="gray.2" align="center" gap={5}>
+        {/* <Button size="compact-sm" c="gray.2" bg="dark" variant="filled" rightSection={<ListChevronsUpDown size={16} />} >Filters dfs gjkl</Button> */}
+
+        <Group gap={2} align='center'>
+          <Indicator position='bottom-start' offset={6} processing px="3" color="teal" size={8} >
+            <Database size={20} />
+          </Indicator>
+          <Text size="sm" fw={600} >
+            RunDB
+          </Text>
+
+
         </Group>
 
         <Code fw={700} bg="dark" >v1.0.0    </Code>

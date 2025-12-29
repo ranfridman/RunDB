@@ -5,6 +5,7 @@ import { AppInfo } from '../AppInfo/AppInfo';
 import { History } from '../History/History';
 import { SidebarOption } from '../SidebarOption/SidebarOption';
 import { Contact, Settings } from 'lucide-react';
+import { AddDatabaseModal } from '../AddDatabaseModal/AddDatabaseModal';
 
 export const Sidebar = () => {
   return (
@@ -19,6 +20,8 @@ export const Sidebar = () => {
         <SidebarOption title="Settings" icon={<Settings />} />
         <SidebarOption title="Contact Us" icon={<Contact />} />
       </Flex>
+      <AddDatabaseModal />
+
     </>
   );
 };
