@@ -1,9 +1,11 @@
-import { Box, Card, Stack, Text, Textarea } from "@mantine/core"
+import { ActionIcon, Box, Button, Card, Divider, Group, Stack, Text, Textarea } from "@mantine/core"
 import { ComplexTable } from "../ComplexTable/ComplexTable"
 import { highlightSQL } from "../SQLPrewview/SQLPreview"
 import SQLEditor from "../SqlEditor/SqlEditor"
 import { useState } from "react"
 import { CodeHighlight } from "@mantine/code-highlight"
+import { typeToColor } from "../TypesTheme/TypesTheme"
+import { Archive, Copy, Play } from "lucide-react"
 
 
 export const TablePanel: React.FC = () => {
@@ -12,16 +14,39 @@ export const TablePanel: React.FC = () => {
     return (
         <Stack justify="flex-end" bg="gray.9" h="89.7vh">
 
-            <Card m="xs" withBorder radius="md">
+            <Card m="xs" mb={0} withBorder radius="md" px={0} pb={0} mah="30%">
+                <Card.Section withBorder>
 
-                <SQLEditor
-                    value={sqlValue}
-                    onChange={setSqlValue}
-                    placeholder="Enter SQL query..."
-                    height={200}
-                />
+                    <SQLEditor
+                        value={sqlValue}
+                        onChange={setSqlValue}
+                        placeholder="Enter SQL query..."
+                        height={150}
+                    />
+                </Card.Section>
+
+                <Group px="xs" my="xs" h="3em" align="center" justify="space-between">
+                    <Group gap="sm">
+
+                        <Button leftSection={<Play size="15" />} size="compact-sm" w="5em" c="dark.7" bg={typeToColor['SQL']} radius="md" >
+                            Run Query
+                        </Button>
+                        <Divider orientation="vertical" />
+                        <Button leftSection={<Archive size="15" />} variant="transparent" c="dimmed" size="compact-sm" px="0" fw="xs" radius="md" >
+                            Save Query
+                        </Button>
+                    </Group>
+                    <Group gap="xs">
+                        <Text fz="xs" c="dimmed">Copy</Text>
+
+                        <ActionIcon size="xs" c="dimmed" variant="transparent" >
+                            <Copy size={16} />
+                        </ActionIcon>
+                    </Group>
+
+                </Group>
             </Card>
-            <Card m="xs" p={0} withBorder radius="md" mt="auto">
+            <Card m="xs" p={0} withBorder radius="md" mt="auto" h="80%">
 
                 <ComplexTable maxRows={20} height="100%" >
                     <thead>
@@ -191,6 +216,6 @@ export const TablePanel: React.FC = () => {
                     </tbody>
                 </ComplexTable>
             </Card>
-        </Stack>
+        </Stack >
     )
 }

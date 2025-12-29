@@ -18,7 +18,7 @@ type queryTypeOptions = 'Analysis' | 'Graph' | 'Table' | 'SQL'
 
 export const QuerySection = () => {
   const [opened, handlers] = useDisclosure(true);
-  const [queryType, setQueryType] = useState<queryTypeOptions>('Table');
+  const [queryType, setQueryType] = useState<queryTypeOptions>('Analysis');
   return (
     <>
       <Group justify="space-between" align="center">

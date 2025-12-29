@@ -68,10 +68,10 @@ export function SQLEditor({
             rules: [
                 { token: 'keyword', foreground: theme.colors.blue[4], fontStyle: 'bold' },
                 { token: 'keyword.sql', foreground: theme.colors.blue[4], fontStyle: 'bold' },
-                { token: 'operator', foreground: theme.colors.grape[4] },
-                { token: 'operator.sql', foreground: theme.colors.grape[4] },
-                { token: 'string', foreground: theme.colors.green[4] },
-                { token: 'string.sql', foreground: theme.colors.green[4] },
+                { token: 'operator', foreground: theme.colors.violet[4] },
+                { token: 'operator.sql', foreground: theme.colors.violet[4] },
+                { token: 'string', foreground: theme.colors.teal[4] },
+                { token: 'string.sql', foreground: theme.colors.teal[4] },
                 { token: 'number', foreground: theme.colors.orange[4] },
                 { token: 'number.sql', foreground: theme.colors.orange[4] },
                 { token: 'comment', foreground: theme.colors.gray[6], fontStyle: 'italic' },
@@ -79,6 +79,7 @@ export function SQLEditor({
                 { token: 'identifier', foreground: theme.colors.gray[3] },
                 { token: 'type', foreground: theme.colors.yellow[4] },
                 { token: 'delimiter', foreground: theme.colors.gray[5] },
+
             ],
             colors: {
                 'editor.background': theme.colors.dark[7],
@@ -98,10 +99,10 @@ export function SQLEditor({
             rules: [
                 { token: 'keyword', foreground: theme.colors.blue[7], fontStyle: 'bold' },
                 { token: 'keyword.sql', foreground: theme.colors.blue[7], fontStyle: 'bold' },
-                { token: 'operator', foreground: theme.colors.grape[7] },
-                { token: 'operator.sql', foreground: theme.colors.grape[7] },
-                { token: 'string', foreground: theme.colors.green[7] },
-                { token: 'string.sql', foreground: theme.colors.green[7] },
+                { token: 'operator', foreground: theme.colors.violet[7] },
+                { token: 'operator.sql', foreground: theme.colors.violet[7] },
+                { token: 'string', foreground: theme.colors.teal[7] },
+                { token: 'string.sql', foreground: theme.colors.teal[7] },
                 { token: 'number', foreground: theme.colors.orange[7] },
                 { token: 'number.sql', foreground: theme.colors.orange[7] },
                 { token: 'comment', foreground: theme.colors.gray[5], fontStyle: 'italic' },

@@ -151,8 +151,8 @@ export function ComplexTable({
 
   if (data.length === 0) {
     return (
-      <Card withBorder radius="md" p="xl" bg="transparent">
-        <Stack align="center" gap="xs">
+      <Card radius="md" p="xl" h="100%" bg="transparent">
+        <Stack justify="center" align="center" gap="xs" p={0} >
           <Text c="dimmed" size="sm">No data found in table</Text>
         </Stack>
       </Card>

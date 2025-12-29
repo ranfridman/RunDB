@@ -1,5 +1,5 @@
 import { ActionIcon, Group, Stack, Text, Textarea, Title } from "@mantine/core";
-import { X } from "lucide-react";
+import { ChevronLeft, X } from "lucide-react";
 
 interface AIPanelInputProps {
     type: string;
@@ -15,7 +15,7 @@ export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type }) => {
                         <Text c="dimmed" fz="xs">Create a {type} based on your db</Text>
                     </Group>
                     <ActionIcon size="xs" variant="subtle">
-                        <X />
+                        <ChevronLeft />
                     </ActionIcon>
                 </Group>
                 <Textarea minRows={3} autosize placeholder="Enter your input here..." />
