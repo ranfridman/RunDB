@@ -209,17 +209,22 @@ export function ComplexTable({
             <Table.Tr>
               {columns.map(col => (
                 <Table.Th
+                  bg="gray.9"
                   key={col.key}
                   onClick={() => handleSort(col.key)}
                   className={col.sortable !== false ? classes.sortableHeader : ''}
-                  style={{ width: col.width }}
+                  style={{ width: col.width, maxWidth: 500 }}
+                  pr={0}
                 >
-                  <Group gap={4} wrap="nowrap" justify={col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start'}>
-                    <Text size="xs" fw={700} className={classes.headerText}>
+                  <Group gap={4} wrap="nowrap"
+                    // justify={col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start'}
+                    justify="space-between"
+                  >
+                    <Text size="xs" fw={500} lineClamp={1} className={classes.headerText}>
                       {col.label || col.key}
                     </Text>
                     {col.sortable !== false && (
-                      <Box className={classes.sortIcon}>
+                      <Box className={classes.sortIcon} >
                         {sortField === col.key ? (
                           sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
                         ) : (
@@ -227,6 +232,7 @@ export function ComplexTable({
                         )}
                       </Box>
                     )}
+                    <Divider orientation="vertical" p={0} mx={0} />
                   </Group>
                 </Table.Th>
               ))}
