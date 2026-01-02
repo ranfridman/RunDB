@@ -1,11 +1,14 @@
 import { ActionIcon, Group, Stack, Text, Textarea, Title } from "@mantine/core";
 import { ChevronLeft, X } from "lucide-react";
+import { useState } from "react";
 
 interface AIPanelInputProps {
     type: string;
+    initialQuery?: string;
 }
 
-export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type }) => {
+export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery }) => {
+    const [query, setQuery] = useState(initialQuery || "");
     return (
         <>
             <Stack p="sm" pt="xs" pb="0" gap="xs" w="100%" >
@@ -18,7 +21,12 @@ export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type }) => {
                         <ChevronLeft />
                     </ActionIcon>
                 </Group>
-                <Textarea minRows={3} autosize placeholder="Enter your input here..." />
+                <Textarea
+                    value={query}
+                    onChange={(e) => setQuery(e.target.value)}
+                    minRows={3}
+                    autosize
+                    placeholder="Enter your input here..." />
             </Stack>
         </>
     );

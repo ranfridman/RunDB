@@ -5,7 +5,10 @@ export interface Tab {
     id: string;
     label: string;
     type: string;
+    query?: string;
 }
+
+
 
 interface TabsStore {
     tabs: Tab[];

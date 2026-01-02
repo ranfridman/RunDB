@@ -12,15 +12,17 @@ interface AIPanelProps {
     label: string;
     type: string;
     id: string;
+    intialQuery?: string;
 }
+
 
 const typeToSetup: { [key: string]: React.ReactNode } = {
     Graph: <GraphSetup />,
 }
 
-export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id }) => {
+export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }) => {
     const url = "https://r.jina.ai/https://en.wikipedia.org/wiki/Comparison_of_Linux_distributions";
-    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('setup');
+    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('loading');
     // const { data, isLoading } = useQuery({
     //     queryKey: ['markdown', url],
     //     queryFn: async () => {
@@ -34,7 +36,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id }) => {
                 {/* <NavigationProgress /> */}
 
                 <Box w="30em">
-                    <AIPanelInput type={type} />
+                    <AIPanelInput type={type} initialQuery={intialQuery} />
                     {panelMode === "setup" && typeToSetup[type]}
                     {panelMode === "loading" && <LoadingInfo color={typeToColor[type]} stages={[
                         { title: "Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", description: "Lfdgjklds gsdf gjkldfs gorem Loren Ipsum Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", status: "finished" },
@@ -65,7 +67,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id }) => {
                         {
                             panelMode != "setup" && (
                                 <Response isAnimating={false}>
-                                    {data}
+                                    {"data"}
                                 </Response>
                             )
                         }

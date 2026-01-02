@@ -65,7 +65,7 @@ function Leaf({ node, expanded, hasChildren, elementProps }: RenderTreeNodePaylo
         </Pill>
       )}
       {customNode.type === 'table' && (
-        <Box ml="auto" mr={"xs"} p={0}>
+        <Box ml="auto" mr="xs" p={0}>
 
           <DatabaseTreeTableMenu />
         </Box>

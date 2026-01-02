@@ -18,13 +18,17 @@ export interface tabData {
   label: string;
   id: string;
   type: string;
+  query?: string;
 }
 
 
 
 
 export const InfoArea: React.FC = () => {
-  const { tabs, addTab, removeTab, setActiveTab, activeTab } = useTabsStore();
+  const tabs = useTabsStore((state) => state.tabs);
+  const activeTab = useTabsStore((state) => state.activeTab);
+  const addTab = useTabsStore((state) => state.addTab);
+  const setActiveTab = useTabsStore((state) => state.setActiveTab);
 
   const handleNewTabCreated = (tab: tabData) => {
     addTab(tab);
@@ -38,7 +42,7 @@ export const InfoArea: React.FC = () => {
 
   const panels = tabs.map((option, index) => (
     <Tabs.Panel key={index} value={option.id} p={0} keepMounted={false}>
-      {(option.type !== 'SQL') ? <AIPanel label={option.label} type={option.type} id={option.id} /> : <TablePanel />}
+      {(option.type !== 'SQL') ? <AIPanel label={option.label} type={option.type} id={option.id} intialQuery={option.query} /> : <TablePanel />}
     </Tabs.Panel>
   ));
   return (
