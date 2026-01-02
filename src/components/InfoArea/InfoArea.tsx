@@ -41,7 +41,7 @@ export const InfoArea: React.FC = () => {
   ));
 
   const panels = tabs.map((option, index) => (
-    <Tabs.Panel key={index} value={option.id} p={0} keepMounted={false}>
+    <Tabs.Panel key={index} value={option.id} p={0} keepMounted={true}>
       {(option.type !== 'SQL') ? <AIPanel label={option.label} type={option.type} id={option.id} intialQuery={option.query} /> : <TablePanel />}
     </Tabs.Panel>
   ));

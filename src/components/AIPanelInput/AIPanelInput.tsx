@@ -5,9 +5,11 @@ import { useState } from "react";
 interface AIPanelInputProps {
     type: string;
     initialQuery?: string;
+    isActive?: boolean;
+    onQueryChange?: (query: string) => void;
 }
 
-export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery }) => {
+export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery, isActive = true, onQueryChange }) => {
     const [query, setQuery] = useState(initialQuery || "");
     return (
         <>
@@ -17,13 +19,17 @@ export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery }
                         <Title fz="h2">{type}</Title>
                         <Text c="dimmed" fz="xs">Create a {type} based on your db</Text>
                     </Group>
-                    <ActionIcon size="xs" variant="subtle">
+                    <ActionIcon size="xs" variant="subtle" disabled={!isActive}>
                         <ChevronLeft />
                     </ActionIcon>
                 </Group>
                 <Textarea
+                    disabled={!isActive}
                     value={query}
-                    onChange={(e) => setQuery(e.target.value)}
+                    onChange={(e) => {
+                        setQuery(e.target.value);
+                        onQueryChange?.(e.target.value);
+                    }}
                     minRows={3}
                     autosize
                     placeholder="Enter your input here..." />

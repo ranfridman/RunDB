@@ -16,24 +16,31 @@ const graphTypes = [
 ]
 const color = typeToColor["Graph"];
 
-export const GraphSetup: React.FC = () => {
+interface GraphSetupProps {
+    onRun: () => void;
+}
+
+export const GraphSetup: React.FC<GraphSetupProps> = ({ onRun }) => {
     const [graph, setGraph] = useState<string>("");
     const [graphType, setGraphType] = useState<string>("pie");
     return (
         <>
             <Card w="100%" p="0" pt="xs" >
-                {/* <Stack p="sm" pt="0" gap="xs" w="100%" >
-                    <Title fz="h2">Graph Setup</Title>
-                    <Textarea classNames={{ ...styles }} color="red" placeholder="Enter your graph code here" />
-                </Stack> */}
                 <Group w="100%" justify="space-between" gap={0} px="sm" py="0">
                     <SegmentedControl
-                        //  classNames={{ indicator: styles.indicator }}
                         color={color}
                         w="82%" variant="subtle"
                         radius="lg" onChange={setGraphType} bg="gray.9" withItemsBorders={false} value={graphType} size="xs"
                         data={graphTypes} />
-                    <Button leftSection={<Play size="15" />} w="18%" variant="filled" size="compact-sm" color={color} radius="md" my="xs">
+                    <Button
+                        leftSection={<Play size="15" />}
+                        w="18%"
+                        variant="filled"
+                        size="compact-sm"
+                        color={color}
+                        radius="md"
+                        my="xs"
+                        onClick={onRun}>
                         Run
                     </Button>
                 </Group>

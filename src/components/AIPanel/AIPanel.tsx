@@ -2,10 +2,13 @@ import { Box, Center, Divider, Group, ScrollArea, Stack, Text, ThemeIcon } from 
 import Response from "../Response/Response";
 import { GraphSetup } from "../GraphSetup/GraphSetup";
 import { useQuery } from "@tanstack/react-query";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { AIPanelInput } from "../AIPanelInput/AIPanelInput";
 import { LoadingInfo } from "../LoadingInfo/LoadingInfo";
 import { getIconByType, typeToColor, typeToIcon } from "../TypesTheme/TypesTheme";
+import { useStreamAIResponse } from "@/api/stream";
+import { useUsers } from "@/api/queries";
+import { AiResponse } from "../AiResponse/AiResponse";
 
 
 interface AIPanelProps {
@@ -16,27 +19,19 @@ interface AIPanelProps {
 }
 
 
-const typeToSetup: { [key: string]: React.ReactNode } = {
-    Graph: <GraphSetup />,
-}
+
 
 export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }) => {
-    const url = "https://r.jina.ai/https://en.wikipedia.org/wiki/Comparison_of_Linux_distributions";
-    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('loading');
-    // const { data, isLoading } = useQuery({
-    //     queryKey: ['markdown', url],
-    //     queryFn: async () => {
-    //         const response = await fetch(url);
-    //         return response.text();
-    //     },
-    // });
+    const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('setup');
+    const [query, setQuery] = useState<string>(intialQuery || "");
+    const typeToSetup: { [key: string]: React.ReactNode } = {
+        Graph: <GraphSetup onRun={() => setPanelMode('loading')} />,
+    }
     return (
         <>
             <Group justify="space-between" w="100%" dir='row' gap="0" h="89.7vh" align="top" >
-                {/* <NavigationProgress /> */}
-
                 <Box w="30em">
-                    <AIPanelInput type={type} initialQuery={intialQuery} />
+                    <AIPanelInput type={type} initialQuery={intialQuery} isActive={panelMode === "setup"} onQueryChange={setQuery} />
                     {panelMode === "setup" && typeToSetup[type]}
                     {panelMode === "loading" && <LoadingInfo color={typeToColor[type]} stages={[
                         { title: "Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", description: "Lfdgjklds gsdf gjkldfs gorem Loren Ipsum Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", status: "finished" },
@@ -66,9 +61,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                         }
                         {
                             panelMode != "setup" && (
-                                <Response isAnimating={false}>
-                                    {"data"}
-                                </Response>
+                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={intialQuery ?? ""} />
                             )
                         }
                     </ScrollArea>

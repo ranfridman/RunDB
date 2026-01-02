@@ -23,7 +23,7 @@ export const useTabsStore = create<TabsStore>((set) => ({
     tabs: [],
     activeTab: "pluse",
     addTab: (tab: Tab) => set((state) => ({ tabs: [...state.tabs, tab], activeTab: tab.id })),
-    removeTab: (id: string) => set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id) })),
+    removeTab: (id: string) => set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id), activeTab: "pluse" })),
     setActiveTab: (id: string | null) => set((state) => ({ activeTab: id })),
     openTableTab: (id: string) => set((state) => {
         const index = state.tabs.findIndex((t) => t.id === id);

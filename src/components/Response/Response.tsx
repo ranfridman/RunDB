@@ -46,10 +46,10 @@ const ResponseComponent = memo(
                 controls={{ mermaid: false }}
                 components={{
                     // Map Markdown tags to Mantine components
-                    // code: (props) =>
-                    //     <ContentCard isStreaming={isAnimating ?? false} type={"Graph"}>
-                    //         <MarkdownCode {...props} />,
-                    //     </ContentCard>,
+                    code: (props) =>
+                        <ContentCard isStreaming={isAnimating ?? false} type={"Graph"}>
+                            <MarkdownCode {...props} />,
+                        </ContentCard>,
                     h1: createHeadingComponent((props: any) => <Text size="xl" fw={700} px="md" mt="md" {...props} />),
                     h2: createHeadingComponent((props: any) => <Text size="lg" fw={600} px="md" mt="md" {...props} />),
                     h3: createHeadingComponent((props: any) => <Text size="md" fw={600} px="md" mt="sm" {...props} />),
