@@ -13,26 +13,35 @@ export const streamAIResponse = async (
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
 ): Promise<void> => {
-    let lastIndex = 0;
-
-    await apiClient.post('api/v1/chat/stream', { mode, prompt }, {
+    const response = await fetch('/api/v1/chat/stream', {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({ mode, prompt }),
         signal,
-        onDownloadProgress: (progressEvent) => {
-            const xhr = progressEvent.event.target;
-            const response = xhr.response || xhr.responseText;
-
-            const chunk = response.slice(lastIndex);
-            if (chunk) {
-                onChunk(chunk);
-                lastIndex = response.length;
-            }
-        }
     });
+
+    if (!response.body) return;
+
+    const reader = response.body.getReader();
+    const decoder = new TextDecoder();
+
+    try {
+        while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+            const chunk = decoder.decode(value, { stream: true });
+            onChunk(chunk);
+        }
+    } finally {
+        reader.releaseLock();
+    }
 };
 
 export const useStreamAIResponse = ({ mode, prompt }: StreamRequest) => {
     return useMutation({
         mutationFn: (onChunk: (chunk: string) => void) => streamAIResponse({ mode, prompt }, onChunk),
-        mutationKey: ['stream', mode, prompt],
+        // mutationKey: ['stream', mode, prompt],
     });
 };

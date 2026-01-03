@@ -3,7 +3,6 @@ import { create } from "zustand";
 interface DBConnection {
     id: string;
     name: string;
-    type: string;
     connection: any;
 }
 
@@ -17,6 +16,7 @@ interface DBConnectionsStore {
     removeDBConnection: (id: string) => void;
     setActiveDB: (id: string | null) => void;
     setDBModal: (id: string | null) => void;
+    editDBConnection: (updatedDBConnection: DBConnection) => void;
 }
 
 export const useDBConnectionsStore = create<DBConnectionsStore>((set) => ({
@@ -27,5 +27,5 @@ export const useDBConnectionsStore = create<DBConnectionsStore>((set) => ({
     removeDBConnection: (id: string) => set((state) => ({ dbConnections: state.dbConnections.filter((dbConnection) => dbConnection.id !== id) })),
     setActiveDB: (id: string | null) => set((state) => ({ activeDB: id })),
     setDBModal: (id: string | null) => set((state) => ({ dbModalOpen: id })),
-
+    editDBConnection: (updatedDBConnection: DBConnection) => set((state) => ({ dbConnections: state.dbConnections.map((dbConnection) => dbConnection.id === updatedDBConnection.id ? updatedDBConnection : dbConnection) })),
 }));

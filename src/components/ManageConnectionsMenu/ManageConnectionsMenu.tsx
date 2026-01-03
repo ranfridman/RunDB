@@ -8,6 +8,7 @@ import { ManageConnectionsMenuOption } from "./ManageConnectionsMenuOption"
 
 export const ManageConnectionsMenu = () => {
     const dbConnections = useDBConnectionsStore((state) => state.dbConnections)
+    const setDBModal = useDBConnectionsStore((state) => state.setDBModal)
     return (
         <Menu shadow="md" trigger="hover" width={200} closeOnClickOutside closeOnItemClick={false}>
             <Menu.Target >
@@ -24,11 +25,14 @@ export const ManageConnectionsMenu = () => {
 
 
 
-                <Menu.Item py={3} mb={5} key={"newConnection"} leftSection={
-                    <ThemeIcon variant="light" size={20}>
-                        <Plus size={16} />
-                    </ThemeIcon>
-                }>
+                <Menu.Item py={3} mb={5} key={"newConnection"}
+                    closeMenuOnClick
+                    onClick={() => setDBModal(new Date().getTime().toString())}
+                    leftSection={
+                        <ThemeIcon variant="light" size={20}>
+                            <Plus size={16} />
+                        </ThemeIcon>
+                    }>
                     Add Connection
                 </Menu.Item>
                 <Menu.Divider />

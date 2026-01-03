@@ -27,14 +27,7 @@ export interface tabData {
 export const InfoArea: React.FC = () => {
   const tabs = useTabsStore((state) => state.tabs);
   const activeTab = useTabsStore((state) => state.activeTab);
-  const addTab = useTabsStore((state) => state.addTab);
   const setActiveTab = useTabsStore((state) => state.setActiveTab);
-
-  const handleNewTabCreated = (tab: tabData) => {
-    addTab(tab);
-    setActiveTab(tab.id);
-  }
-
 
   const tabsList = tabs.map((option, index) => (
     <TabOption option={option} index={index} />

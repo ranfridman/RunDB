@@ -8,7 +8,7 @@ import { useEffect, useState } from "react";
 export interface LoadingInfoStageProps {
     title: string;
     description: string;
-    status: "notStarted" | "processing" | "finished";
+    status?: "notStarted" | "processing" | "finished";
     color?: string;
 }
 export const useAsymptoticProgress = (isProcessing: boolean) => {
@@ -52,15 +52,15 @@ export const LoadingInfoStage: React.FC<LoadingInfoStageProps> = ({ title, descr
                     color={color}
                     style={{ transform: "rotate(180deg)" }}
                 />
-                <Card radius="md" flex={1} p="xs" pl="5" pt="5" bg="gray.9" >
+                <Card radius="md" flex={1} p="xs" pl="xs" pt="5" bg="gray.9" >
                     <Stack gap="0.2em" justify="center">
-                        {status !== "finished" && (
+                        {status === "notStarted" && (
                             <>
                                 <Skeleton height={12} mt="5" width="80%" />
                                 <Skeleton height={10} mt="5" width="60%" />
                             </>
                         )}
-                        {status === "finished" &&
+                        {status !== "notStarted" &&
                             <Group gap="5" align="top" justify="space-between">
                                 <Text lineClamp={isExpanded ? 0 : 1} w="91%" fz="h6" fw={600} c="gray.1" component="h6">{title}</Text>
                                 <ActionIcon size="xs" variant="transparent" style={{ transform: isExpanded ? "rotate(180deg)" : "rotate(0deg)", transition: "transform 0.1s ease-in-out" }} onClick={() => setIsExpanded(!isExpanded)}>
@@ -69,7 +69,7 @@ export const LoadingInfoStage: React.FC<LoadingInfoStageProps> = ({ title, descr
                             </Group>
 
                         }
-                        {status === "finished" && <Text lineClamp={isExpanded ? 0 : 1} fz="xs" c="dimmed">{description}</Text>}
+                        {status !== "notStarted" && <Text lineClamp={isExpanded ? 0 : 1} fz="xs" c="dimmed">{description}</Text>}
                     </Stack>
                 </Card>
             </Group>

@@ -8,7 +8,7 @@ import { LoadingInfo } from "../LoadingInfo/LoadingInfo";
 import { getIconByType, typeToColor, typeToIcon } from "../TypesTheme/TypesTheme";
 import { useStreamAIResponse } from "@/api/stream";
 import { useUsers } from "@/api/queries";
-import { AiResponse } from "../AiResponse/AiResponse";
+import { AiResponse, Stage } from "../AiResponse/AiResponse";
 
 
 interface AIPanelProps {
@@ -24,6 +24,7 @@ interface AIPanelProps {
 export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }) => {
     const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('setup');
     const [query, setQuery] = useState<string>(intialQuery || "");
+    const [stages, setStages] = useState<Stage[]>([]);
     const typeToSetup: { [key: string]: React.ReactNode } = {
         Graph: <GraphSetup onRun={() => setPanelMode('loading')} />,
     }
@@ -33,12 +34,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                 <Box w="30em">
                     <AIPanelInput type={type} initialQuery={intialQuery} isActive={panelMode === "setup"} onQueryChange={setQuery} />
                     {panelMode === "setup" && typeToSetup[type]}
-                    {panelMode === "loading" && <LoadingInfo color={typeToColor[type]} stages={[
-                        { title: "Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", description: "Lfdgjklds gsdf gjkldfs gorem Loren Ipsum Lfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren IpsumLfdgjklds gsdf gjkldfs gorem Loren Ipsum", status: "finished" },
-                        { title: "Lorem", description: "Lorem", status: "processing" },
-                        { title: "Lorem", description: "Lorem", status: "notStarted" },
-
-                    ]} />}
+                    {panelMode === "loading" && <LoadingInfo color={typeToColor[type]} stages={stages} />}
                 </Box>
                 <Divider orientation="vertical" mx={0} />
                 <Box w="calc(99% - 30em)">
@@ -61,7 +57,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                         }
                         {
                             panelMode != "setup" && (
-                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={intialQuery ?? ""} />
+                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={intialQuery ?? ""} onStagesUpdate={setStages} />
                             )
                         }
                     </ScrollArea>
