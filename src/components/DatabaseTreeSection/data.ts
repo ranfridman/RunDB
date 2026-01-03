@@ -2,8 +2,8 @@ import { TreeNodeData } from '@mantine/core';
 
 
 export interface DatabaseTreeNodeData extends TreeNodeData {
-    type: 'database' | "table" | "column";
-    children?: DatabaseTreeNodeData[];
+  type: 'database' | "table" | "column";
+  children?: DatabaseTreeNodeData[];
 }
 
 
@@ -33,10 +33,10 @@ export const data: DatabaseTreeNodeData[] = [
       {
         label: 'react',
         value: 'node_modules/react',
-        type: 'table',  
+        type: 'table',
         children: [
           { label: 'index.d.ts', value: 'node_modules/react/index.d.ts', type: 'column' },
-          { label: 'package.json', value: 'node_modules/react/package.json', type: 'column' },   
+          { label: 'package.json', value: 'node_modules/react/package.json', type: 'column' },
         ],
       },
       {
@@ -59,7 +59,7 @@ export const data: DatabaseTreeNodeData[] = [
             type: 'table',
             children: [
               { label: 'index.d.ts', value: 'node_modules/@mantine/hooks/index.d.ts', type: 'column' },
-              { label: 'package.json', value: 'node_modules/@mantine/hooks/package.json', type: 'column'     },
+              { label: 'package.json', value: 'node_modules/@mantine/hooks/package.json', type: 'column' },
             ],
           },
           {

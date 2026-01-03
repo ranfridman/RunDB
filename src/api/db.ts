@@ -1,4 +1,4 @@
-import { useMutation } from "@tanstack/react-query";
+import { useMutation, useQuery } from "@tanstack/react-query";
 import { postData } from "./queries";
 
 export interface DBCreds {
@@ -17,3 +17,11 @@ export const validateDBCredentials = (creds: DBCreds) =>
 export const useValidateDB = () => useMutation({
     mutationFn: validateDBCredentials,
 });
+
+export const getDBStructure = (creds?: DBCreds) => useQuery({
+    queryKey: ['db-structure', creds],
+    queryFn: () => postData('/api/v1/db/structure', creds),
+    enabled: !!creds,
+});
+
+

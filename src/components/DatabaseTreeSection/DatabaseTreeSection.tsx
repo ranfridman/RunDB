@@ -1,16 +1,16 @@
 import { IconRefresh, IconSearch } from '@tabler/icons-react';
 import { FolderTree, ListTree } from 'lucide-react';
 import { ActionIcon, getTreeExpandedState, Group, Input, Text, useTree } from '@mantine/core';
-import { data } from './data';
 import { DatabaseTree } from './DatabaseTree';
 import classes from './DatabaseTreeSection.module.css';
 import { useMemo, useState } from 'react';
 import { DatabaseTreeNodeData } from './data';
+import { useDBConnectionsStore } from '@/stores/useDBConnections';
+import { getDBStructure } from '@/api/db';
 
 const filterTree = (nodes: DatabaseTreeNodeData[], search: string) => {
   const expanded: Record<string, boolean> = {};
   const searchLower = search.trim().toLowerCase();
-
   const traverse = (list: DatabaseTreeNodeData[]): DatabaseTreeNodeData[] => {
     const result: DatabaseTreeNodeData[] = [];
     for (const node of list) {
@@ -34,7 +34,6 @@ const filterTree = (nodes: DatabaseTreeNodeData[], search: string) => {
 
 export const DatabaseTreeSection = () => {
   const treeExpandState = useTree({
-    // initialExpandedState: getTreeExpandedState(data, '*'),
   });
   const toggleExpandAllNodes = () => {
     if (Object.values(treeExpandState.expandedState).every((value) => value))
@@ -43,29 +42,52 @@ export const DatabaseTreeSection = () => {
       treeExpandState.expandAllNodes();
   };
   const [searchedValue, setSearchedValue] = useState('');
+  const activeDB = useDBConnectionsStore((state) => state.activeDB);
+  const dbConnection = useDBConnectionsStore((state) => state.dbConnections.find((dbConnection) => dbConnection.id === activeDB));
+  const dbStructure = getDBStructure(dbConnection?.connection);
 
   const filteredData = useMemo(() => {
-    const { nodes } = filterTree(data, searchedValue);
+    if (!dbStructure.data?.data) return [];
+    if (searchedValue.trim() === '') return dbStructure.data?.data;
+    const rawData = Array.isArray(dbStructure.data?.data) ? dbStructure.data?.data : [];
+    const { nodes } = filterTree(rawData as DatabaseTreeNodeData[], searchedValue);
+    treeExpandState.setExpandedState(getTreeExpandedState(nodes, '*'));
     return nodes;
-  }, [searchedValue]);
+  }, [searchedValue, dbStructure.data?.data]);
+
 
 
   return (
     <>
+      {/* {JSON.stringify(filteredData)} */}
       <Group justify="space-between" align="center" h="md">
         <Text size="sm" c="dimmed">
           Structure
         </Text>
         <Group gap={5}>
-          <ActionIcon size="xs" variant="transparent" c="dimmed" onClick={toggleExpandAllNodes}>
-            <FolderTree />
+          <ActionIcon
+            size="xs"
+            variant="transparent"
+            c="dimmed"
+            onClick={toggleExpandAllNodes}
+            disabled={dbStructure.isLoading || dbStructure.isError}
+          >
+            <FolderTree size={14} />
           </ActionIcon>
-          <ActionIcon size="xs" variant="transparent" c="dimmed">
-            <IconRefresh />
+          <ActionIcon
+            size="xs"
+            variant="transparent"
+            c="dimmed"
+            onClick={() => dbStructure.refetch()}
+            loading={dbStructure.isFetching}
+          >
+            <IconRefresh size={14} />
           </ActionIcon>
         </Group>
       </Group>
+
       <Input
+        spellCheck={false}
         leftSection={<IconSearch size="13" />}
         placeholder="Search in Database"
         size="xs"
@@ -77,12 +99,20 @@ export const DatabaseTreeSection = () => {
           const val = event.target.value;
           setSearchedValue(val);
           if (val.trim()) {
-            const { expanded } = filterTree(data, val);
+            const rawData = Array.isArray(dbStructure.data) ? dbStructure.data : [];
+            const { expanded } = filterTree(rawData as DatabaseTreeNodeData[], val);
             treeExpandState.setExpandedState(expanded);
           }
         }}
       />
-      <DatabaseTree data={filteredData} treeExpandState={treeExpandState} />
+
+      {dbStructure.isLoading ? (
+        <Text size="xs" c="dimmed" ta="center" mt="md">Loading structure...</Text>
+      ) : dbStructure.isError ? (
+        <Text size="xs" c="red" ta="center" mt="md">Error loading structure</Text>
+      ) : (
+        <DatabaseTree data={filteredData} treeExpandState={treeExpandState} />
+      )}
     </>
   );
 };
