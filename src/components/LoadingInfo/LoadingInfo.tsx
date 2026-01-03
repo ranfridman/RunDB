@@ -26,8 +26,9 @@ export const LoadingInfo: React.FC<LoadingInfoProps> = ({ stages, color }) => {
                 {stages.map((stage, index) => (
                     <LoadingInfoStage key={index} {...stage} status={stage.status === "finished" || index !== stages.length - 1 ? "finished" : "processing"} color={color} />
                 ))}
-                <LoadingInfoStage key={stages.length} title="" description="" status="notStarted" color={color} />
-
+                {stages[stages.length - 1]?.status !== "finished" && (
+                    <LoadingInfoStage key={stages.length} title="" description="" status="notStarted" color={color} />
+                )}
             </Stack>
         </>
     );

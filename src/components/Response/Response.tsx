@@ -65,7 +65,7 @@ const ResponseComponent = memo(
                     },
                     li: (props) => <Box component="li" {...props} />,
                     table: ({ children }) => (
-                        <ContentCard isStreaming={isAnimating ?? false} type={"Table"} padding={0}>
+                        <ContentCard isStreaming={isAnimating ?? false} type={"Table"} >
                             <ComplexTable maxRows={12}>
                                 {children}
                             </ComplexTable>

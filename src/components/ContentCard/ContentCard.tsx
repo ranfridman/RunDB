@@ -40,10 +40,10 @@ export const ContentCard = ({ children, isStreaming, type, icon, padding = "md",
                         </Group>
                     </Group>
                 </Card.Section>
-                <Card.Section p={padding} withBorder bg="gray.9">
+                <Card.Section withBorder bg="gray.9">
                     {
                         isStreaming ? (
-                            <Text> Loading </Text>
+                            <Text p="xs"> Loading </Text>
                         ) : (
                             children
                         )

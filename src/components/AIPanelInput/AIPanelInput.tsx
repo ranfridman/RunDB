@@ -19,7 +19,7 @@ export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery, 
                         <Title fz="h2">{type}</Title>
                         <Text c="dimmed" fz="xs">Create a {type} based on your db</Text>
                     </Group>
-                    <ActionIcon size="xs" variant="subtle" disabled={!isActive}>
+                    <ActionIcon size="xs" variant="subtle" disabled={isActive}>
                         <ChevronLeft />
                     </ActionIcon>
                 </Group>
