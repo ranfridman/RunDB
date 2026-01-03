@@ -1,5 +1,5 @@
 import { IconRefresh, IconSearch } from '@tabler/icons-react';
-import { FolderTree, ListTree } from 'lucide-react';
+import { FolderTree, ListTree, X } from 'lucide-react';
 import { ActionIcon, getTreeExpandedState, Group, Input, Text, useTree } from '@mantine/core';
 import { DatabaseTree } from './DatabaseTree';
 import classes from './DatabaseTreeSection.module.css';
@@ -95,12 +95,25 @@ export const DatabaseTreeSection = () => {
         radius="md"
         variant="default"
         value={searchedValue}
+        rightSectionPointerEvents="all"
+        rightSection={
+          searchedValue && (
+            <ActionIcon
+              size="xs"
+              variant="transparent"
+              c="dimmed"
+              onClick={() => { setSearchedValue(''); }}
+            >
+              <X size={14} />
+            </ActionIcon>
+          )
+        }
         onChange={(event) => {
           const val = event.target.value;
           setSearchedValue(val);
           if (val.trim()) {
-            const rawData = Array.isArray(dbStructure.data) ? dbStructure.data : [];
-            const { expanded } = filterTree(rawData as DatabaseTreeNodeData[], val);
+            const rawData = dbStructure.data?.data || [];
+            const { expanded } = filterTree(rawData, val);
             treeExpandState.setExpandedState(expanded);
           }
         }}
@@ -108,6 +121,8 @@ export const DatabaseTreeSection = () => {
 
       {dbStructure.isLoading ? (
         <Text size="xs" c="dimmed" ta="center" mt="md">Loading structure...</Text>
+      ) : (!activeDB) ? (
+        <Text size="xs" c="dimmed" ta="center" mt="md">No database selected</Text>
       ) : dbStructure.isError ? (
         <Text size="xs" c="red" ta="center" mt="md">Error loading structure</Text>
       ) : (
