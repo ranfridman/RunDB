@@ -49,7 +49,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                                         <Text size="xl" c="gray.1">Setup the input form</Text>
                                     </Group>
                                     <Divider w="20em" />
-                                    <Text size="sm" c="dimmed" align="center" w="25em">
+                                    <Text size="sm" c="dimmed" ta="center" w="25em">
                                         Before loading the data, you need to fill the input fields. Make sure to fill all the required fields. and the data will be loaded automatically.
                                     </Text>
                                 </Stack>
