@@ -21,22 +21,14 @@ export const fetchData = async <T>(url: string): Promise<T> => {
 
 // Generic poster
 export const postData = async <T, D>(url: string, payload: D): Promise<T> => {
-    const { data } = await apiClient.post<T>(url, payload);
-    return data;
+    try {
+        const { data } = await apiClient.post<T>(url, payload);
+        return data;
+    } catch (error: any) {
+        if (error.response?.status === 422) {
+            console.error('Validation Error (422):', error.response.data);
+        }
+        throw error;
+    }
 };
 
-// Example Hook using React Query
-export const useUsers = (options?: UseQueryOptions<User[], Error>) => {
-    return useQuery<User[], Error>({
-        queryKey: ['users'],
-        queryFn: () => fetchData<User[]>('/users'),
-        ...options,
-    });
-};
-
-export const useCreateUser = (options?: UseMutationOptions<User, Error, CreateUserDTO>) => {
-    return useMutation<User, Error, CreateUserDTO>({
-        mutationFn: (newUser) => postData<User, CreateUserDTO>('/users', newUser),
-        ...options,
-    });
-};

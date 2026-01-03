@@ -20,8 +20,8 @@ interface DBConnectionsStore {
 }
 
 export const useDBConnectionsStore = create<DBConnectionsStore>((set) => ({
-    dbConnections: [{ id: '1', name: 'Dsdf df', type: 'PostgreSQL', connection: {} }, { id: '2', name: 'DB2', type: 'PostgreSQL', connection: {} }],
-    activeDB: '1',
+    dbConnections: [],
+    activeDB: null,
     dbModalOpen: null,
     addDBConnection: (dbConnection: DBConnection) => set((state) => ({ dbConnections: [...state.dbConnections, dbConnection] })),
     removeDBConnection: (id: string) => set((state) => ({ dbConnections: state.dbConnections.filter((dbConnection) => dbConnection.id !== id) })),

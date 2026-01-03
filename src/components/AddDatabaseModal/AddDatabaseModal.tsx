@@ -1,8 +1,9 @@
 import { useDBConnectionsStore } from "../../stores/useDBConnections";
-import { Button, Divider, Group, Modal, NumberInput, PasswordInput, Select, Stack, TextInput, Title } from "@mantine/core";
+import { Button, Divider, Group, LoadingOverlay, Modal, NumberInput, PasswordInput, Select, Stack, TextInput, Title } from "@mantine/core";
 import { Database, Server, Share2, Shield, User } from "lucide-react";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import styles from './AddDatabaseModal.module.css';
+import { useValidateDB } from "@/api/db";
 
 type DBType = 'postgres' | 'mysql' | 'mssql' | 'mariadb' | 'cockroachdb';
 
@@ -15,42 +16,87 @@ const DB_TEMPLATES: Record<DBType, { label: string; port: number; user: string }
 };
 
 export const AddDatabaseModal: React.FC = () => {
-    const onClose = useDBConnectionsStore((state) => state.setDBModal);
     const dbModalOpen = useDBConnectionsStore((state) => state.dbModalOpen);
     const currentDBConnection = useDBConnectionsStore((state) => state.dbConnections.find((dbConnection) => dbConnection.id === dbModalOpen));
+    const onClose = useDBConnectionsStore((state) => state.setDBModal);
     const updatedDBConnection = useDBConnectionsStore((state) => state.editDBConnection);
+    const addDBConnection = useDBConnectionsStore((state) => state.addDBConnection);
+    const isNewConnection = !currentDBConnection;
+    const validateDB = useValidateDB();
     const [dbType, setDbType] = useState<DBType | null>(null);
-    const [connectionName, setConnectionName] = useState<string>(currentDBConnection?.name || '');
-    const [host, setHost] = useState<string>(currentDBConnection?.connection.host || '');
-    const [port, setPort] = useState<number | string>(currentDBConnection?.connection.port || 0);
-    const [database, setDatabase] = useState<string>(currentDBConnection?.connection.database || '');
-    const [username, setUsername] = useState<string>(currentDBConnection?.connection.username || '');
-    const [password, setPassword] = useState<string>(currentDBConnection?.connection.password || '');
+    const [connectionName, setConnectionName] = useState<string>('');
+    const [host, setHost] = useState<string>('');
+    const [port, setPort] = useState<number>(0);
+    const [database, setDatabase] = useState<string>('');
+    const [user, setUser] = useState<string>('');
+    const [password, setPassword] = useState<string>('');
 
     const selectDBType = (value: DBType) => {
         setDbType(value);
         setPort(DB_TEMPLATES[value].port);
-        setUsername(DB_TEMPLATES[value].user);
+        setUser(DB_TEMPLATES[value].user);
     };
-
-    const handleSubmit = () => {
-        if (!dbModalOpen || !connectionName || !host || !port || !database || !username || !password) {
-            console.log('Missing required fields');
+    useEffect(() => {
+        if (dbModalOpen) {
+            const dbConnection = currentDBConnection;
+            if (dbConnection) {
+                setDbType(dbConnection.connection.type);
+                setConnectionName(dbConnection.name);
+                setHost(dbConnection.connection.host);
+                setPort(dbConnection.connection.port);
+                setDatabase(dbConnection.connection.database);
+                setUser(dbConnection.connection.user);
+                setPassword(dbConnection.connection.password);
+            }
+        }
+    }, [dbModalOpen]);
+    const handleSubmit = async () => {
+        if (!dbModalOpen || !connectionName || !host || !port || !database || !user || !password) {
             return;
         }
-        updatedDBConnection({
-            id: dbModalOpen!,
-            name: connectionName,
-            connection: {
+        try {
+            const isValid = await validateDB.mutateAsync({
                 host,
                 port,
                 database,
-                username,
+                user,
                 password,
-            },
-        });
-        onClose(null);
-        clearForm();
+            });
+            if (!isValid) {
+                return;
+            }
+            console.log('Valid credentials');
+
+            if (isNewConnection) {
+                addDBConnection({
+                    id: dbModalOpen!,
+                    name: connectionName,
+                    connection: {
+                        host,
+                        port,
+                        database,
+                        user,
+                        password,
+                    },
+                });
+            } else {
+                updatedDBConnection({
+                    id: dbModalOpen!,
+                    name: connectionName,
+                    connection: {
+                        host,
+                        port,
+                        database,
+                        user,
+                        password,
+                    },
+                });
+            }
+            clearForm();
+            onClose(null);
+        } catch (error) {
+            return;
+        }
     };
     const clearForm = () => {
         setDbType(null);
@@ -58,7 +104,7 @@ export const AddDatabaseModal: React.FC = () => {
         setHost('');
         setPort(0);
         setDatabase('');
-        setUsername('');
+        setUser('');
         setPassword('');
     };
 
@@ -72,6 +118,7 @@ export const AddDatabaseModal: React.FC = () => {
             centered
             size="lg"
         >
+            <LoadingOverlay visible={validateDB.isPending} zIndex={1000} overlayProps={{ radius: "sm", blur: 2 }} />
             <Stack gap="md">
                 <Select
                     label="Database Type"
@@ -119,7 +166,7 @@ export const AddDatabaseModal: React.FC = () => {
                     <NumberInput
                         label="Port"
                         value={port}
-                        onChange={(e) => setPort(e)}
+                        onChange={(value) => setPort(Number(value) || 0)}
                         placeholder="5432"
                         allowDecimal={false}
                         classNames={styles}
@@ -140,13 +187,13 @@ export const AddDatabaseModal: React.FC = () => {
 
                 <Group grow align="flex-start">
                     <TextInput
-                        label="Username"
+                        label="User"
                         placeholder="postgres"
                         leftSection={<User size={16} />}
                         classNames={styles}
                         withAsterisk
-                        value={username}
-                        onChange={(e) => setUsername(e.target.value)}
+                        value={user}
+                        onChange={(e) => setUser(e.target.value)}
                     />
                     <PasswordInput
                         label="Password"
