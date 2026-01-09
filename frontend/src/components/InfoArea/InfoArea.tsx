@@ -12,6 +12,7 @@ import { GraphSetup } from '../GraphSetup/GraphSetup';
 import { AIPanel } from '../AIPanel/AIPanel';
 import { useTabsStore } from '../../stores/useTabs';
 import { TablePanel } from '../TabelPanel/TabelPanel';
+import { Dashboard } from '../Dashboard/Dashboard';
 
 
 export interface tabData {
@@ -35,7 +36,13 @@ export const InfoArea: React.FC = () => {
 
   const panels = tabs.map((option, index) => (
     <Tabs.Panel key={index} value={option.id} p={0} keepMounted={true}>
-      {(option.type !== 'SQL') ? <AIPanel label={option.label} type={option.type} id={option.id} intialQuery={option.query} /> : <TablePanel />}
+      {option.type === 'Dashboard' ? (
+        <Dashboard />
+      ) : option.type === 'SQL' ? (
+        <TablePanel />
+      ) : (
+        <AIPanel label={option.label} type={option.type} id={option.id} intialQuery={option.query} />
+      )}
     </Tabs.Panel>
   ));
   return (

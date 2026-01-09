@@ -84,6 +84,14 @@ export const NewTabOptions: React.FC = () => {
                             createNewTab={createNewTab}
                         />
                     </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Dashboard"
+                            description="Create custom dashboards with multiple data visualizations and key performance indicators."
+                            type="Dashboard"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
                 </Grid>
             </Stack>
         </Group>
