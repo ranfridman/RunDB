@@ -54,14 +54,9 @@ export const AddDatabaseModal: React.FC = () => {
         if (!dbModalOpen || !connectionName || !host || !port || !database || !user || !password) {
             return;
         }
+        const uri = `${dbType}://${user}:${password}@${host}:${port}/${database}`;
         try {
-            const isValid = await validateDB.mutateAsync({
-                host,
-                port,
-                database,
-                user,
-                password,
-            });
+            const isValid = await validateDB.mutateAsync(uri);
             if (!isValid) {
                 return;
             }

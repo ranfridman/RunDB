@@ -1,26 +1,130 @@
 .grid {
-    /* padding: var(--mantine-spacing-md); */
-    /* min-height: 100%; */
+    height: 80vh;
+    display: flex;
+    flex-direction: column;
+    padding: var(--mantine-spacing-md);
+    gap: var(--mantine-spacing-md);
+    overflow: hidden;
+    background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
+}
+
+.row {
+    display: flex;
+    width: 100%;
 }
 
 .cell {
-    height: 200px;
+    flex: 1;
+    position: relative;
     display: flex;
-    align-items: center;
-    justify-content: center;
+    flex-direction: column;
+    background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6));
+    border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
     border-radius: var(--mantine-radius-md);
-    background: rgba(255, 255, 255, 0.05);
-    border: 1px solid rgba(255, 255, 255, 0.1);
-    transition: all 0.2s ease;
-    cursor: pointer;
-    color: var(--mantine-color-white);
-    font-weight: 600;
-    font-size: var(--mantine-font-size-xl);
+    padding: var(--mantine-spacing-md);
+    margin: 6px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
 .cell:hover {
-    background: rgba(255, 255, 255, 0.1);
-    border-color: var(--mantine-color-yellow-4);
-    /* transform: translateY(-4px); */
-    box-shadow: var(--mantine-shadow-lg);
+    transform: translateY(-2px);
+    box-shadow: var(--mantine-shadow-md);
+    border-color: var(--mantine-color-yellow-filled);
+}
+
+.vDivider,
+.hDivider {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.2s ease;
+}
+
+.vDivider {
+    width: 16px;
+    cursor: col-resize;
+    margin: 0 -8px;
+}
+
+.hDivider {
+    height: 16px;
+    cursor: row-resize;
+    margin: -8px 0;
+    width: 100%;
+}
+
+.vDivider::after {
+    content: '';
+    width: 2px;
+    height: 30px;
+    background: var(--mantine-color-gray-4);
+    border-radius: 2px;
+}
+
+.hDivider::after {
+    content: '';
+    height: 2px;
+    width: 30px;
+    background: var(--mantine-color-gray-4);
+    border-radius: 2px;
+}
+
+.vDivider:hover::after,
+.hDivider:hover::after {
+    background: var(--mantine-color-yellow-filled);
+    box-shadow: 0 0 8px var(--mantine-color-yellow-filled);
+}
+
+.panelHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-bottom: var(--mantine-spacing-xs);
+    border-bottom: 1px solid var(--mantine-color-gray-2);
+    margin-bottom: var(--mantine-spacing-sm);
+}
+
+.panelLabel {
+    font-size: var(--mantine-font-size-xs);
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--mantine-color-dimmed);
+}
+
+.cellContent {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    min-height: 0;
+}
+
+.addEdge {
+    position: absolute;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 20px;
+    opacity: 0;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--mantine-color-yellow-light);
+    transition: opacity 0.2s;
+    color: var(--mantine-color-yellow-6);
+}
+
+.cell:hover .addEdge {
+    opacity: 1;
+}
+
+.dashboardHeader {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0 var(--mantine-spacing-xs);
 }

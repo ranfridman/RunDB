@@ -1,6 +1,6 @@
 import { ActionIcon, Avatar, Menu, ThemeIcon } from "@mantine/core"
 import { Check, EllipsisVertical, Plus } from "lucide-react"
-import { IconArrowsLeftRight, IconTrash } from "@tabler/icons-react"
+import { IconArrowsLeftRight, IconLogout, IconTrash, IconUser } from "@tabler/icons-react"
 import { useDBConnectionsStore } from "../../stores/useDBConnections"
 import { ManageConnectionsMenuOption } from "./ManageConnectionsMenuOption"
 
@@ -37,17 +37,17 @@ export const ManageConnectionsMenu = () => {
                 </Menu.Item>
                 <Menu.Divider />
 
-                <Menu.Label>Danger zone</Menu.Label>
+                <Menu.Label>Account</Menu.Label>
                 <Menu.Item
-                    leftSection={<IconArrowsLeftRight size={14} />}
+                    leftSection={<IconUser size={14} />}
                 >
-                    Transfer my data
+                    My Account
                 </Menu.Item>
                 <Menu.Item
                     color="red"
-                    leftSection={<IconTrash size={14} />}
+                    leftSection={<IconLogout size={14} />}
                 >
-                    Delete my account
+                    Log out
                 </Menu.Item>
             </Menu.Dropdown>
         </Menu>

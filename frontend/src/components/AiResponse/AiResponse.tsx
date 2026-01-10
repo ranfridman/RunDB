@@ -17,7 +17,7 @@ interface AiResponseProps {
 export const AiResponse = ({ mode, prompt, onStagesUpdate }: AiResponseProps) => {
     const [streamedData, setStreamedData] = useState("");
     const [rawStream, setRawStream] = useState("");
-    const t = useStreamAIResponse({ mode: mode, prompt: prompt })
+    const t = useStreamAIResponse({ mode: mode, query: prompt, uri: "" })
 
     const parseStages = (text: string) => {
         const regex = /```stage\n([\s\S]*?)\n```/g;

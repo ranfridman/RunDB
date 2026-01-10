@@ -3,22 +3,23 @@ import apiClient from './client';
 
 export interface StreamRequest {
     mode: string;
-    prompt: string;
+    query: string;
+    uri: string;
 }
 
 
 
 export const streamAIResponse = async (
-    { mode, prompt }: StreamRequest,
+    { mode, query, uri }: StreamRequest,
     onChunk: (chunk: string) => void,
     signal?: AbortSignal
 ): Promise<void> => {
-    const response = await fetch('/api/v1/chat/stream', {
+    const response = await fetch('/api/v1/chat/research', {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ mode, prompt }),
+        body: JSON.stringify({ mode, query, uri }),
         signal,
     });
 
@@ -39,9 +40,9 @@ export const streamAIResponse = async (
     }
 };
 
-export const useStreamAIResponse = ({ mode, prompt }: StreamRequest) => {
+export const useStreamAIResponse = ({ mode, query, uri }: StreamRequest) => {
     return useMutation({
-        mutationFn: (onChunk: (chunk: string) => void) => streamAIResponse({ mode, prompt }, onChunk),
+        mutationFn: (onChunk: (chunk: string) => void) => streamAIResponse({ mode, query, uri }, onChunk),
         // mutationKey: ['stream', mode, prompt],
     });
 };

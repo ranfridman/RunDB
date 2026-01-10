@@ -12,7 +12,7 @@ description: {description}<$>
 ```
 """
 
-    async def stream_chat_response(self, mode: ChatMode, prompt: str) -> AsyncGenerator[str, None]:
+    async def stream_chat_response(self, mode: ChatMode, prompt: str, uri: str = None) -> AsyncGenerator[str, None]:
         # TODO: Integrate with actual LLM (e.g., OpenAI, Gemini, local model)
         # For now, we simulate a streaming response based on the mode
         
@@ -26,6 +26,10 @@ graph TD;
     A[Start] --> B{{Decision}};
     B -->|Yes| C[Result 1];
     B -->|No| D[Result 2];
+```
+```python
+def hello():
+    print("Hello, world!")
 ```
 
 ```mermaid

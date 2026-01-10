@@ -8,6 +8,6 @@ class ChatMode(str, Enum):
 
 class ChatRequest(BaseModel):
     mode: ChatMode
-    prompt: str
+    query: str
     id: Optional[str] = None
-    dbConnectionId: Optional[str] = None
+    uri: Optional[str] = None

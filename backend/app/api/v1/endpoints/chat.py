@@ -5,7 +5,7 @@ from app.services.chat_service import chat_service
 
 router = APIRouter()
 
-@router.post("/stream")
+@router.post("/research")
 async def stream_chat(
     request: schemas.chat.ChatRequest,
 ):
@@ -13,7 +13,7 @@ async def stream_chat(
     Stream a chat response based on mode and prompt.
     """
     return StreamingResponse(
-        chat_service.stream_chat_response(mode=request.mode, prompt=request.prompt),
+        chat_service.stream_chat_response(mode=request.mode, prompt=request.query, uri=request.uri),
         media_type="text/plain",
         headers={
             "Cache-Control": "no-cache",

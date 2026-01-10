@@ -44,7 +44,7 @@ export const DatabaseTreeSection = () => {
   const [searchedValue, setSearchedValue] = useState('');
   const activeDB = useDBConnectionsStore((state) => state.activeDB);
   const dbConnection = useDBConnectionsStore((state) => state.dbConnections.find((dbConnection) => dbConnection.id === activeDB));
-  const dbStructure = getDBStructure(dbConnection?.connection);
+  const dbStructure = getDBStructure("dbConnection?.connection");
 
   const filteredData = useMemo(() => {
     if (!dbStructure.data?.data) return [];

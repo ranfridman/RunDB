@@ -15,18 +15,18 @@ export interface DBCreds {
 }
 
 // Raw async function - can be called directly (e.g., in event handlers)
-export const validateDBCredentials = (creds: DBCreds) =>
-    postData<boolean, DBCreds>('/api/v1/db/validate', creds);
+export const validateDBCredentials = (uri: string) =>
+    postData<boolean, { uri: string }>('/api/v1/db/validate', { uri });
 
 // React hook version - use when you need React Query's state management
 export const useValidateDB = () => useMutation({
     mutationFn: validateDBCredentials,
 });
 
-export const getDBStructure = (creds?: DBCreds) => useQuery({
-    queryKey: ['db-structure', creds],
-    queryFn: () => postData<DBStructureResponse, DBCreds>('/api/v1/db/structure', creds!),
-    enabled: !!creds,
+export const getDBStructure = (uri?: string) => useQuery({
+    queryKey: ['db-structure', uri],
+    queryFn: () => postData<DBStructureResponse, { uri: string }>('/api/v1/db/structure', { uri: uri! }),
+    enabled: !!uri,
 });
 
 

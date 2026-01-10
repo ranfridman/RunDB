@@ -9,6 +9,9 @@ class DBCredentials(BaseModel):
     password: str
     database: str
 
+class DBUriRequest(BaseModel):
+    uri: str
+
 class DBValidateResponse(BaseModel):
     success: bool
     message: str
