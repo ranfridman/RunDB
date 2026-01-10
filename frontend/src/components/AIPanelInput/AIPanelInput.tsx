@@ -7,9 +7,10 @@ interface AIPanelInputProps {
     initialQuery?: string;
     isActive?: boolean;
     onQueryChange?: (query: string) => void;
+    onBack?: () => void;
 }
 
-export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery, isActive = true, onQueryChange }) => {
+export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery, isActive = true, onQueryChange, onBack }) => {
     const [query, setQuery] = useState(initialQuery || "");
     return (
         <>
@@ -19,9 +20,11 @@ export const AIPanelInput: React.FC<AIPanelInputProps> = ({ type, initialQuery, 
                         <Title fz="h2">{type}</Title>
                         <Text c="dimmed" fz="xs">Create a {type} based on your db</Text>
                     </Group>
-                    <ActionIcon size="xs" variant="subtle" disabled={isActive}>
-                        <ChevronLeft />
-                    </ActionIcon>
+                    {!isActive && (
+                        <ActionIcon size="xs" variant="subtle" onClick={onBack}>
+                            <ChevronLeft />
+                        </ActionIcon>
+                    )}
                 </Group>
                 <Textarea
                     disabled={!isActive}

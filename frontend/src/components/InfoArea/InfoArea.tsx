@@ -48,11 +48,11 @@ export const InfoArea: React.FC = () => {
   return (
     <>
       <Tabs defaultValue="pluse" value={activeTab} onChange={(value) => setActiveTab(value)} >
-        <Tabs.List bg="dark.7" w="100%">
+        <Tabs.List bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" w="100%">
           <ScrollArea type="scroll" scrollbarSize={2} offsetScrollbars >
             <Group w="100%" gap="0" display="flex" style={{ flexWrap: "nowrap" }}>
               {...tabsList}
-              <Tabs.Tab value="pluse" px={12} bg={activeTab === "pluse" ? "dark.9" : ""}>
+              <Tabs.Tab value="pluse" px={12} bg={activeTab === "pluse" ? "light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))" : ""}>
                 <Plus size={16} />
               </Tabs.Tab>
               <Divider orientation="vertical" mx={0} pr={30} />

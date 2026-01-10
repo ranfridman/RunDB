@@ -1,0 +1,10 @@
+.option {
+    border: 1px solid var(--mantine-color-gray-8);
+    border-radius: var(--mantine-radius-md);
+    cursor: pointer;
+    transition: background-color 200ms ease;
+}
+
+.option:hover {
+    background-color: var(--mantine-color-gray-9);
+}

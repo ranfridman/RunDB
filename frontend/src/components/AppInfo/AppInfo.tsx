@@ -18,7 +18,9 @@ export const AppInfo = () => {
 
         </Group>
 
-        <Code fw={700} bg="dark" >v1.0.0    </Code>
+        <Code fw={700} bg="light-dark(var(--mantine-color-gray-1), var(--mantine-color-dark-4))"
+          c="light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-1))"
+        >v1.0.0    </Code>
       </Group>
     </>
   );

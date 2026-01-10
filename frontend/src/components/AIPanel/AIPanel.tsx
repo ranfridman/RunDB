@@ -1,13 +1,10 @@
 import { Box, Center, Divider, Group, ScrollArea, Stack, Text, ThemeIcon } from "@mantine/core";
-import Response from "../Response/Response";
 import { GraphSetup } from "../GraphSetup/GraphSetup";
-import { useQuery } from "@tanstack/react-query";
-import { useState, useEffect } from "react";
+import { AnalysisSetup } from "../AnalysisSetup/AnalysisSetup";
+import { useState } from "react";
 import { AIPanelInput } from "../AIPanelInput/AIPanelInput";
 import { LoadingInfo } from "../LoadingInfo/LoadingInfo";
-import { getIconByType, typeToColor, typeToIcon } from "../TypesTheme/TypesTheme";
-import { useStreamAIResponse } from "@/api/stream";
-import { useUsers } from "@/api/queries";
+import { getIconByType, typeToColor } from "../TypesTheme/TypesTheme";
 import { AiResponse, Stage } from "../AiResponse/AiResponse";
 
 
@@ -25,14 +22,23 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
     const [panelMode, setPanelMode] = useState<'setup' | 'loading' | 'finished'>('setup');
     const [query, setQuery] = useState<string>(intialQuery || "");
     const [stages, setStages] = useState<Stage[]>([]);
+
     const typeToSetup: { [key: string]: React.ReactNode } = {
         Graph: <GraphSetup onRun={() => setPanelMode('loading')} />,
+        Analysis: <AnalysisSetup onRun={() => setPanelMode('loading')} />,
     }
+
     return (
         <>
             <Group justify="space-between" w="100%" dir='row' gap="0" h="89.7vh" align="top" >
                 <Box w="30em">
-                    <AIPanelInput type={type} initialQuery={intialQuery} isActive={panelMode === "setup"} onQueryChange={setQuery} />
+                    <AIPanelInput
+                        type={type}
+                        initialQuery={query}
+                        isActive={panelMode === "setup"}
+                        onQueryChange={setQuery}
+                        onBack={() => setPanelMode('setup')}
+                    />
                     {panelMode === "setup" && typeToSetup[type]}
                     {panelMode === "loading" && <LoadingInfo color={typeToColor[type]} stages={stages} />}
                 </Box>
@@ -57,7 +63,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                         }
                         {
                             panelMode != "setup" && (
-                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={intialQuery ?? ""} onStagesUpdate={setStages} />
+                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={query} onStagesUpdate={setStages} />
                             )
                         }
                     </ScrollArea>

@@ -17,7 +17,7 @@ export const TabOption: React.FC<TabOptionProps> = ({ option, index }) => {
     const isActive = useTabsStore((state) => state.activeTab === option.id);
     return (
         <>
-            <Tabs.Tab key={index} px="xs" bg={isActive ? "dark.9" : ""} color={typeToColor[option.type ?? '']}
+            <Tabs.Tab key={index} px="xs" bg={isActive ? "light-dark(var(--mantine-color-white), var(--mantine-color-dark-9))" : ""} color={typeToColor[option.type ?? '']}
                 rightSection={
                     <ActionIcon size="xs" ref={ref} variant="transparent" c="dimmed" className={classes.closeIcon}>
                         {(isActive || hovered) && < X onClick={() => closeTab(option.id)} />}

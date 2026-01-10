@@ -14,7 +14,10 @@ export const HeadingTracker: React.FC<{ children: React.ReactNode }> = ({ childr
     const [consumedHeadings, setConsumedHeadings] = useState<string[]>([]);
 
     const consumeHeading = useCallback((text: string) => {
-        setConsumedHeadings(prev => [...prev, text]);
+        setConsumedHeadings(prev => {
+            if (prev.includes(text)) return prev;
+            return [...prev, text];
+        });
     }, []);
 
     const resetConsumedHeadings = useCallback(() => {
