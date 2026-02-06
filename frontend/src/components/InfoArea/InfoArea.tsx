@@ -13,6 +13,7 @@ import { AIPanel } from '../AIPanel/AIPanel';
 import { useTabsStore } from '../../stores/useTabs';
 import { TablePanel } from '../TabelPanel/TabelPanel';
 import { Dashboard } from '../Dashboard/Dashboard';
+import { UIUX } from '../UIUIX/UIUX';
 
 
 export interface tabData {
