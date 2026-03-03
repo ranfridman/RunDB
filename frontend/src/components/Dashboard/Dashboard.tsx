@@ -3,6 +3,7 @@ import { Box, Text, ActionIcon, Group, Stack, Badge, RingProgress } from "@manti
 import { Plus, Database, Activity, Terminal, ShieldCheck, Zap } from "lucide-react"
 import classes from './Dashboard.module.css';
 import { Board, DashboardRow, Panel } from './Board/Board';
+import { DinamicGraph } from "../DinamicGraph/DinamicGraph";
 
 export type PanelType = 'schema' | 'performance' | 'logs' | 'environment' | 'new';
 
@@ -41,18 +42,19 @@ export const Dashboard = () => {
     });
 
     return (
-        <Box className={classes.grid}>
+        <Box className={classes.grid} mih="80vh">
             <Group justify="space-between" px="md" mb="xs">
                 <Text fw={800} size="xl" variant="gradient">Nexus</Text>
                 <ActionIcon onClick={add} variant="light" color="yellow"><Plus size={18} /></ActionIcon>
             </Group>
-
+            <DinamicGraph />
             <Board
                 rows={rows}
                 onRowsChange={setRows}
                 onRemovePanel={del}
                 onToggleSlot={toggle}
                 panelRegistry={panelRegistry}
+                height={rows.length * 400}
             />
         </Box>
     );

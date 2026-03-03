@@ -5,8 +5,6 @@ import { getIconByType, typeToColor } from "../TypesTheme/TypesTheme";
 import styles from './NewTabOptions.module.css';
 import { tabData } from '../InfoArea/InfoArea';
 import { useTabsStore } from '../../stores/useTabs';
-import { UIUX } from '../UIUIX/UIUX';
-import { UIUXComponent } from '../UIUIX/UIUXComponent';
 
 interface TabOptionButtonProps {
     label: string;
@@ -45,58 +43,56 @@ const TabOptionButton: React.FC<TabOptionButtonProps> = ({ label, description, t
 export const NewTabOptions: React.FC = () => {
     const createNewTab = useTabsStore((state) => state.addTab);
     return (
-        <UIUX>
-            <Group h="60vh" justify="center" w="100%" p="md" pos="relative">
+        <Group h="60vh" justify="center" w="100%" p="md" pos="relative">
 
-                <Stack justify="center" w="36em">
-                    <Stack gap="0">
-                        <Text size="xl" fw={500}>Start with a tab option</Text>
-                        <Text size="md" c="dimmed">Choose a tab option to get started</Text>
-                    </Stack>
-                    <Grid gutter="md" columns={2}>
-                        <Grid.Col span={1}>
-                            <TabOptionButton
-                                label="Table"
-                                description="Organize your raw data into a structured, sortable, and filterable table format for easy scanning."
-                                type="Table"
-                                createNewTab={createNewTab}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <TabOptionButton
-                                label="Graph"
-                                description="Visualize trends and patterns in your data with dynamic, interactive charts and graphs."
-                                type="Graph"
-                                createNewTab={createNewTab}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <TabOptionButton
-                                label="SQL"
-                                description="Generate optimized SQL queries to extract, transform, and analyze your data directly from your database."
-                                type="SQL"
-                                createNewTab={createNewTab}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <TabOptionButton
-                                label="Analysis"
-                                description="Perform a deep-dive analysis to uncover hidden insights, correlations, and actionable intelligence."
-                                type="Analysis"
-                                createNewTab={createNewTab}
-                            />
-                        </Grid.Col>
-                        <Grid.Col span={1}>
-                            <TabOptionButton
-                                label="Dashboard"
-                                description="Create custom dashboards with multiple data visualizations and key performance indicators."
-                                type="Dashboard"
-                                createNewTab={createNewTab}
-                            />
-                        </Grid.Col>
-                    </Grid>
+            <Stack justify="center" w="36em">
+                <Stack gap="0">
+                    <Text size="xl" fw={500}>Start with a tab option</Text>
+                    <Text size="md" c="dimmed">Choose a tab option to get started</Text>
                 </Stack>
-            </Group>
-        </UIUX>
+                <Grid gutter="md" columns={2}>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Table"
+                            description="Organize your raw data into a structured, sortable, and filterable table format for easy scanning."
+                            type="Table"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Graph"
+                            description="Visualize trends and patterns in your data with dynamic, interactive charts and graphs."
+                            type="Graph"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="SQL"
+                            description="Generate optimized SQL queries to extract, transform, and analyze your data directly from your database."
+                            type="SQL"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Analysis"
+                            description="Perform a deep-dive analysis to uncover hidden insights, correlations, and actionable intelligence."
+                            type="Analysis"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Dashboard"
+                            description="Create custom dashboards with multiple data visualizations and key performance indicators."
+                            type="Dashboard"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                </Grid>
+            </Stack>
+        </Group>
     )
 }

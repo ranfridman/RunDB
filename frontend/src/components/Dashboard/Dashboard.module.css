@@ -1,9 +1,9 @@
 .grid {
-    height: 80vh;
     display: flex;
     flex-direction: column;
     padding: var(--mantine-spacing-md);
     gap: var(--mantine-spacing-md);
+    padding-top: var(--mantine-spacing-lg);
     overflow: hidden;
     background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
 }
@@ -22,7 +22,8 @@
     border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4));
     border-radius: var(--mantine-radius-md);
     padding: var(--mantine-spacing-md);
-    margin: 6px;
+    margin: 0 8px;
+    /* Vertical margin removed, handled by divider */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
 
@@ -49,9 +50,11 @@
 }
 
 .hDivider {
-    height: 16px;
+    height: 32px;
+    /* Fixed height for the gap */
     cursor: row-resize;
-    margin: -8px 0;
+    margin: 0;
+    /* No negative margin */
     width: 100%;
 }
 
@@ -65,14 +68,15 @@
 
 .hDivider::after {
     content: '';
-    height: 2px;
-    width: 30px;
+    height: 3px;
+    /* Changed to vertical bar */
+    width: 60px;
     background: var(--mantine-color-gray-4);
-    border-radius: 2px;
+    border-radius: 4px;
 }
 
-.vDivider:hover::after,
-.hDivider:hover::after {
+.hDivider:hover::after,
+.vDivider:hover::after {
     background: var(--mantine-color-yellow-filled);
     box-shadow: 0 0 8px var(--mantine-color-yellow-filled);
 }
@@ -127,4 +131,23 @@
     justify-content: space-between;
     align-items: center;
     padding: 0 var(--mantine-spacing-xs);
+}
+
+/* Remove graph focus outline */
+:global(.recharts-wrapper),
+:global(.recharts-wrapper *),
+:global(.recharts-surface),
+:global(.recharts-surface *),
+:global(.recharts-sector),
+:global(.recharts-curve),
+:global(.recharts-dot) {
+    outline: none !important;
+    box-shadow: none !important;
+    -webkit-tap-highlight-color: transparent;
+}
+
+:global(.recharts-wrapper:focus),
+:global(.recharts-surface:focus),
+:global(.recharts-surface:focus-visible) {
+    outline: none !important;
 }

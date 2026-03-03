@@ -17,9 +17,10 @@ interface BoardProps {
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
     onToggleSlot: (rowIndex: number) => void;
     panelRegistry: Record<PanelType, { label: string; icon: any; content: any }>;
+    height?: string | number;
 }
 
-export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry }: BoardProps) => {
+export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry, height }: BoardProps) => {
     const [activeId, setActiveId] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragInfo = useRef<{ type: 'h' | 'v', rowIndex: number } | null>(null);
@@ -43,20 +44,10 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
 
         if (type === 'h') {
             const delta = (e.movementY / rect.height) * rows.length; // Normalized delta ?? 
-            // Better logic from previous working version:
-            // The previous logic was: deltaPercent = (e.movementY / totalHeight) * 100;
-            // But here we use flex weights (avg 1). 
-            // Let's rely on the previous logic which was roughly: move amount relative to container height.
-
-            // Re-implementing specific flex-based resize logic:
             const r1 = next[rowIndex];
             const r2 = next[rowIndex + 1];
             if (r1 && r2) {
-                // Percentage-ish movement converted to flex unit
-                // Total flex height is roughly Rows.length
                 const move = (e.movementY / rect.height) * rows.length;
-
-                // Constrain: min height 0.2 (20% of a row avg)
                 const clampedMove = Math.min(Math.max(move, -r1.height + 0.2), r2.height - 0.2);
 
                 r1.height += clampedMove;
@@ -139,17 +130,9 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                 onMouseMove={handleMouseMove}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
+                h={height}
             >
-                {/* Header is technically outside the grid-flex area in the CSS now? or inside? 
-                     In Dashboard.tsx it was inside .grid but outside the rows container.
-                     We'll let Dashboard render the "Nexus" header, Board just handles the content area?
-                     No, looking at css .grid has flex-direction column. The header is just the first child.
-                     But DragOverlay needs to be inside DndContext.
-                     Ideally Board wraps EVERYTHING.
-                 */}
-
-                {/* Content Area */}
-                <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }}>
+                <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden', paddingTop: '3px' }}>
                     {rows.map((row, ri) => (
                         <Box key={row.id} flex={row.height} display="flex" style={{ flexDirection: 'column', minHeight: 0 }}>
                             <Box className={classes.row} flex={1} style={{ minHeight: 0 }}>
