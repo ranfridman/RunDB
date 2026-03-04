@@ -1,5 +1,5 @@
 import { ActionIcon, Checkbox, Group, Paper, ScrollArea, SegmentedControl, Select, Stack, Text, Tabs, ColorSwatch, CheckIcon, Menu, SimpleGrid, Slider } from '@mantine/core';
-import { X, Palette, Info, Settings2 } from 'lucide-react';
+import { X, Palette, Info, Settings2, Database } from 'lucide-react';
 
 export type ChartType = 'area' | 'bar' | 'line' | 'scatter' | 'pie';
 
@@ -17,6 +17,8 @@ export interface ChartConfig {
     withDots: boolean;
     withLabels: boolean;
     labelsType: 'value' | 'percent';
+    xAxisKey: string;
+    yAxisKeys: string[];
     seriesColors: Record<string, string>;
 }
 
@@ -43,43 +45,45 @@ const PRESET_COLORS = [
 
 const ColorsTab = ({ config, setConfig }: TabProps) => (
     <Stack gap="sm" mt="sm">
-        {Object.entries(config.seriesColors || {}).map(([key, color]) => (
-            <Group key={key} justify="space-between" align="center" wrap="nowrap">
-                <Text size="xs" fw={500} truncate style={{ flex: 1 }}>{key}</Text>
+        {Object.entries(config.seriesColors || {})
+            .filter(([key]) => config.yAxisKeys.includes(key))
+            .map(([key, color]) => (
+                <Group key={key} justify="space-between" align="center" wrap="nowrap">
+                    <Text size="xs" fw={500} truncate style={{ flex: 1 }}>{key}</Text>
 
-                <Menu shadow="md" width={200} position="bottom-end" withinPortal>
-                    <Menu.Target>
-                        <ActionIcon variant="transparent">
-                            <ColorSwatch
-                                color={color}
-                                size={22}
-                                style={{ cursor: 'pointer', border: '1px solid var(--mantine-color-default-border)' }}
-                            />
-                        </ActionIcon>
-                    </Menu.Target>
-
-                    <Menu.Dropdown p="xs">
-                        <Text size="xs" fw={700} c="dimmed" mb="xs">SELECT COLOR</Text>
-                        <SimpleGrid cols={5} spacing="xs">
-                            {PRESET_COLORS.map((presetColor) => (
+                    <Menu shadow="md" width={200} position="bottom-end" withinPortal>
+                        <Menu.Target>
+                            <ActionIcon variant="transparent">
                                 <ColorSwatch
-                                    key={presetColor}
-                                    color={presetColor}
-                                    size={24}
-                                    style={{ cursor: 'pointer', color: '#fff' }}
-                                    onClick={() => setConfig((p) => ({
-                                        ...p,
-                                        seriesColors: { ...p.seriesColors, [key]: presetColor }
-                                    }))}
-                                >
-                                    {color === presetColor && <CheckIcon width={12} />}
-                                </ColorSwatch>
-                            ))}
-                        </SimpleGrid>
-                    </Menu.Dropdown>
-                </Menu>
-            </Group>
-        ))}
+                                    color={color}
+                                    size={22}
+                                    style={{ cursor: 'pointer', border: '1px solid var(--mantine-color-default-border)' }}
+                                />
+                            </ActionIcon>
+                        </Menu.Target>
+
+                        <Menu.Dropdown p="xs">
+                            <Text size="xs" fw={700} c="dimmed" mb="xs">SELECT COLOR</Text>
+                            <SimpleGrid cols={5} spacing="xs">
+                                {PRESET_COLORS.map((presetColor) => (
+                                    <ColorSwatch
+                                        key={presetColor}
+                                        color={presetColor}
+                                        size={24}
+                                        style={{ cursor: 'pointer', color: '#fff' }}
+                                        onClick={() => setConfig((p) => ({
+                                            ...p,
+                                            seriesColors: { ...p.seriesColors, [key]: presetColor }
+                                        }))}
+                                    >
+                                        {color === presetColor && <CheckIcon width={12} />}
+                                    </ColorSwatch>
+                                ))}
+                            </SimpleGrid>
+                        </Menu.Dropdown>
+                    </Menu>
+                </Group>
+            ))}
     </Stack>
 );
 
@@ -234,6 +238,55 @@ const SettingsTab = ({ chartType, config, setConfig }: TabProps) => {
     );
 };
 
+const DataTab = ({ config, setConfig, availableKeys }: TabProps & { availableKeys: string[] }) => (
+    <Stack gap="md" mt="sm">
+        <Select
+            label="X-Axis (Data Key)"
+            size="xs"
+            value={config.xAxisKey}
+            onChange={(val) => {
+                if (!val) return;
+                setConfig(p => {
+                    const oldX = p.xAxisKey;
+                    const newYAxisKeys = p.yAxisKeys.filter(k => k !== val);
+
+                    // Automatically swap the previous X-axis into the Y-axis list 
+                    // if it wasn't there and they are just swapping two metrics.
+                    if (!newYAxisKeys.includes(oldX) && oldX !== 'date') {
+                        newYAxisKeys.push(oldX);
+                    }
+
+                    return { ...p, xAxisKey: val, yAxisKeys: newYAxisKeys };
+                });
+            }}
+            data={availableKeys}
+        />
+        <Stack gap={4}>
+            <Text size="xs" fw={500}>Y-Axis (Series)</Text>
+            <Stack gap="xs">
+                {availableKeys.map(key => (
+                    <Checkbox
+                        key={key}
+                        label={key}
+                        size="xs"
+                        checked={config.yAxisKeys.includes(key)}
+                        onChange={(e) => {
+                            const checked = e.currentTarget.checked;
+                            setConfig(p => ({
+                                ...p,
+                                yAxisKeys: checked
+                                    ? [...p.yAxisKeys, key]
+                                    : p.yAxisKeys.filter(k => k !== key)
+                            }));
+                        }}
+                        disabled={key === config.xAxisKey}
+                    />
+                ))}
+            </Stack>
+        </Stack>
+    </Stack>
+);
+
 // --- Main Panel Component ---
 
 interface GraphSettingsPanelProps {
@@ -241,9 +294,10 @@ interface GraphSettingsPanelProps {
     config: ChartConfig;
     setConfig: (updater: (prev: ChartConfig) => ChartConfig) => void;
     onClose: () => void;
+    availableKeys: string[];
 }
 
-export const GraphSettingsPanel = ({ chartType, config, setConfig, onClose }: GraphSettingsPanelProps) => {
+export const GraphSettingsPanel = ({ chartType, config, setConfig, onClose, availableKeys }: GraphSettingsPanelProps) => {
     return (
         <Paper
             shadow="md"
@@ -273,8 +327,11 @@ export const GraphSettingsPanel = ({ chartType, config, setConfig, onClose }: Gr
                         </ActionIcon>
                     </Group>
 
-                    <Tabs defaultValue="colors" color="dark">
+                    <Tabs defaultValue="data" color="dark">
                         <Tabs.List grow>
+                            <Tabs.Tab value="data" leftSection={<Database size={14} />}>
+                                Data
+                            </Tabs.Tab>
                             <Tabs.Tab value="colors" leftSection={<Palette size={14} />}>
                                 Colors
                             </Tabs.Tab>
@@ -282,6 +339,10 @@ export const GraphSettingsPanel = ({ chartType, config, setConfig, onClose }: Gr
                                 Settings
                             </Tabs.Tab>
                         </Tabs.List>
+
+                        <Tabs.Panel value="data">
+                            <DataTab chartType={chartType} config={config} setConfig={setConfig} availableKeys={availableKeys} />
+                        </Tabs.Panel>
 
                         <Tabs.Panel value="colors">
                             <ColorsTab chartType={chartType} config={config} setConfig={setConfig} />

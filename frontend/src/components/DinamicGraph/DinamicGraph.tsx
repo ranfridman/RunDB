@@ -62,11 +62,11 @@ export const DinamicGraph = () => {
     const [chartType, setChartType] = useState<ChartType>('area');
     const [showOptions, setShowOptions] = useState(false);
 
-    // Dynamically extract data keys (excluding the group key, e.g. 'date')
-    const dataKeys = Object.keys(data[0] || {}).filter(key => key !== 'date');
+    // Dynamically extract data keys
+    const availableKeys = Object.keys(data[0] || {});
 
     const [config, setConfig] = useState<ChartConfig>(() => {
-        const initialColors = dataKeys.reduce((acc, key, index) => {
+        const initialColors = availableKeys.reduce((acc, key, index) => {
             acc[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
             return acc;
         }, {} as Record<string, string>);
@@ -85,19 +85,21 @@ export const DinamicGraph = () => {
             withDots: true,
             withLabels: true,
             labelsType: 'value',
+            xAxisKey: 'date',
+            yAxisKeys: availableKeys.filter(key => key !== 'date'),
             seriesColors: initialColors,
         };
     });
 
-    const series = Object.entries(config.seriesColors).map(([name, color]) => ({
+    const series = config.yAxisKeys.map((name) => ({
         name,
-        color,
+        color: config.seriesColors[name] || '#000',
     }));
 
     const chartProps: any = {
         h: 350,
         data,
-        dataKey: 'date',
+        dataKey: config.xAxisKey,
         series,
         withTooltip: config.withTooltip,
         withLegend: config.withLegend,
@@ -125,12 +127,20 @@ export const DinamicGraph = () => {
         chartProps.data = series.map((s) => ({
             name: s.name,
             color: s.color,
-            data: data.map((d: any) => ({
-                date: d.date,
-                value: d[s.name],
-            })),
+            data: data.map((d: any) => {
+                // Try to parse the X axis as a number for Scatter charts (e.g. if they chose Apples for X).
+                // If it's a string like 'Mar 15', Scatter chart might still fail without numeric scales,
+                // but we must respect the user's mapped column.
+                const rawX = d[config.xAxisKey];
+                const xVal = typeof rawX === 'number' ? rawX : (parseFloat(rawX) || rawX);
+                return {
+                    x: xVal,
+                    y: typeof d[s.name] === 'number' ? d[s.name] : (parseFloat(d[s.name]) || d[s.name]),
+                    name: rawX, // Store original for tooltip
+                };
+            }),
         }));
-        chartProps.dataKey = { x: 'date', y: 'value' };
+        chartProps.dataKey = { x: 'x', y: 'y' };
         delete chartProps.series;
     }
 
@@ -182,6 +192,7 @@ export const DinamicGraph = () => {
                         config={config}
                         setConfig={setConfig}
                         onClose={() => setShowOptions(false)}
+                        availableKeys={availableKeys}
                     />
                 )}
             </Box>
