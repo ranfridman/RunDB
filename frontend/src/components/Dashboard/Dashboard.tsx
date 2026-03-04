@@ -44,7 +44,7 @@ export const Dashboard = () => {
     return (
         <Box className={classes.grid} mih="80vh">
             <Group justify="space-between" px="md" mb="xs">
-                <Text fw={800} size="xl" variant="gradient">Nexus</Text>
+                {/* <Text fw={800} size="xl" variant="gradient">Nexus</Text> */}
                 <ActionIcon onClick={add} variant="light" color="yellow"><Plus size={18} /></ActionIcon>
             </Group>
             <DinamicGraph />

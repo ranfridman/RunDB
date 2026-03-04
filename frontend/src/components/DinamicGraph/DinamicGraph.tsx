@@ -7,10 +7,13 @@ import {
     Stack,
     SegmentedControl,
     ActionIcon,
+    Center,
+    ThemeIcon,
 } from '@mantine/core';
-import { Settings, ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, X } from 'lucide-react';
+import { Settings, ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, BarChart2 } from 'lucide-react';
 import '@mantine/charts/styles.css';
 import { ChartConfig, ChartType, GraphSettingsPanel, CHART_SUPPORTED_PROPS } from './GraphSettingsPanel';
+import { ChartErrorBoundary } from './ChartErrorBoundary';
 
 const data = [
     { date: 'Mar 15', Apples: 1200, Oranges: 3800, Tomatoes: 500 },
@@ -184,7 +187,20 @@ export const DinamicGraph = () => {
             </Group>
 
             <Box style={{ flex: 1, minHeight: 350, position: 'relative', overflow: 'hidden', outline: 'none' }} tabIndex={-1}>
-                <Chart {...chartProps} />
+                <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
+                    {series.length === 0 ? (
+                        <Center style={{ height: 350 }}>
+                            <Stack align="center" gap="xs" style={{ opacity: 0.4 }}>
+                                <ThemeIcon variant="light" color="gray" size="xl" radius="xl">
+                                    <BarChart2 size={20} />
+                                </ThemeIcon>
+                                <Text size="xs" c="dimmed">Select at least one Y-axis series</Text>
+                            </Stack>
+                        </Center>
+                    ) : (
+                        <Chart {...chartProps} />
+                    )}
+                </ChartErrorBoundary>
 
                 {showOptions && (
                     <GraphSettingsPanel
