@@ -6,6 +6,8 @@ import { TablesDocs } from '../TablesDocs/TablesDocs';
 import { GridDocs } from '../GridDocs/GridDocs';
 import { LayoutList, LayoutGrid } from 'lucide-react';
 
+import mockDbData from '../DocsPanel/mockDbData.json';
+
 export interface DocsOverviewProps {
     isEditing: boolean;
 }
@@ -17,8 +19,11 @@ interface EditorSection {
 
 export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
+
+    const latestDescription = mockDbData.database.descriptions[mockDbData.database.descriptions.length - 1]?.description || "";
+
     const [sections, setSections] = useState<EditorSection[]>([
-        { id: crypto.randomUUID(), content: "Lorem ipsum dolor sit amet consectetur adipisicing elit. Quisquam, quod." }
+        { id: crypto.randomUUID(), content: latestDescription }
     ]);
 
     const addSection = () => {
@@ -36,7 +41,7 @@ export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
     };
 
     return (
-        <Stack >
+        <Stack px="sm" pt="xs"  >
             {sections.map(section => (
                 <Box key={section.id} >
                     {isEditing && sections.length > 1 && (

@@ -1,10 +1,18 @@
 {
     "version": "1.0.0",
-        "database": {
+    "database": {
         "name": "AssociationDB",
-            "server": "localhost",
-                "analyzedAt": "2025-11-09T04:57:01.725Z",
-                    "descriptions": []
+        "server": "localhost",
+        "analyzedAt": "2025-11-09T04:57:01.725Z",
+        "descriptions": [
+            {
+                "timestamp": "2025-11-09T05:00:29.502Z",
+                "description": "AssociationDB is a comprehensive association management system database. It tracks the full lifecycle of member engagement \u2014 from member profiles and membership types, to chapter affiliations, committee participation, and board positions. The database also manages event registrations and sessions, course enrollments and certificates, marketing campaigns with email sends and click tracking, and financial records including invoices and payments. Supporting entities include organizations, segments, email templates, and membership types, making this a full-featured platform for running a professional or trade association.",
+                "notes": "",
+                "isAiGenerated": true,
+                "author": "anthropic/opus-4.6"
+            }
+        ]
     },
     "schemas": [
         {

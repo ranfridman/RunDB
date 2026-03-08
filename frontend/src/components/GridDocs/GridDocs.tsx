@@ -14,7 +14,7 @@ const rawTables = mockDbData.schemas[0].tables;
 const BATCH = 15;
 
 const GridCard = memo(({ rawTable, isSelected, onClick }: any) => {
-    const d = rawTable.descriptions[0];
+    const d = rawTable.descriptions[rawTable.descriptions.length - 1];
 
     return (
         <motion.div
@@ -90,12 +90,15 @@ export const GridDocs = ({ isEditing: isEditingProp }: GridDocsProps) => {
     const filtered = useMemo(() => {
         if (!search) return rawTables;
         const q = search.toLowerCase();
-        return rawTables.filter(t =>
-            t.name.toLowerCase().includes(q) ||
-            (t.descriptions[0]?.description || '').toLowerCase().includes(q) ||
-            (t.descriptions[0]?.author || '').toLowerCase().includes(q) ||
-            (t.descriptions[0]?.timestamp || '').toLowerCase().includes(q)
-        );
+        return rawTables.filter(t => {
+            const d = t.descriptions[t.descriptions.length - 1];
+            return (
+                t.name.toLowerCase().includes(q) ||
+                (d?.description || '').toLowerCase().includes(q) ||
+                (d?.author || '').toLowerCase().includes(q) ||
+                (d?.timestamp || '').toLowerCase().includes(q)
+            );
+        });
     }, [search]);
 
     const visible = filtered.slice(0, count);

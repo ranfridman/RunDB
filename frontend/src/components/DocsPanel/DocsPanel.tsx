@@ -72,8 +72,8 @@ const DocsPanelContent = () => {
 
                             <Group
                                 gap={0}
-                                bg="var(--mantine-color-secondary-9)"
-                                style={{ borderBottom: '1px solid var(--mantine-color-dark-4)' }}
+                                bg="light-dark(var(--mantine-color-gray-1), var(--mantine-color-secondary-9))"
+                                style={{ borderBottom: '1px solid light-dark(var(--mantine-color-gray-4), var(--mantine-color-dark-4))' }}
                             >
                                 {tabs.map((tab) => {
                                     const isActive = activeTab === tab.value;
@@ -131,7 +131,7 @@ const DocsPanelContent = () => {
                                         transition={{ duration: 0.15 }}
                                         style={{ height: '100%' }}
                                     >
-                                        <Box px="sm" pt="xs">
+                                        <Box >
                                             {tabContent[activeTab]}
                                         </Box>
                                     </motion.div>

@@ -3,6 +3,8 @@ import { Edit, Check, Settings2 } from 'lucide-react';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
 import { useDocsPanelStore } from '../DocsPanel/DocsPanelStore';
 
+import mockDbData from '../DocsPanel/mockDbData.json';
+
 interface DocsHeaderProps {
     isEditing: boolean;
     onToggleEditing: () => void;
@@ -10,6 +12,7 @@ interface DocsHeaderProps {
 
 export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
     const setSelected = useDocsPanelStore(state => state.setSelected);
+    const dbName = mockDbData.database.name;
 
     return (
         <Group justify="space-between" py={3}>
@@ -17,7 +20,7 @@ export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
                 <ThemeIcon size={50} pt="xs" variant='transparent' p={0} c={typeToColor.Docs}>
                     {typeToIcon2.Docs}
                 </ThemeIcon>
-                <Text lh={1} fw={500} fz="h1">Documentation DBNAME</Text >
+                <Text lh={1} fw={500} fz="h1">Documentation: {dbName}</Text >
             </Group>
 
             <Group>
@@ -25,7 +28,7 @@ export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
                     variant="light"
                     color="gray"
                     size="md"
-                    onClick={() => setSelected('AssociationDemo', 'schema')}
+                    onClick={() => setSelected(mockDbData.schemas[0].name, 'schema')}
                 >
                     <Settings2 size={16} />
                 </ActionIcon>

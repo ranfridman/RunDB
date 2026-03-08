@@ -75,7 +75,9 @@ const TableNode = memo(({ data }: { data: TableNodeData }) => {
                                 position={Position.Left}
                                 id={`${col.name}-target`}
                                 style={{
-                                    background: col.isForeignKey ? '#54aeff' : 'transparent',
+                                    background: col.isForeignKey
+                                        ? 'light-dark(var(--mantine-color-blue-7), var(--mantine-color-blue-4))'
+                                        : 'transparent',
                                     width: col.isForeignKey ? 6 : 4,
                                     height: col.isForeignKey ? 6 : 4,
                                     border: 'none',
@@ -94,7 +96,9 @@ const TableNode = memo(({ data }: { data: TableNodeData }) => {
                                 position={Position.Right}
                                 id={`${col.name}-source`}
                                 style={{
-                                    background: col.isPrimaryKey ? '#d4a72c' : 'transparent',
+                                    background: col.isPrimaryKey
+                                        ? 'light-dark(var(--mantine-color-orange-8), var(--mantine-color-yellow-4))'
+                                        : 'transparent',
                                     width: col.isPrimaryKey ? 6 : 4,
                                     height: col.isPrimaryKey ? 6 : 4,
                                     border: 'none',
@@ -210,14 +214,24 @@ function buildGraph(): { nodes: Node[]; edges: Edge[] } {
                         targetHandle: `${dep.column}-target`,
                         animated: true,
                         label: `${dep.referencedColumn} → ${dep.column}`,
-                        labelStyle: { fontSize: 9, fill: '#8697b5', fontFamily: 'monospace' },
-                        labelBgStyle: { fill: '#0b0f14', fillOpacity: 0.85 },
+                        labelStyle: {
+                            fontSize: 9,
+                            fill: 'light-dark(var(--mantine-color-gray-7), var(--mantine-color-dark-2))',
+                            fontFamily: 'monospace'
+                        },
+                        labelBgStyle: {
+                            fill: 'light-dark(var(--mantine-color-white), var(--mantine-color-dark-8))',
+                            fillOpacity: 0.9
+                        },
                         labelBgPadding: [4, 2] as [number, number],
                         labelBgBorderRadius: 3,
-                        style: { stroke: '#54aeff', strokeWidth: 1.5 },
+                        style: {
+                            stroke: 'light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4))',
+                            strokeWidth: 1.5
+                        },
                         markerEnd: {
                             type: 'arrowclosed' as any,
-                            color: '#54aeff',
+                            color: 'light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4))',
                             width: 16,
                             height: 16,
                         },
@@ -259,7 +273,7 @@ const ERDChartInner = () => {
                     // Reposition for close focus
                     let newPos = { ...n.position };
                     const NODE_FOCUS_X_GAP = 300;
-                    const NODE_FOCUS_Y_GAP = 180;
+                    const NODE_FOCUS_Y_GAP = 300;
 
                     if (n.id === node.id) {
                         newPos = { x: 400, y: 300 };
@@ -326,12 +340,17 @@ const ERDChartInner = () => {
                 defaultEdgeOptions={{ type: 'smoothstep' }}
                 proOptions={{ hideAttribution: true }}
             >
-                <Background variant={BackgroundVariant.Dots} gap={20} size={1.5} color="rgba(179, 167, 167, 0.66)" />
+                <Background
+                    variant={BackgroundVariant.Dots}
+                    gap={20}
+                    size={1.5}
+                    color="light-dark(var(--mantine-color-gray-8), var(--mantine-color-gray-7))"
+                />
                 <Controls showInteractive={true} />
                 <MiniMap
                     nodeStrokeWidth={3}
-                    nodeColor={() => '#218bff'}
-                    maskColor="rgba(0, 0, 0, 0.6)"
+                    nodeColor={() => 'light-dark(var(--mantine-color-blue-6), var(--mantine-color-blue-4))'}
+                    maskColor="light-dark(rgba(255, 255, 255, 0.7), rgba(0, 0, 0, 0.6))"
                     pannable
                     zoomable
                 />
