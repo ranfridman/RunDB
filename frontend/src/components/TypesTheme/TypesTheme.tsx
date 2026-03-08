@@ -1,5 +1,5 @@
 import { ThemeIcon } from "@mantine/core";
-import { ChartArea, CodeXml, FileText, LayoutDashboard, Table } from "lucide-react";
+import { BookOpenText, ChartArea, CodeXml, FileText, LayoutDashboard, Table } from "lucide-react";
 
 export const typeToColor: { [key: string]: string } = {
   Table: 'blue',
@@ -8,6 +8,7 @@ export const typeToColor: { [key: string]: string } = {
   Analysis: 'violet',
   Text: 'orange',
   Dashboard: 'yellow',
+  Docs: 'blue',
 };
 
 export const getIconByType = (type: string, size: number = 16): React.ReactNode => {
@@ -35,6 +36,9 @@ export const typeToIcon2: { [key: string]: React.ReactNode } = {
   Dashboard: (
     <LayoutDashboard />
   ),
+  Docs: (
+    <BookOpenText />
+  ),
 };
 export const typeToIcon: { [key: string]: React.ReactNode } = {
   Table: (
@@ -60,6 +64,11 @@ export const typeToIcon: { [key: string]: React.ReactNode } = {
   Dashboard: (
     <ThemeIcon size={16} variant='transparent' p={0} c={typeToColor.Dashboard}>
       <LayoutDashboard />
+    </ThemeIcon>
+  ),
+  Docs: (
+    <ThemeIcon size={16} variant='transparent' p={0} c={typeToColor.Docs}>
+      <BookOpenText />
     </ThemeIcon>
   ),
 };

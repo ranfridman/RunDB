@@ -1,0 +1,164 @@
+/* ── ERD Chart – Dark themed React Flow styles ── */
+
+.erd-chart-wrapper {
+    width: 100%;
+    height: 75vh;
+    border-radius: 8px;
+    overflow: hidden;
+}
+
+/* ─ React Flow overrides ─ */
+.erd-chart-wrapper .react-flow__background {
+    background-color: var(--mantine-color-dark-8, #0b0f14);
+}
+
+.erd-chart-wrapper .react-flow__minimap {
+    background-color: var(--mantine-color-dark-7, #0b0f14);
+    border: 1px solid var(--mantine-color-dark-4, #222833);
+    border-radius: 6px;
+}
+
+.erd-chart-wrapper .react-flow__controls {
+    border: 1px solid var(--mantine-color-dark-4, #222833);
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.erd-chart-wrapper .react-flow__controls-button {
+    background-color: var(--mantine-color-dark-6, #0b0f14);
+    border-bottom: 1px solid var(--mantine-color-dark-4, #222833);
+    fill: var(--mantine-color-dark-0, #fafcff);
+    color: var(--mantine-color-dark-0, #fafcff);
+}
+
+.erd-chart-wrapper .react-flow__controls-button:hover {
+    background-color: var(--mantine-color-dark-5, #222938);
+}
+
+/* ─ Edge styles ─ */
+.erd-chart-wrapper .react-flow__edge-path {
+    stroke: var(--mantine-color-blue-4, #54aeff);
+    stroke-width: 1.5;
+}
+
+/* ─ Custom Table Node ─ */
+.erd-table-node {
+    min-width: 220px;
+    max-width: 280px;
+    border-radius: 8px;
+    background: var(--mantine-color-dark-7, #0b0f14);
+    border: 1px solid var(--mantine-color-dark-4, #222833);
+    box-shadow: 0 4px 24px rgba(0, 0, 0, 0.35);
+    font-family: inherit;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+    overflow: hidden;
+}
+
+.erd-table-node:hover {
+    border-color: var(--mantine-color-blue-5, #218bff);
+    box-shadow: 0 4px 32px rgba(33, 139, 255, 0.15);
+}
+
+/* Header */
+.erd-table-node__header {
+    padding: 8px 12px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 8px;
+    background: linear-gradient(135deg,
+            var(--mantine-color-dark-6, #0b0f14) 0%,
+            var(--mantine-color-dark-7, #0b0f14) 100%);
+    border-bottom: 1px solid var(--mantine-color-dark-4, #222833);
+}
+
+.erd-table-node__title {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--mantine-color-blue-3, #80ccff);
+    letter-spacing: 0.3px;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.erd-table-node__badge {
+    font-size: 9px;
+    padding: 1px 6px;
+    border-radius: 4px;
+    background: var(--mantine-color-dark-5, #222938);
+    color: var(--mantine-color-dark-1, #cad5e8);
+    font-weight: 600;
+    flex-shrink: 0;
+}
+
+/* Columns list */
+.erd-table-node__columns {
+    padding: 4px 0;
+}
+
+.erd-table-node__columns::-webkit-scrollbar {
+    width: 3px;
+}
+
+.erd-table-node__columns::-webkit-scrollbar-thumb {
+    background: var(--mantine-color-dark-4, #222833);
+    border-radius: 2px;
+}
+
+.erd-table-node__column {
+    position: relative;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 12px;
+    height: 22px;
+    font-size: 11px;
+    color: var(--mantine-color-dark-1, #cad5e8);
+    transition: background 0.15s ease;
+}
+
+.erd-table-node__column:hover {
+    background: rgba(255, 255, 255, 0.03);
+}
+
+.erd-table-node__column--pk {
+    color: var(--mantine-color-yellow-4, #d4a72c);
+}
+
+.erd-table-node__column--fk {
+    color: var(--mantine-color-blue-4, #54aeff);
+}
+
+.erd-table-node__col-icon {
+    flex-shrink: 0;
+    width: 14px;
+    text-align: center;
+    font-size: 10px;
+}
+
+.erd-table-node__col-name {
+    flex: 1;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    font-weight: 500;
+}
+
+.erd-table-node__col-type {
+    font-size: 9px;
+    color: var(--mantine-color-dark-2, #8697b5);
+    flex-shrink: 0;
+    font-family: monospace;
+}
+
+/* Dependency level badge in header */
+.erd-table-node__level {
+    font-size: 8px;
+    padding: 1px 5px;
+    border-radius: 3px;
+    background: var(--mantine-color-blue-9, #002155);
+    color: var(--mantine-color-blue-3, #80ccff);
+    font-weight: 700;
+    flex-shrink: 0;
+}

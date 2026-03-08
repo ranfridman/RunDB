@@ -1,11 +1,8 @@
 import { AppShell, Burger } from '@mantine/core';
-import { useDisclosure, useListState } from '@mantine/hooks';
+import { useDisclosure } from '@mantine/hooks';
 import { Sidebar } from '../Sidebar/Sidebar';
 import { Header } from '../Header/Header';
 import { InfoArea, tabData } from '../InfoArea/InfoArea';
-import { useState } from 'react';
-import { UIUXComponent } from '../UIUIX/UIUXComponent';
-import { UIUX } from '../UIUIX/UIUX';
 
 
 const options: tabData[] = [

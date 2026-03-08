@@ -1,71 +1,27 @@
 import { useState } from 'react';
-import { AreaChart, BarChart, LineChart, ScatterChart, PieChart } from '@mantine/charts';
 import {
     Box,
     Text,
     Group,
     Stack,
-    SegmentedControl,
     ActionIcon,
     Center,
     ThemeIcon,
+    Tooltip,
 } from '@mantine/core';
-import { Settings, ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, BarChart2 } from 'lucide-react';
+import { Settings, BarChart2 } from 'lucide-react';
 import '@mantine/charts/styles.css';
-import { ChartConfig, ChartType, GraphSettingsPanel, CHART_SUPPORTED_PROPS } from './GraphSettingsPanel';
+
+import { ChartConfig, ChartType, CHART_SUPPORTED_PROPS } from './GraphSettingsPanel/types';
+import { GraphSettingsPanel } from './GraphSettingsPanel/GraphSettingsPanel';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
-
-const data = [
-    { date: 'Mar 15', Apples: 1200, Oranges: 3800, Tomatoes: 500 },
-    { date: 'Mar 16', Apples: 1450, Oranges: 3100, Tomatoes: 900 },
-    { date: 'Mar 17', Apples: 4200, Oranges: 1800, Tomatoes: 1200 },
-    { date: 'Mar 18', Apples: 3800, Oranges: 1200, Tomatoes: 2800 },
-    { date: 'Mar 19', Apples: 1800, Oranges: 4500, Tomatoes: 3100 },
-    { date: 'Mar 20', Apples: 1500, Oranges: 3900, Tomatoes: 4100 },
-    { date: 'Mar 21', Apples: 800, Oranges: 2200, Tomatoes: 5200 },
-    { date: 'Mar 22', Apples: 2890, Oranges: 1338, Tomatoes: 4452 },
-    { date: 'Mar 23', Apples: 4756, Oranges: 803, Tomatoes: 3402 },
-    { date: 'Mar 24', Apples: 5322, Oranges: 2986, Tomatoes: 1821 },
-    { date: 'Mar 25', Apples: 2470, Oranges: 5108, Tomatoes: 809 },
-    { date: 'Mar 26', Apples: 1129, Oranges: 4726, Tomatoes: 1290 },
-    { date: 'Mar 27', Apples: 3200, Oranges: 2850, Tomatoes: 3150 },
-    { date: 'Mar 28', Apples: 4500, Oranges: 1100, Tomatoes: 4600 },
-];
-
-const CHART_COMPONENTS = {
-    area: AreaChart,
-    bar: BarChart,
-    line: LineChart,
-    scatter: ScatterChart,
-    pie: PieChart,
-};
-
-const CHART_ICONS = {
-    area: { Icon: ChartArea, color: 'var(--mantine-color-yellow-6)' },
-    bar: { Icon: ChartBar, color: 'var(--mantine-color-orange-6)' },
-    line: { Icon: ChartLine, color: 'var(--mantine-color-red-6)' },
-    scatter: { Icon: ChartScatter, color: 'var(--mantine-color-grape-6)' },
-    pie: { Icon: ChartPie, color: 'var(--mantine-color-teal-6)' },
-};
-
-const DEFAULT_COLORS = [
-    'var(--mantine-color-blue-6)',
-    'var(--mantine-color-teal-6)',
-    'var(--mantine-color-grape-6)',
-    'var(--mantine-color-orange-6)',
-    'var(--mantine-color-red-6)',
-    'var(--mantine-color-pink-6)',
-    'var(--mantine-color-cyan-6)',
-    'var(--mantine-color-lime-6)',
-    'var(--mantine-color-yellow-6)',
-    'var(--mantine-color-indigo-6)',
-];
+import { data } from './mockData';
+import { CHART_COMPONENTS, CHART_ICONS, DEFAULT_COLORS } from './constants';
 
 export const DinamicGraph = () => {
     const [chartType, setChartType] = useState<ChartType>('area');
     const [showOptions, setShowOptions] = useState(false);
 
-    // Dynamically extract data keys
     const availableKeys = Object.keys(data[0] || {});
 
     const [config, setConfig] = useState<ChartConfig>(() => {
@@ -88,6 +44,7 @@ export const DinamicGraph = () => {
             withDots: true,
             withLabels: true,
             labelsType: 'value',
+            tooltipDataSource: 'segment',
             xAxisKey: 'date',
             yAxisKeys: availableKeys.filter(key => key !== 'date'),
             seriesColors: initialColors,
@@ -100,7 +57,7 @@ export const DinamicGraph = () => {
     }));
 
     const chartProps: any = {
-        h: 350,
+        h: 400,
         data,
         dataKey: config.xAxisKey,
         series,
@@ -112,7 +69,6 @@ export const DinamicGraph = () => {
         withYAxis: config.withYAxis,
     };
 
-    // Special data mapping for PieChart and ScatterChart
     if (chartType === 'pie') {
         const latestData = data[data.length - 1] as any;
         chartProps.data = series.map((s) => ({
@@ -120,6 +76,7 @@ export const DinamicGraph = () => {
             value: latestData[s.name],
             color: s.color,
         }));
+        chartProps.tooltipDataSource = config.tooltipDataSource;
         delete chartProps.series;
         delete chartProps.dataKey;
         delete chartProps.gridAxis;
@@ -131,15 +88,12 @@ export const DinamicGraph = () => {
             name: s.name,
             color: s.color,
             data: data.map((d: any) => {
-                // Try to parse the X axis as a number for Scatter charts (e.g. if they chose Apples for X).
-                // If it's a string like 'Mar 15', Scatter chart might still fail without numeric scales,
-                // but we must respect the user's mapped column.
                 const rawX = d[config.xAxisKey];
                 const xVal = typeof rawX === 'number' ? rawX : (parseFloat(rawX) || rawX);
                 return {
                     x: xVal,
                     y: typeof d[s.name] === 'number' ? d[s.name] : (parseFloat(d[s.name]) || d[s.name]),
-                    name: rawX, // Store original for tooltip
+                    name: rawX,
                 };
             }),
         }));
@@ -150,68 +104,57 @@ export const DinamicGraph = () => {
     CHART_SUPPORTED_PROPS[chartType].forEach(prop => {
         chartProps[prop] = config[prop as keyof ChartConfig];
     });
-
-    const Chart = CHART_COMPONENTS[chartType];
-    const { Icon, color: iconColor } = CHART_ICONS[chartType];
-
+    const ChartComponent = CHART_COMPONENTS[chartType];
     return (
-        <Stack gap="xs" style={{ height: '100%', width: '100%' }}>
-            <Group justify="space-between" align="center">
-                <Group gap="xs">
-                    <Icon size={16} color={iconColor} />
-                    <Text size="xs" fw={700} c="dimmed">ANALYTICS</Text>
-                </Group>
+        <Box
+            style={{ height: '100%', width: '100%', position: 'relative', minHeight: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            tabIndex={-1}
+        >
+            {!showOptions && (
+                <ActionIcon
+                    size="md"
+                    variant="subtle"
+                    onClick={() => setShowOptions(true)}
+                    style={{
+                        position: 'absolute',
+                        top: 3,
+                        left: 10,
+                        zIndex: 25,
+                        backgroundColor: 'light-dark(rgba(0,0,0,0.05), rgba(255,255,255,0.05))',
+                        backdropFilter: 'blur(10px)',
+                        borderRadius: '50%',
+                        color: 'inherit'
+                    }}
+                >
+                    <Settings size={18} />
+                </ActionIcon>
+            )}
 
-                <Group gap="xs">
-                    <SegmentedControl
-                        size="xs"
-                        value={chartType}
-                        onChange={(val) => setChartType(val as ChartType)}
-                        data={[
-                            { label: 'Area', value: 'area' },
-                            { label: 'Bar', value: 'bar' },
-                            { label: 'Line', value: 'line' },
-                            { label: 'Scatter', value: 'scatter' },
-                            { label: 'Pie', value: 'pie' },
-                        ]}
-                    />
-                    <ActionIcon
-                        size="sm"
-                        variant="subtle"
-                        onClick={() => setShowOptions(!showOptions)}
-                        c={showOptions ? 'yellow' : 'dimmed'}
-                    >
-                        <Settings size={14} />
-                    </ActionIcon>
-                </Group>
-            </Group>
-
-            <Box style={{ flex: 1, minHeight: 350, position: 'relative', overflow: 'hidden', outline: 'none' }} tabIndex={-1}>
-                <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
-                    {series.length === 0 ? (
-                        <Center style={{ height: 350 }}>
-                            <Stack align="center" gap="xs" style={{ opacity: 0.4 }}>
-                                <ThemeIcon variant="light" color="gray" size="xl" radius="xl">
-                                    <BarChart2 size={20} />
-                                </ThemeIcon>
-                                <Text size="xs" c="dimmed">Select at least one Y-axis series</Text>
-                            </Stack>
-                        </Center>
-                    ) : (
-                        <Chart {...chartProps} />
-                    )}
-                </ChartErrorBoundary>
-
-                {showOptions && (
-                    <GraphSettingsPanel
-                        chartType={chartType}
-                        config={config}
-                        setConfig={setConfig}
-                        onClose={() => setShowOptions(false)}
-                        availableKeys={availableKeys}
-                    />
+            <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
+                {series.length === 0 ? (
+                    <Center style={{ height: 400 }}>
+                        <Stack align="center" gap="xs" style={{ opacity: 0.4 }}>
+                            <ThemeIcon variant="light" color="gray" size="xl" radius="xl">
+                                <BarChart2 size={20} />
+                            </ThemeIcon>
+                            <Text size="xs" c="dimmed">Select at least one Y-axis series</Text>
+                        </Stack>
+                    </Center>
+                ) : (
+                    <ChartComponent {...chartProps} />
                 )}
-            </Box>
-        </Stack>
+            </ChartErrorBoundary>
+
+            {showOptions && (
+                <GraphSettingsPanel
+                    chartType={chartType}
+                    setChartType={setChartType}
+                    config={config}
+                    setConfig={setConfig}
+                    onClose={() => setShowOptions(false)}
+                    availableKeys={availableKeys}
+                />
+            )}
+        </Box>
     );
 };

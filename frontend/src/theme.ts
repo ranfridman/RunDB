@@ -22,6 +22,42 @@ export const theme = createTheme({
     deg: 45,
   },
   colors: {
+    secondary: [
+      '#F0F1F2',
+      '#D1D4D9',
+      '#B2B7BF',
+      '#939AA6',
+      '#747D8C',
+      '#5A6270',
+      '#464C57',
+      '#32373F',
+      '#1E2126',
+      '#111419'
+    ],
+    midnight: [
+      '#F1F3F5',
+      '#E9ECEF',
+      '#DEE2E6',
+      '#ADB5BD',
+      '#495057',
+      '#343A40',
+      '#212529',
+      '#1A1D23',
+      '#15181C',
+      '#111419'
+    ],
+    charcoal: [
+      '#f8f9fa',
+      '#f1f3f5',
+      '#e9ecef',
+      '#dee2e6',
+      '#ced4da',
+      '#adb5bd',
+      '#6c757d',
+      '#495057',
+      '#343a40',
+      '#111419'
+    ],
     dark: [
       '#fafcff',
       '#cad5e8',

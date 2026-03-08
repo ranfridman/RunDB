@@ -51,14 +51,14 @@ export const NewTabOptions: React.FC = () => {
                     <Text size="md" c="dimmed">Choose a tab option to get started</Text>
                 </Stack>
                 <Grid gutter="md" columns={2}>
-                    <Grid.Col span={1}>
+                    {/* <Grid.Col span={1}>
                         <TabOptionButton
                             label="Table"
                             description="Organize your raw data into a structured, sortable, and filterable table format for easy scanning."
                             type="Table"
                             createNewTab={createNewTab}
                         />
-                    </Grid.Col>
+                    </Grid.Col> */}
                     <Grid.Col span={1}>
                         <TabOptionButton
                             label="Graph"
@@ -88,6 +88,14 @@ export const NewTabOptions: React.FC = () => {
                             label="Dashboard"
                             description="Create custom dashboards with multiple data visualizations and key performance indicators."
                             type="Dashboard"
+                            createNewTab={createNewTab}
+                        />
+                    </Grid.Col>
+                    <Grid.Col span={1}>
+                        <TabOptionButton
+                            label="Documentation"
+                            description="Create custom dashboards with multiple data visualizations and key performance indicators."
+                            type="Docs"
                             createNewTab={createNewTab}
                         />
                     </Grid.Col>

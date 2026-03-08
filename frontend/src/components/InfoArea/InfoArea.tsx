@@ -13,7 +13,7 @@ import { AIPanel } from '../AIPanel/AIPanel';
 import { useTabsStore } from '../../stores/useTabs';
 import { TablePanel } from '../TabelPanel/TabelPanel';
 import { Dashboard } from '../Dashboard/Dashboard';
-import { UIUX } from '../UIUIX/UIUX';
+import { DocsPanel } from '../DocsPanel/DocsPanel';
 
 
 export interface tabData {
@@ -37,7 +37,9 @@ export const InfoArea: React.FC = () => {
 
   const panels = tabs.map((option, index) => (
     <Tabs.Panel key={index} value={option.id} p={0} keepMounted={true}>
-      {option.type === 'Dashboard' ? (
+      {option.type === 'Docs' ? (
+        <DocsPanel />
+      ) : option.type === 'Dashboard' ? (
         <Dashboard />
       ) : option.type === 'SQL' ? (
         <TablePanel />
@@ -49,7 +51,7 @@ export const InfoArea: React.FC = () => {
   return (
     <>
       <Tabs defaultValue="pluse" value={activeTab} onChange={(value) => setActiveTab(value)} >
-        <Tabs.List bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" w="100%">
+        <Tabs.List bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-7))" w="100%" style={{ borderBottom: 'none' }}>
           <ScrollArea type="scroll" scrollbarSize={2} offsetScrollbars >
             <Group w="100%" gap="0" display="flex" style={{ flexWrap: "nowrap" }}>
               {...tabsList}
