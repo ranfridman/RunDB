@@ -264,31 +264,43 @@ const ERDChartInner = () => {
             const targets = initialEdges.filter((e) => e.source === node.id).map((e) => e.target);
             const neighborIds = new Set([...sources, ...targets, node.id]);
 
+            const NODE_FOCUS_X_GAP = 300;
+            const CENTER_X = 400;
+            const CENTER_Y = 300;
+
+            const getH = (id: string) => {
+                const targetN = initialNodes.find(inNode => inNode.id === id);
+                return targetN ? (HEADER_HEIGHT + 8 + (targetN.data as TableNodeData).columnCount * COL_ROW_HEIGHT) : 0;
+            };
+
+            const calcStack = (ids: string[]) => {
+                const uniqueIds = Array.from(new Set(ids));
+                const totalH = uniqueIds.reduce((acc, id, i) => acc + getH(id) + (i > 0 ? NODE_V_GAP : 0), 0);
+                let currY = CENTER_Y - totalH / 2;
+                const positions = new Map<string, number>();
+                uniqueIds.forEach(id => {
+                    positions.set(id, currY);
+                    currY += getH(id) + NODE_V_GAP;
+                });
+                return positions;
+            };
+
+            const sourcePositions = calcStack(sources);
+            const targetPositions = calcStack(targets);
+
             setNodes((nds) =>
                 nds.map((n) => {
                     if (!neighborIds.has(n.id)) {
                         return { ...n, hidden: true };
                     }
 
-                    // Reposition for close focus
                     let newPos = { ...n.position };
-                    const NODE_FOCUS_X_GAP = 300;
-                    const NODE_FOCUS_Y_GAP = 300;
-
                     if (n.id === node.id) {
-                        newPos = { x: 400, y: 300 };
-                    } else if (sources.includes(n.id)) {
-                        const idx = sources.indexOf(n.id);
-                        newPos = {
-                            x: 400 - NODE_FOCUS_X_GAP,
-                            y: 300 + (idx - (sources.length - 1) / 2) * NODE_FOCUS_Y_GAP,
-                        };
-                    } else if (targets.includes(n.id)) {
-                        const idx = targets.indexOf(n.id);
-                        newPos = {
-                            x: 400 + NODE_FOCUS_X_GAP,
-                            y: 300 + (idx - (targets.length - 1) / 2) * NODE_FOCUS_Y_GAP,
-                        };
+                        newPos = { x: CENTER_X, y: CENTER_Y - getH(n.id) / 2 };
+                    } else if (sourcePositions.has(n.id)) {
+                        newPos = { x: CENTER_X - NODE_FOCUS_X_GAP, y: sourcePositions.get(n.id)! };
+                    } else if (targetPositions.has(n.id)) {
+                        newPos = { x: CENTER_X + NODE_FOCUS_X_GAP, y: targetPositions.get(n.id)! };
                     }
 
                     return { ...n, hidden: false, position: newPos };
