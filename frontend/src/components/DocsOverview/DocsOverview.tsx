@@ -22,8 +22,9 @@ export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
     const [viewMode, setViewMode] = useState<'table' | 'grid'>('table');
     const [search, setSearch] = useState('');
     const dbData = useDocsPanelStore(state => state.dbData);
+    if (!dbData) return null;
 
-    const latestDescription = dbData.database.descriptions[dbData.database.descriptions.length - 1]?.description || "";
+    const latestDescription = dbData.database.descriptions?.[dbData.database.descriptions.length - 1]?.description || "";
     const [description, setDescription] = useState<string>(latestDescription);
 
     const allTables = useMemo(() => {
@@ -34,7 +35,8 @@ export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
         if (!search) return allTables.length;
         const q = search.toLowerCase();
         return allTables.filter(t => {
-            const d = t.descriptions[t.descriptions.length - 1];
+            const descriptions = t.descriptions || [];
+            const d = descriptions[descriptions.length - 1];
             return (
                 t.name.toLowerCase().includes(q) ||
                 (d?.description || '').toLowerCase().includes(q) ||

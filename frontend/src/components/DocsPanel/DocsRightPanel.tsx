@@ -151,25 +151,47 @@ export const DocsRightPanel = () => {
     const setActiveTab = useDocsPanelStore(state => state.setActiveTab);
     const isEditing = useDocsPanelStore(state => state.isEditing);
     const dbData = useDocsPanelStore(state => state.dbData);
+    if (!dbData) return null;
 
-    const itemData = useMemo(() => {
-        if (!selectedItemId) return null;
-        if (selectedItemType === 'schema') return dbData.schemas.find(s => s.name === selectedItemId);
-        if (selectedItemType === 'table') {
-            for (const s of dbData.schemas) {
-                const t = s.tables.find(t => t.name === selectedItemId);
-                if (t) return { ...t, schema: s.name };
-            }
-        }
-        if (selectedItemType === 'column') {
-            for (const s of dbData.schemas) {
-                for (const t of s.tables) {
-                    const c = t.columns.find(c => c.name === selectedItemId);
-                    if (c) return { ...c, table: t.name, schema: s.name };
+    // Resolve the selected item and its parent table context in one go
+    const { itemData, tableData } = useMemo(() => {
+        if (!selectedItemId) return { itemData: null, tableData: null };
+
+        const parts = selectedItemId.split('.');
+        const db = dbData;
+
+        // 1. Try resolving via the unique path (schema.table.column)
+        let s = db.schemas.find(x => x.name === parts[0]);
+        let t = s?.tables.find(x => x.name === parts[1]);
+        let c = t?.columns.find(x => x.name === parts[2]);
+
+        // 2. Fallback for flat names (if the ID wasn't a full path)
+        if (!s && parts.length === 1) {
+            for (const schema of db.schemas) {
+                if (selectedItemType === 'schema' && schema.name === selectedItemId) {
+                    s = schema;
+                    break;
+                }
+                if (selectedItemType === 'table') {
+                    const found = schema.tables.find(x => x.name === selectedItemId);
+                    if (found) { s = schema; t = found; break; }
+                }
+                if (selectedItemType === 'column') {
+                    for (const table of schema.tables) {
+                        const found = table.columns.find(x => x.name === selectedItemId);
+                        if (found) { s = schema; t = table; c = found; break; }
+                    }
                 }
             }
         }
-        return null;
+
+        const resolvedItem = (selectedItemType === 'schema' ? s :
+            selectedItemType === 'table' ? (t ? { ...t, schema: s?.name } : null) :
+                (c ? { ...c, table: t?.name, schema: s?.name } : null)) as any;
+
+        const resolvedTable = (t ? { ...t, schema: s?.name } : null) as any;
+
+        return { itemData: resolvedItem, tableData: resolvedTable };
     }, [selectedItemId, selectedItemType, dbData]);
 
     if (!selectedItemId) return null;
@@ -183,19 +205,6 @@ export const DocsRightPanel = () => {
             </Stack>
         </Center>
     );
-
-    const tableData = useMemo(() => {
-        if (!itemData) return null;
-        if (selectedItemType === 'table') return itemData;
-        if (selectedItemType === 'column') {
-            const tableName = (itemData as any).table;
-            for (const s of dbData.schemas) {
-                const t = s.tables.find(tbl => tbl.name === tableName);
-                if (t) return { ...t, schema: s.name };
-            }
-        }
-        return null;
-    }, [itemData, selectedItemType, dbData.schemas]);
 
     const descriptions = (tableData as any)?.descriptions || [];
     const dependsOn: ConnectionItem[] = (tableData as any)?.dependsOn || [];
@@ -305,16 +314,9 @@ export const DocsRightPanel = () => {
 
                         <CustomRichTextEditor
                             icon={<FileText size={16} color="var(--mantine-color-blue-4)" />}
-                            rightSettings={
-                                <Avatar.Group spacing="xs" >
-                                    <Avatar size="sm" color="initials" name="Ran" />
-                                    <Avatar size="sm" color="initials" name="John Doe" />
-                                    <Avatar size="sm" color="initials" name="Doe" />
-                                    <Avatar size="sm" color="initials" name="Doe" />
-                                    <Avatar size="sm" color="initials" name="Doe" />
-                                    <Avatar size="sm" color="initials" name="Doe" />
-                                </Avatar.Group>
-                            }
+                            // rightSettings={
+                            // <Avatar size="sm" color="initials" name={descriptions[descriptions.length - 1]?.author || 'Unknown'} />
+                            // }
                             initialContent={descriptions[descriptions.length - 1]?.description || ''}
                             isEditable={isEditing}
                         />

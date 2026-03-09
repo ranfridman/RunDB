@@ -1,5 +1,5 @@
-import { Group, ThemeIcon, Text, Avatar } from '@mantine/core';
-import { Bot } from 'lucide-react';
+import { Group, ThemeIcon, Text, Avatar, Box, Badge } from '@mantine/core';
+import { Bot, Database } from 'lucide-react';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
 import { useDocsPanelStore, type DbData } from '../DocsPanel/DocsPanelStore';
 
@@ -17,8 +17,12 @@ export const TableGridItem = ({ table }: TableGridItemProps) => {
                     <ThemeIcon size={28} variant="transparent" p={0} c={typeToColor['Docs']}>
                         {typeToIcon2.Table}
                     </ThemeIcon>
-                    <Text fw={600} size="h5">{table.name}</Text>
+                    <Box>
+                        <Text fw={600} size="h5" lineClamp={1}>{table.name}</Text>
+                        <Text size="10px" c="blue.4" fw={700} tt="uppercase">{(table as any).schema}</Text>
+                    </Box>
                 </Group>
+                {/* <Badge size="xs" variant="light" color="blue">{(table as any).schema}</Badge> */}
             </Group>
 
             <Text size="sm" c="dimmed" lineClamp={2} mb="md" style={{ minHeight: 40 }}>

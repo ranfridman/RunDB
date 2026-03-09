@@ -1,9 +1,9 @@
 import { useState, useMemo, useEffect, memo } from 'react';
-import { Box, Card, Text, Group, ThemeIcon, Stack, Grid, Divider, Avatar, UnstyledButton } from '@mantine/core';
+import { Box, Card, Text, Group, ThemeIcon, Stack, Grid, Divider, Avatar, UnstyledButton, Badge } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
-import { Bot } from 'lucide-react';
+import { Bot, Database } from 'lucide-react';
 import { useDocsPanelStore, type DbData } from '../DocsPanel/DocsPanelStore';
 
 const BATCH = 15;
@@ -11,11 +11,12 @@ const BATCH = 15;
 // ---- Single row (memoised, panel content only mounts when expanded) ----
 
 const TableRow = memo(({ rawTable, isSelected, onClick }: {
-    rawTable: DbData['schemas'][number]['tables'][number];
+    rawTable: DbData['schemas'][number]['tables'][number] & { schema: string };
     isSelected: boolean;
     onClick: () => void;
 }) => {
-    const d = rawTable.descriptions[rawTable.descriptions.length - 1];
+    const descriptions = rawTable.descriptions || [];
+    const d = descriptions[descriptions.length - 1];
 
     return (
         <motion.div
@@ -43,11 +44,17 @@ const TableRow = memo(({ rawTable, isSelected, onClick }: {
             >
                 <Grid align="center" gutter="md">
                     <Grid.Col span={3}>
-                        <Group gap="sm">
-                            <ThemeIcon size={28} variant="transparent" p={0} c={typeToColor['Docs']}>
-                                {typeToIcon2.Table}
-                            </ThemeIcon>
-                            <Text fw={600} size="h5">{rawTable.name}</Text>
+                        <Group justify="space-between" >
+                            <Group gap="sm">
+                                <ThemeIcon size={28} variant="transparent" p={0} c={typeToColor['Docs']}>
+                                    {typeToIcon2.Table}
+                                </ThemeIcon>
+                                <Box >
+                                    <Text fw={600} size="h5" lineClamp={1}>{rawTable.name}</Text>
+                                    <Text size="10px" c="blue.4" fw={700} tt="uppercase">{rawTable.schema}</Text>
+                                </Box>
+                            </Group>
+                            {/* <Badge size="xs" variant="light" color="blue">{rawTable.schema}</Badge> */}
                         </Group>
                     </Grid.Col>
                     <Grid.Col span={4}>
@@ -84,6 +91,7 @@ export const TablesDocs = ({ isEditing: isEditingProp, externalSearch }: TablesD
     const setSelected = useDocsPanelStore(s => s.setSelected);
     const storeIsEditing = useDocsPanelStore(s => s.isEditing);
     const dbData = useDocsPanelStore(s => s.dbData);
+    if (!dbData) return null;
     const isEditing = isEditingProp ?? storeIsEditing;
 
     const allTables = useMemo(() => {
@@ -128,14 +136,14 @@ export const TablesDocs = ({ isEditing: isEditingProp, externalSearch }: TablesD
 
     return (
         <Stack gap="xs">
-            <Card withBorder p={0} radius="md">
+            <Card withBorder p={0} radius="md" style={{ overflow: 'hidden' }}>
                 <Box px="md" py="xs" style={{ backgroundColor: 'var(--mantine-color-dark-7)' }}>
                     <Grid align="center" gutter="md">
                         <Grid.Col span={3}><Text size="xs" fw={700} c="dimmed" tt="uppercase">Table Name</Text></Grid.Col>
                         <Grid.Col span={4}><Text size="xs" fw={700} c="dimmed" tt="uppercase">Description</Text></Grid.Col>
                         <Grid.Col span={2}><Text size="xs" fw={700} c="dimmed" tt="uppercase">Created At</Text></Grid.Col>
                         <Grid.Col span={2}><Text size="xs" fw={700} c="dimmed" tt="uppercase">Author</Text></Grid.Col>
-                        <Grid.Col span={1} style={{ textAlign: 'right' }}><Text size="xs" fw={700} c="dimmed" tt="uppercase">Actions</Text></Grid.Col>
+                        <Grid.Col span={1} style={{ textAlign: 'right' }}></Grid.Col>
                     </Grid>
                 </Box>
                 <Divider />
@@ -143,16 +151,15 @@ export const TablesDocs = ({ isEditing: isEditingProp, externalSearch }: TablesD
                 <Box>
                     {visible.map(t => (
                         <TableRow
-                            key={t.name}
+                            key={`${t.schema}.${t.name}`}
                             rawTable={t}
-                            isSelected={selectedItemId === t.name}
-                            onClick={() => setSelected(t.name, 'table')}
+                            isSelected={selectedItemId === `${t.schema}.${t.name}`}
+                            onClick={() => setSelected(`${t.schema}.${t.name}`, 'table')}
                         />
                     ))}
                 </Box>
-
-                {count < filtered.length && <div ref={sentinelRef} style={{ height: 1 }} />}
             </Card>
+            {count < filtered.length && <div ref={sentinelRef} style={{ height: 1 }} />}
         </Stack>
     );
 };

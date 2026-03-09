@@ -30,6 +30,7 @@ export const ERDChartInner = () => {
     const setSelected = useDocsPanelStore(s => s.setSelected);
     const selectedItemId = useDocsPanelStore(s => s.selectedItemId);
     const dbData = useDocsPanelStore(s => s.dbData);
+    if (!dbData) return null;
 
     const { nodes: initialNodes, edges: initialEdges } = useMemo(() => buildGraph(dbData), [dbData]);
 
@@ -96,7 +97,7 @@ export const ERDChartInner = () => {
 
     useEffect(() => {
         if (selectedItemId) {
-            const node = initialNodes.find(n => n.data.label === selectedItemId);
+            const node = initialNodes.find(n => n.id === selectedItemId);
             if (node) {
                 focusNode(node);
             }
@@ -114,7 +115,7 @@ export const ERDChartInner = () => {
             // Open documentation (only if we didn't click a specific column)
             const isColumnClick = event.target?.closest('.erd-table-node__column');
             if (!isColumnClick) {
-                setSelected(node.data.label as string, 'table');
+                setSelected(node.id, 'table');
             }
             // Always focus the parent table node to show only it and connected tables
             focusNode(node);

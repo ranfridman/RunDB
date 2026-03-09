@@ -10,10 +10,11 @@ export interface DocsPanelState {
     selectedItemType: 'table' | 'column' | 'schema' | null;
     isEditing: boolean;
     activeTab: string;
-    dbData: DbData;
+    dbData: DbData | null;
     setSelected: (id: string | null, type: 'table' | 'column' | 'schema' | null) => void;
     setIsEditing: (isEditing: boolean) => void;
     setActiveTab: (tab: string) => void;
+    setDbData: (data: DbData) => void;
 }
 
 export const createDocsPanelStore = () =>
@@ -22,10 +23,11 @@ export const createDocsPanelStore = () =>
         selectedItemType: null,
         isEditing: false,
         activeTab: 'overview',
-        dbData: mockDbData,
+        dbData: null,
         setSelected: (id, type) => set({ selectedItemId: id, selectedItemType: type }),
         setIsEditing: (isEditing) => set({ isEditing }),
         setActiveTab: (activeTab) => set({ activeTab }),
+        setDbData: (dbData) => set({ dbData }),
     }));
 
 export type DocsPanelStore = ReturnType<typeof createDocsPanelStore>;

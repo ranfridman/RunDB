@@ -1,12 +1,16 @@
 import { useState, useId, lazy, Suspense } from 'react';
-import { Box, Divider, Text, Center, Stack, ThemeIcon, Group, UnstyledButton, MantineProvider, createTheme, ScrollArea, Loader } from '@mantine/core';
-import { FileText, GitBranch, Share2, MoreHorizontal } from 'lucide-react';
+import { Box, Divider, Text, Center, Stack, ThemeIcon, Group, UnstyledButton, MantineProvider, createTheme, ScrollArea, Loader, rem } from '@mantine/core';
+import { FileText, GitBranch, Share2, MoreHorizontal, Database, Upload, X as CloseIcon, FileJson } from 'lucide-react';
+import { Dropzone, type FileWithPath } from '@mantine/dropzone';
+import '@mantine/dropzone/styles.css';
 import { DocsOverview } from '../DocsOverview/DocsOverview';
 import { DocsHeader } from '../DocsHeader/DocsHeader';
 import { typeToColor } from '../TypesTheme/TypesTheme';
 import { motion, AnimatePresence } from 'framer-motion';
 import { DocsPanelContext, useDocsPanelProvider, useDocsPanelStore } from './DocsPanelStore';
 import { DocsRightPanel } from './DocsRightPanel';
+
+import { FileDropzone } from '../FileDropzone/FileDropzone';
 
 const ERDChart = lazy(() => import('../ERDChart/ERDChart').then(m => ({ default: m.ERDChart })));
 
@@ -19,10 +23,9 @@ const DocsPanelContent = () => {
     const isEditing = useDocsPanelStore(state => state.isEditing);
     const setIsEditing = useDocsPanelStore(state => state.setIsEditing);
     const selectedItemId = useDocsPanelStore(state => state.selectedItemId);
-    const selectedItemType = useDocsPanelStore(state => state.selectedItemType);
-    const setSelected = useDocsPanelStore(state => state.setSelected);
     const activeTab = useDocsPanelStore(state => state.activeTab);
     const setActiveTab = useDocsPanelStore(state => state.setActiveTab);
+    const dbData = useDocsPanelStore(state => state.dbData);
 
     const tabs = [
         { value: 'overview', label: 'Overview', icon: <FileText size={14} /> },
@@ -50,8 +53,15 @@ const DocsPanelContent = () => {
         ),
     };
 
+    if (!dbData) return (
+        <MantineProvider theme={theme} cssVariablesSelector={`#${uniqueId}`}>
+            <FileDropzone />
+        </MantineProvider>
+    );
+
     return (
         <MantineProvider theme={theme} cssVariablesSelector={`#${uniqueId}`}>
+            <FileDropzone />
             <Group
                 id={uniqueId}
                 h="100%"
@@ -152,12 +162,16 @@ const DocsPanelContent = () => {
     );
 };
 
+import { DocsErrorBoundary } from './DocsErrorBoundary';
+
 export const DocsPanel = () => {
     const store = useDocsPanelProvider();
 
     return (
         <DocsPanelContext.Provider value={store}>
-            <DocsPanelContent />
+            <DocsErrorBoundary>
+                <DocsPanelContent />
+            </DocsErrorBoundary>
         </DocsPanelContext.Provider>
     );
 };

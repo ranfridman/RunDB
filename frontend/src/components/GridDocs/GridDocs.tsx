@@ -48,6 +48,7 @@ export const GridDocs = ({ isEditing: isEditingProp, externalSearch }: GridDocsP
     const selectedItemId = useDocsPanelStore(s => s.selectedItemId);
     const setSelected = useDocsPanelStore(s => s.setSelected);
     const dbData = useDocsPanelStore(s => s.dbData);
+    if (!dbData) return null;
 
     const allTables = useMemo(() => {
         return dbData.schemas.flatMap(s => s.tables.map(t => ({ ...t, schema: s.name })));
@@ -94,10 +95,10 @@ export const GridDocs = ({ isEditing: isEditingProp, externalSearch }: GridDocsP
             <SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }} spacing="md">
                 {visible.map((t: any) => (
                     <GridCard
-                        key={t.name}
+                        key={`${t.schema}.${t.name}`}
                         rawTable={t}
-                        isSelected={selectedItemId === t.name}
-                        onClick={() => setSelected(t.name, 'table')}
+                        isSelected={selectedItemId === `${t.schema}.${t.name}`}
+                        onClick={() => setSelected(`${t.schema}.${t.name}`, 'table')}
                     />
                 ))}
             </SimpleGrid>
