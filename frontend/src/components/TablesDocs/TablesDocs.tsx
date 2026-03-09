@@ -1,12 +1,10 @@
 import { useState, useMemo, useEffect, memo } from 'react';
-import { Box, Card, Text, Group, ThemeIcon, Stack, Grid, Divider, Avatar, Input, UnstyledButton } from '@mantine/core';
+import { Box, Card, Text, Group, ThemeIcon, Stack, Grid, Divider, Avatar, UnstyledButton } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
-import { Bot, Search } from 'lucide-react';
+import { Bot } from 'lucide-react';
 import { useDocsPanelStore, type DbData } from '../DocsPanel/DocsPanelStore';
-
-import AnimatedNumber from '../Animations/AnimatedNumber';
 
 const BATCH = 15;
 
@@ -78,9 +76,10 @@ const TableRow = memo(({ rawTable, isSelected, onClick }: {
 
 export interface TablesDocsProps {
     isEditing?: boolean;
+    externalSearch?: string;
 }
 
-export const TablesDocs = ({ isEditing: isEditingProp }: TablesDocsProps) => {
+export const TablesDocs = ({ isEditing: isEditingProp, externalSearch }: TablesDocsProps) => {
     const selectedItemId = useDocsPanelStore(s => s.selectedItemId);
     const setSelected = useDocsPanelStore(s => s.setSelected);
     const storeIsEditing = useDocsPanelStore(s => s.isEditing);
@@ -93,8 +92,14 @@ export const TablesDocs = ({ isEditing: isEditingProp }: TablesDocsProps) => {
 
     const rawTables = allTables;
 
-    const [search, setSearch] = useState('');
     const [count, setCount] = useState(BATCH);
+
+    const search = externalSearch ?? '';
+
+    // Reset count when search changes
+    useEffect(() => {
+        setCount(BATCH);
+    }, [search]);
 
     // Mantine's useIntersection — auto-load more when sentinel is visible
     const { ref: sentinelRef, entry } = useIntersection({ rootMargin: '400px' });
@@ -117,26 +122,12 @@ export const TablesDocs = ({ isEditing: isEditingProp }: TablesDocsProps) => {
                 (d?.timestamp || '').toLowerCase().includes(q)
             );
         });
-    }, [search]);
+    }, [search, rawTables]);
 
     const visible = filtered.slice(0, count);
 
     return (
         <Stack gap="xs">
-            <Group justify="space-between">
-                <Text fw={600} fz="md">Tables (
-                    <AnimatedNumber value={filtered.length} />
-                    )</Text>
-                <Input
-                    leftSection={<Search size={12} />}
-                    placeholder="Filter tables..."
-                    size="xs"
-                    variant="filled"
-                    color={typeToColor['Docs']}
-                    value={search}
-                    onChange={(e) => { setSearch(e.currentTarget.value); setCount(BATCH); }}
-                />
-            </Group>
             <Card withBorder p={0} radius="md">
                 <Box px="md" py="xs" style={{ backgroundColor: 'var(--mantine-color-dark-7)' }}>
                     <Grid align="center" gutter="md">

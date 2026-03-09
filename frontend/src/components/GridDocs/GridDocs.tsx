@@ -1,18 +1,13 @@
 import { useState, useMemo, useEffect, memo } from 'react';
-import { Card, Text, Group, ThemeIcon, Stack, Avatar, Input, Loader, Center, SimpleGrid } from '@mantine/core';
+import { Card, Stack, Loader, Center, SimpleGrid } from '@mantine/core';
 import { useIntersection } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
-import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
-import { Bot, Search } from 'lucide-react';
 import { useDocsPanelStore } from '../DocsPanel/DocsPanelStore';
-
-import AnimatedNumber from '../Animations/AnimatedNumber';
+import { TableGridItem } from '../TableGridItem/TableGridItem';
 
 const BATCH = 15;
 
 const GridCard = memo(({ rawTable, isSelected, onClick }: any) => {
-    const d = rawTable.descriptions[rawTable.descriptions.length - 1];
-
     return (
         <motion.div
             layout
@@ -36,28 +31,7 @@ const GridCard = memo(({ rawTable, isSelected, onClick }: any) => {
                     transition: 'background-color 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease'
                 }}
             >
-                <Group justify="space-between" mb="xs">
-                    <Group gap="sm">
-                        <ThemeIcon size={28} variant="transparent" p={0} c={typeToColor['Docs']}>
-                            {typeToIcon2.Table}
-                        </ThemeIcon>
-                        <Text fw={600} size="h5">{rawTable.name}</Text>
-                    </Group>
-                </Group>
-
-                <Text size="sm" c="dimmed" lineClamp={2} mb="md" style={{ minHeight: 40 }}>
-                    {d?.description || 'No description'}
-                </Text>
-
-                <Group justify="space-between" mt="auto" wrap="nowrap">
-                    <Group gap="xs" wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
-                        <Avatar name={d?.author} size="sm" radius="xl" alt={d?.author} color="initials" style={{ flexShrink: 0 }}>
-                            {d?.isAiGenerated && <Bot size={16} />}
-                        </Avatar>
-                        <Text size="xs" fw={500} truncate="end">{d?.author}</Text>
-                    </Group>
-                    <Text size="xs" c="dimmed" truncate="end" style={{ flexShrink: 0 }}>{d?.timestamp}</Text>
-                </Group>
+                <TableGridItem table={rawTable} />
             </Card>
         </motion.div>
     );
@@ -65,9 +39,10 @@ const GridCard = memo(({ rawTable, isSelected, onClick }: any) => {
 
 export interface GridDocsProps {
     isEditing?: boolean;
+    externalSearch?: string;
 }
 
-export const GridDocs = ({ isEditing: isEditingProp }: GridDocsProps) => {
+export const GridDocs = ({ isEditing: isEditingProp, externalSearch }: GridDocsProps) => {
     const storeIsEditing = useDocsPanelStore(s => s.isEditing);
     const isEditing = isEditingProp ?? storeIsEditing;
     const selectedItemId = useDocsPanelStore(s => s.selectedItemId);
@@ -80,8 +55,14 @@ export const GridDocs = ({ isEditing: isEditingProp }: GridDocsProps) => {
 
     const rawTables = allTables;
 
-    const [search, setSearch] = useState('');
     const [count, setCount] = useState(BATCH);
+
+    const search = externalSearch ?? '';
+
+    // Reset count when search changes
+    useEffect(() => {
+        setCount(BATCH);
+    }, [search]);
 
     const { ref: sentinelRef, entry } = useIntersection({ rootMargin: '400px' });
 
@@ -103,26 +84,12 @@ export const GridDocs = ({ isEditing: isEditingProp }: GridDocsProps) => {
                 (d?.timestamp || '').toLowerCase().includes(q)
             );
         });
-    }, [search]);
+    }, [search, rawTables]);
 
     const visible = filtered.slice(0, count);
 
     return (
         <Stack gap="xs">
-            <Group justify="space-between">
-                <Text fw={600} fz="md">Tables (
-                    <AnimatedNumber value={filtered.length} />
-                    )</Text>
-                <Input
-                    leftSection={<Search size={12} />}
-                    placeholder="Filter tables..."
-                    size="xs"
-                    variant="filled"
-                    color={typeToColor['Docs']}
-                    value={search}
-                    onChange={(e) => { setSearch(e.currentTarget.value); setCount(BATCH); }}
-                />
-            </Group>
 
             <SimpleGrid cols={{ base: 1, sm: 2, xl: 3 }} spacing="md">
                 {visible.map((t: any) => (
