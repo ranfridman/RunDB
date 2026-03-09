@@ -1,14 +1,13 @@
-import { useMemo, lazy, Suspense, useState } from 'react';
+import { useMemo, lazy, Suspense, useState, useEffect, useRef } from 'react';
 import {
     Box, Stack, Group, Text, ThemeIcon, ActionIcon, ScrollArea,
-    Badge, Paper, Divider, Collapse,
+    Badge, Paper, Divider,
     Button, Center, Loader,
     Avatar, Card, Grid, Tooltip, UnstyledButton
 } from '@mantine/core';
 import {
-    X, Table2, Columns, History, Sparkles, LayoutList,
+    X, Table2, Columns, LayoutList,
     ChevronRight, User, GitBranch,
-    ChevronDown, ChevronUp,
     AlertCircle, FileText,
     ArrowDownRight, ArrowUpRight, Link2, Database,
     Layers, Hash
@@ -141,54 +140,7 @@ const ConnectionsSection = ({ dependsOn, dependents, onNavigate }: {
     );
 };
 
-/* ─── History Section (collapsed by default) ────────────────────── */
 
-const HistorySection = ({ descriptions }: { descriptions: any[] }) => {
-    const [opened, setOpened] = useState(false);
-
-    return (
-        <Stack gap="xs">
-            <UnstyledButton onClick={() => setOpened(o => !o)} w="100%">
-                <Group justify="space-between">
-                    <Group gap="xs">
-                        <History size={16} color="var(--mantine-color-blue-4)" />
-                        <Text fw={700} size="sm" tt="uppercase">History</Text>
-                        <Badge size="xs" variant="light" color="blue" radius="sm">
-                            {descriptions.length} versions
-                        </Badge>
-                    </Group>
-                    {opened
-                        ? <ChevronUp size={16} color="var(--mantine-color-dimmed)" />
-                        : <ChevronDown size={16} color="var(--mantine-color-dimmed)" />
-                    }
-                </Group>
-            </UnstyledButton>
-
-            <Collapse in={opened}>
-                <Stack gap={4}>
-                    {[...descriptions].reverse().map((d: any, i: number) => (
-                        <CustomRichTextEditor
-                            key={i}
-                            rightSettings={
-                                <Group gap="xs" wrap="nowrap">
-                                    <Group gap={4} wrap="nowrap">
-                                        {d.isAiGenerated && <Sparkles size={10} color="var(--mantine-color-violet-4)" />}
-                                        <Text size="xs" c="dimmed">
-                                            {new Date(d.timestamp).toLocaleDateString()}
-                                        </Text>
-                                    </Group>
-                                    <Avatar size="sm" color="initials" name={d.author} />
-                                </Group>
-                            }
-                            initialContent={d.description}
-                            isEditable={false}
-                        />
-                    ))}
-                </Stack>
-            </Collapse>
-        </Stack>
-    );
-};
 
 /* ─── Main Panel ────────────────────────────────────────────────── */
 
@@ -232,9 +184,22 @@ export const DocsRightPanel = () => {
         </Center>
     );
 
-    const descriptions = (itemData as any).descriptions || [];
-    const dependsOn: ConnectionItem[] = (itemData as any).dependsOn || [];
-    const dependents: ConnectionItem[] = (itemData as any).dependents || [];
+    const tableData = useMemo(() => {
+        if (!itemData) return null;
+        if (selectedItemType === 'table') return itemData;
+        if (selectedItemType === 'column') {
+            const tableName = (itemData as any).table;
+            for (const s of dbData.schemas) {
+                const t = s.tables.find(tbl => tbl.name === tableName);
+                if (t) return { ...t, schema: s.name };
+            }
+        }
+        return null;
+    }, [itemData, selectedItemType, dbData.schemas]);
+
+    const descriptions = (tableData as any)?.descriptions || [];
+    const dependsOn: ConnectionItem[] = (tableData as any)?.dependsOn || [];
+    const dependents: ConnectionItem[] = (tableData as any)?.dependents || [];
 
     const handleNavigateToTable = (tableName: string) => {
         setSelected(tableName, 'table');
@@ -246,8 +211,17 @@ export const DocsRightPanel = () => {
             ? <Columns size={14} />
             : <Layers size={14} />;
 
+    const viewportRef = useRef<HTMLDivElement>(null);
+
+    // Scroll to top when a table is selected
+    useEffect(() => {
+        if (selectedItemType === 'table' && viewportRef.current) {
+            viewportRef.current.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+    }, [selectedItemId, selectedItemType]);
+
     return (
-        <ScrollArea h="82vh" offsetScrollbars scrollbarSize={2} w="100%" >
+        <ScrollArea h="82vh" offsetScrollbars scrollbarSize={2} w="100%" viewportRef={viewportRef}>
             <Stack p="md" gap="lg">
 
                 {/* ─── Header ─────────────────────────────────── */}
@@ -279,7 +253,7 @@ export const DocsRightPanel = () => {
                                         </UnstyledButton>
                                         <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
                                         <UnstyledButton onClick={() => handleNavigateToTable((itemData as any).table)}>
-                                            <Text size="xs" c="blue.4" fw={500} style={{ cursor: 'pointer' }}>
+                                            <Text size="xs" c="blue.4" fw={500} style={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
                                                 {(itemData as any).table}
                                             </Text>
                                         </UnstyledButton>
@@ -302,12 +276,12 @@ export const DocsRightPanel = () => {
                     </Group>
 
                     {/* Quick stats */}
-                    {selectedItemType === 'table' && (
+                    {(selectedItemType === 'table' || selectedItemType === 'column') && tableData && (
                         <Group gap="lg" mt="sm">
                             <Group gap={4}>
                                 <Hash size={12} color="var(--mantine-color-dimmed)" />
                                 <Text size="xs" c="dimmed">
-                                    {(itemData as any).columns?.length || 0} columns
+                                    {(tableData as any).columns?.length || 0} columns
                                 </Text>
                             </Group>
                             <Group gap={4}>
@@ -316,12 +290,7 @@ export const DocsRightPanel = () => {
                                     {dependsOn.length + dependents.length} connections
                                 </Text>
                             </Group>
-                            <Group gap={4}>
-                                <History size={12} color="var(--mantine-color-dimmed)" />
-                                <Text size="xs" c="dimmed">
-                                    {descriptions.length} versions
-                                </Text>
-                            </Group>
+
                         </Group>
                     )}
                 </Box>
@@ -329,30 +298,26 @@ export const DocsRightPanel = () => {
                 <Divider />
 
                 {/* ─── Table Details ───────────────────────────── */}
-                {selectedItemType === 'table' && (
+                {(selectedItemType === 'table' || selectedItemType === 'column') && tableData && (
                     <Suspense fallback={<Center p="md"><Loader size="sm" /></Center>}>
 
                         {/* Description Editor */}
-                        <Stack gap="xs">
-                            <Group gap="xs">
-                                <FileText size={16} color="var(--mantine-color-blue-4)" />
-                                <Text fw={700} size="sm" tt="uppercase">Description</Text>
-                            </Group>
-                            <CustomRichTextEditor
-                                rightSettings={
-                                    <Avatar.Group spacing="xs" >
-                                        <Avatar size="sm" color="initials" name="Ran" />
-                                        <Avatar size="sm" color="initials" name="John Doe" />
-                                        <Avatar size="sm" color="initials" name="Doe" />
-                                        <Avatar size="sm" color="initials" name="Doe" />
-                                        <Avatar size="sm" color="initials" name="Doe" />
-                                        <Avatar size="sm" color="initials" name="Doe" />
-                                    </Avatar.Group>
-                                }
-                                initialContent={descriptions[descriptions.length - 1]?.description || ''}
-                                isEditable={isEditing}
-                            />
-                        </Stack>
+
+                        <CustomRichTextEditor
+                            icon={<FileText size={16} color="var(--mantine-color-blue-4)" />}
+                            rightSettings={
+                                <Avatar.Group spacing="xs" >
+                                    <Avatar size="sm" color="initials" name="Ran" />
+                                    <Avatar size="sm" color="initials" name="John Doe" />
+                                    <Avatar size="sm" color="initials" name="Doe" />
+                                    <Avatar size="sm" color="initials" name="Doe" />
+                                    <Avatar size="sm" color="initials" name="Doe" />
+                                    <Avatar size="sm" color="initials" name="Doe" />
+                                </Avatar.Group>
+                            }
+                            initialContent={descriptions[descriptions.length - 1]?.description || ''}
+                            isEditable={isEditing}
+                        />
 
                         {/* Connections Section */}
                         <ConnectionsSection
@@ -362,15 +327,12 @@ export const DocsRightPanel = () => {
                         />
 
                         {/* Columns Section */}
-                        <ColumnsDocs columns={(itemData as any).columns} isEditing={isEditing} />
+                        <ColumnsDocs columns={(tableData as any).columns} isEditing={isEditing} />
 
                     </Suspense>
                 )}
 
-                {/* ─── History (collapsed by default) ─────────── */}
-                {descriptions.length > 0 && (
-                    <HistorySection descriptions={descriptions} />
-                )}
+
 
             </Stack>
         </ScrollArea>

@@ -58,7 +58,7 @@ export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
                 />
             </Box>
 
-            <Group justify="space-between" align="center" mb="xs">
+            <Group justify="space-between" align="center" >
                 <Text fw={600} fz="md">
                     Tables (<AnimatedNumber value={filteredCount} />)
                 </Text>
@@ -82,19 +82,19 @@ export const DocsOverview = ({ isEditing }: DocsOverviewProps) => {
                         data={[
                             {
                                 label: (
-                                    <Center style={{ gap: 6 }}>
+                                    <Group align="center" gap="3" justify="start" style={{ flexWrap: 'nowrap' }}>
                                         <LayoutList size={14} />
                                         <Text size="xs" fw={500}>List</Text>
-                                    </Center>
+                                    </Group>
                                 ),
                                 value: 'table'
                             },
                             {
                                 label: (
-                                    <Center style={{ gap: 6 }}>
+                                    <Group align="center" gap="3" justify="start" style={{ flexWrap: 'nowrap' }}>
                                         <LayoutGrid size={14} />
                                         <Text size="xs" fw={500}>Grid</Text>
-                                    </Center>
+                                    </Group>
                                 ),
                                 value: 'grid'
                             },

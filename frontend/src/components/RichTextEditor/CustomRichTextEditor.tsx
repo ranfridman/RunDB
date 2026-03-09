@@ -21,9 +21,10 @@ interface CustomRichTextEditorProps {
     isEditable: boolean;
     onChange?: (content: string) => void;
     rightSettings?: React.ReactNode;
+    icon?: React.ReactNode;
 }
 
-export const CustomRichTextEditor = ({ initialContent, isEditable, onChange, rightSettings }: CustomRichTextEditorProps) => {
+export const CustomRichTextEditor = ({ initialContent, isEditable, onChange, rightSettings, icon }: CustomRichTextEditorProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const { hovered, ref } = useHover();
 
@@ -75,7 +76,8 @@ export const CustomRichTextEditor = ({ initialContent, isEditable, onChange, rig
             <Group justify="space-between">
 
                 <Group gap="5" >
-                    <Text fw={600} fz="md">
+                    {icon}
+                    <Text fw={600} fz="sm" >
                         Description
                     </Text>
                     {isEditable && !isEditing && (

@@ -19,7 +19,7 @@ export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
                 <ThemeIcon size={50} pt="xs" variant='transparent' p={0} c={typeToColor.Docs}>
                     {typeToIcon2.Docs}
                 </ThemeIcon>
-                <Text lh={1} fw={500} fz="h1">Documentation: {dbName}</Text >
+                <Text lh={0.5} fw={500} fz="h1">Documentation: {dbName}</Text >
             </Group>
 
             <Group>
