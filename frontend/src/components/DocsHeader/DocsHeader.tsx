@@ -3,8 +3,6 @@ import { Edit, Check, Settings2 } from 'lucide-react';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
 import { useDocsPanelStore } from '../DocsPanel/DocsPanelStore';
 
-import mockDbData from '../DocsPanel/mockDbData.json';
-
 interface DocsHeaderProps {
     isEditing: boolean;
     onToggleEditing: () => void;
@@ -12,7 +10,8 @@ interface DocsHeaderProps {
 
 export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
     const setSelected = useDocsPanelStore(state => state.setSelected);
-    const dbName = mockDbData.database.name;
+    const dbData = useDocsPanelStore(state => state.dbData);
+    const dbName = dbData.database.name;
 
     return (
         <Group justify="space-between" py={3}>
@@ -28,7 +27,7 @@ export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
                     variant="light"
                     color="gray"
                     size="md"
-                    onClick={() => setSelected(mockDbData.schemas[0].name, 'schema')}
+                    onClick={() => setSelected(dbData.schemas[0].name, 'schema')}
                 >
                     <Settings2 size={16} />
                 </ActionIcon>

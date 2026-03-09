@@ -1,37 +1,216 @@
-import { useMemo, lazy, Suspense } from 'react';
+import { useMemo, lazy, Suspense, useState } from 'react';
 import {
     Box, Stack, Group, Text, ThemeIcon, ActionIcon, ScrollArea,
-    Badge, Paper, Divider, Timeline,
-    Button, Center, Loader
+    Badge, Paper, Divider, Collapse,
+    Button, Center, Loader,
+    Avatar, Card, Grid, Tooltip, UnstyledButton
 } from '@mantine/core';
 import {
     X, Table2, Columns, History, Sparkles, LayoutList,
-    ChevronRight, User,
-    RotateCcw, AlertCircle, FileText
+    ChevronRight, User, GitBranch,
+    ChevronDown, ChevronUp,
+    AlertCircle, FileText,
+    ArrowDownRight, ArrowUpRight, Link2, Database,
+    Layers, Hash
 } from 'lucide-react';
 import { useDocsPanelStore } from './DocsPanelStore';
-import mockDbData from './mockDbData.json';
 import { CustomRichTextEditor } from '../RichTextEditor/CustomRichTextEditor';
 
 const ColumnsDocs = lazy(() => import('../ColumnsDocs/ColumnsDocs').then(m => ({ default: m.ColumnsDocs })));
+
+/* ─── Connections Card ──────────────────────────────────────────── */
+
+interface ConnectionItem {
+    schema: string;
+    table: string;
+    column: string;
+    referencedColumn: string;
+}
+
+const ConnectionRow = ({ item, direction, onNavigate }: {
+    item: ConnectionItem;
+    direction: 'depends' | 'dependent';
+    onNavigate: (tableName: string) => void;
+}) => (
+    <UnstyledButton
+        w="100%"
+        px="md"
+        py={6}
+        onClick={() => onNavigate(item.table)}
+        style={{
+            borderBottom: '1px solid var(--mantine-color-dark-6)',
+            transition: 'background-color 0.2s ease'
+        }}
+        styles={{
+            root: {
+                '&:hover': {
+                    backgroundColor: 'rgba(255, 255, 255, 0.03)'
+                }
+            }
+        }}
+    >
+        <Grid align="center" gutter="xs">
+            <Grid.Col span={1}>
+                <Group justify="center">
+                    {direction === 'depends' ? (
+                        <Tooltip label="This table depends on" withArrow>
+                            <Box><ArrowUpRight size={14} color="var(--mantine-color-orange-5)" /></Box>
+                        </Tooltip>
+                    ) : (
+                        <Tooltip label="Referenced by" withArrow>
+                            <Box><ArrowDownRight size={14} color="var(--mantine-color-green-5)" /></Box>
+                        </Tooltip>
+                    )}
+                </Group>
+            </Grid.Col>
+            <Grid.Col span={4}>
+                <Group gap={4} wrap="nowrap">
+                    <Table2 size={12} color="var(--mantine-color-blue-4)" />
+                    <Text size="xs" fw={600} truncate="end" style={{ fontFamily: '"JetBrains Mono", monospace' }}>
+                        {item.table}
+                    </Text>
+                </Group>
+            </Grid.Col>
+            <Grid.Col span={3}>
+                <Text size="xs" c="dimmed" ff="monospace" truncate="end">
+                    {item.column}
+                </Text>
+            </Grid.Col>
+            <Grid.Col span={1}>
+                <Group justify="center">
+                    <Link2 size={10} color="var(--mantine-color-dimmed)" />
+                </Group>
+            </Grid.Col>
+            <Grid.Col span={3}>
+                <Text size="xs" c="dimmed" ff="monospace" truncate="end">
+                    {item.referencedColumn}
+                </Text>
+            </Grid.Col>
+        </Grid>
+    </UnstyledButton>
+);
+
+const ConnectionsSection = ({ dependsOn, dependents, onNavigate }: {
+    dependsOn: ConnectionItem[];
+    dependents: ConnectionItem[];
+    onNavigate: (tableName: string) => void;
+}) => {
+    const totalConnections = dependsOn.length + dependents.length;
+    if (totalConnections === 0) return null;
+
+    return (
+        <Stack gap="xs">
+            <Group gap="xs">
+                <GitBranch size={16} color="var(--mantine-color-blue-4)" />
+                <Text fw={700} size="sm" tt="uppercase">Connections</Text>
+                <Badge size="xs" variant="light" color="blue" radius="sm">{totalConnections}</Badge>
+            </Group>
+
+            <Card withBorder p={0} radius="md" style={{ overflow: 'hidden' }}>
+                {/* Header Row */}
+                <Box px="md" py={6} style={{ backgroundColor: 'var(--mantine-color-dark-7)' }}>
+                    <Grid align="center" gutter="xs">
+                        <Grid.Col span={1}>
+                            <Text size="9px" fw={800} c="dimmed" tt="uppercase" ta="center">Dir</Text>
+                        </Grid.Col>
+                        <Grid.Col span={4}>
+                            <Text size="9px" fw={800} c="dimmed" tt="uppercase">Table</Text>
+                        </Grid.Col>
+                        <Grid.Col span={3}>
+                            <Text size="9px" fw={800} c="dimmed" tt="uppercase">FK Column</Text>
+                        </Grid.Col>
+                        <Grid.Col span={1}></Grid.Col>
+                        <Grid.Col span={3}>
+                            <Text size="9px" fw={800} c="dimmed" tt="uppercase">References</Text>
+                        </Grid.Col>
+                    </Grid>
+                </Box>
+                <Divider />
+
+                {/* Depends On */}
+                {dependsOn.map((item, i) => (
+                    <ConnectionRow key={`dep-${i}`} item={item} direction="depends" onNavigate={onNavigate} />
+                ))}
+
+                {/* Dependents */}
+                {dependents.map((item, i) => (
+                    <ConnectionRow key={`ref-${i}`} item={item} direction="dependent" onNavigate={onNavigate} />
+                ))}
+            </Card>
+        </Stack>
+    );
+};
+
+/* ─── History Section (collapsed by default) ────────────────────── */
+
+const HistorySection = ({ descriptions }: { descriptions: any[] }) => {
+    const [opened, setOpened] = useState(false);
+
+    return (
+        <Stack gap="xs">
+            <UnstyledButton onClick={() => setOpened(o => !o)} w="100%">
+                <Group justify="space-between">
+                    <Group gap="xs">
+                        <History size={16} color="var(--mantine-color-blue-4)" />
+                        <Text fw={700} size="sm" tt="uppercase">History</Text>
+                        <Badge size="xs" variant="light" color="blue" radius="sm">
+                            {descriptions.length} versions
+                        </Badge>
+                    </Group>
+                    {opened
+                        ? <ChevronUp size={16} color="var(--mantine-color-dimmed)" />
+                        : <ChevronDown size={16} color="var(--mantine-color-dimmed)" />
+                    }
+                </Group>
+            </UnstyledButton>
+
+            <Collapse in={opened}>
+                <Stack gap={4}>
+                    {[...descriptions].reverse().map((d: any, i: number) => (
+                        <CustomRichTextEditor
+                            key={i}
+                            rightSettings={
+                                <Group gap="xs" wrap="nowrap">
+                                    <Group gap={4} wrap="nowrap">
+                                        {d.isAiGenerated && <Sparkles size={10} color="var(--mantine-color-violet-4)" />}
+                                        <Text size="xs" c="dimmed">
+                                            {new Date(d.timestamp).toLocaleDateString()}
+                                        </Text>
+                                    </Group>
+                                    <Avatar size="sm" color="initials" name={d.author} />
+                                </Group>
+                            }
+                            initialContent={d.description}
+                            isEditable={false}
+                        />
+                    ))}
+                </Stack>
+            </Collapse>
+        </Stack>
+    );
+};
+
+/* ─── Main Panel ────────────────────────────────────────────────── */
 
 export const DocsRightPanel = () => {
     const selectedItemId = useDocsPanelStore(state => state.selectedItemId);
     const selectedItemType = useDocsPanelStore(state => state.selectedItemType);
     const setSelected = useDocsPanelStore(state => state.setSelected);
+    const setActiveTab = useDocsPanelStore(state => state.setActiveTab);
     const isEditing = useDocsPanelStore(state => state.isEditing);
+    const dbData = useDocsPanelStore(state => state.dbData);
 
     const itemData = useMemo(() => {
         if (!selectedItemId) return null;
-        if (selectedItemType === 'schema') return mockDbData.schemas.find(s => s.name === selectedItemId);
+        if (selectedItemType === 'schema') return dbData.schemas.find(s => s.name === selectedItemId);
         if (selectedItemType === 'table') {
-            for (const s of mockDbData.schemas) {
+            for (const s of dbData.schemas) {
                 const t = s.tables.find(t => t.name === selectedItemId);
                 if (t) return { ...t, schema: s.name };
             }
         }
         if (selectedItemType === 'column') {
-            for (const s of mockDbData.schemas) {
+            for (const s of dbData.schemas) {
                 for (const t of s.tables) {
                     const c = t.columns.find(c => c.name === selectedItemId);
                     if (c) return { ...c, table: t.name, schema: s.name };
@@ -39,7 +218,7 @@ export const DocsRightPanel = () => {
             }
         }
         return null;
-    }, [selectedItemId, selectedItemType]);
+    }, [selectedItemId, selectedItemType, dbData]);
 
     if (!selectedItemId) return null;
 
@@ -54,106 +233,144 @@ export const DocsRightPanel = () => {
     );
 
     const descriptions = (itemData as any).descriptions || [];
+    const dependsOn: ConnectionItem[] = (itemData as any).dependsOn || [];
+    const dependents: ConnectionItem[] = (itemData as any).dependents || [];
+
+    const handleNavigateToTable = (tableName: string) => {
+        setSelected(tableName, 'table');
+    };
+
+    const itemIcon = selectedItemType === 'table'
+        ? <Table2 size={14} />
+        : selectedItemType === 'column'
+            ? <Columns size={14} />
+            : <Layers size={14} />;
 
     return (
-        <ScrollArea h="82vh" offsetScrollbars scrollbarSize={2}>
-            <Stack gap="xl" p="md" bg="var(--mantine-color-secondary-9)">
-                {/* Compact Navigation Header */}
-                <Box style={{ display: 'flex', justifyContent: 'flex-end' }}>
-                    <ActionIcon variant="light" color="gray" onClick={() => setSelected(null, null)}>
-                        <X size={16} />
-                    </ActionIcon>
-                </Box>
+        <ScrollArea h="82vh" offsetScrollbars scrollbarSize={2} w="100%" >
+            <Stack p="md" gap="lg">
 
-                {/* Path Segment */}
+                {/* ─── Header ─────────────────────────────────── */}
                 <Box>
-                    <Group gap={4} mb="xs">
-                        <ThemeIcon size="xs" variant="transparent" c="blue">
-                            {selectedItemType === 'table' ? <Table2 size={12} /> : selectedItemType === 'column' ? <Columns size={12} /> : <LayoutList size={12} />}
-                        </ThemeIcon>
-                        <Text size="xs" fw={600} c="blue.4">CURRENT VIEW</Text>
+                    <Group justify="space-between" align="flex-start">
+                        <Box>
+                            <Group gap={6} mb={4}>
+                                <ThemeIcon size={20} variant="light" color="blue" radius="sm">
+                                    {itemIcon}
+                                </ThemeIcon>
+                                <Badge
+                                    size="xs"
+                                    variant="dot"
+                                    color="blue"
+                                    styles={{ root: { textTransform: 'uppercase' } }}
+                                >
+                                    {selectedItemType}
+                                </Badge>
+                            </Group>
+
+                            {/* Breadcrumb */}
+                            <Group gap={4} wrap="nowrap" mt={6}>
+                                {selectedItemType === 'column' && (
+                                    <>
+                                        <UnstyledButton onClick={() => { }}>
+                                            <Text size="xs" c="dimmed" style={{ '&:hover': { textDecoration: 'underline' } }}>
+                                                {(itemData as any).schema}
+                                            </Text>
+                                        </UnstyledButton>
+                                        <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
+                                        <UnstyledButton onClick={() => handleNavigateToTable((itemData as any).table)}>
+                                            <Text size="xs" c="blue.4" fw={500} style={{ cursor: 'pointer' }}>
+                                                {(itemData as any).table}
+                                            </Text>
+                                        </UnstyledButton>
+                                        <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
+                                    </>
+                                )}
+                                {selectedItemType === 'table' && (
+                                    <>
+                                        <Text size="xs" c="dimmed">{(itemData as any).schema}</Text>
+                                        <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
+                                    </>
+                                )}
+                                <Text size="md" fw={700}>{selectedItemId}</Text>
+                            </Group>
+                        </Box>
+
+                        <ActionIcon variant="subtle" color="gray" size="sm" onClick={() => setSelected(null, null)}>
+                            <X size={14} />
+                        </ActionIcon>
                     </Group>
-                    <Paper withBorder p="sm" radius="md" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                        <Group gap="xs" wrap="nowrap">
-                            {selectedItemType === 'column' && (
-                                <>
-                                    <Text size="sm" c="dimmed">{(itemData as any).schema}</Text>
-                                    <ChevronRight size={12} color="var(--mantine-color-dark-3)" />
-                                    <Text size="sm" c="dimmed">{(itemData as any).table}</Text>
-                                    <ChevronRight size={12} color="var(--mantine-color-dark-3)" />
-                                </>
-                            )}
-                            {selectedItemType === 'table' && (
-                                <>
-                                    <Text size="sm" c="dimmed">{(itemData as any).schema}</Text>
-                                    <ChevronRight size={12} color="var(--mantine-color-dark-3)" />
-                                </>
-                            )}
-                            <Text size="sm" fw={700}>{selectedItemId}</Text>
+
+                    {/* Quick stats */}
+                    {selectedItemType === 'table' && (
+                        <Group gap="lg" mt="sm">
+                            <Group gap={4}>
+                                <Hash size={12} color="var(--mantine-color-dimmed)" />
+                                <Text size="xs" c="dimmed">
+                                    {(itemData as any).columns?.length || 0} columns
+                                </Text>
+                            </Group>
+                            <Group gap={4}>
+                                <GitBranch size={12} color="var(--mantine-color-dimmed)" />
+                                <Text size="xs" c="dimmed">
+                                    {dependsOn.length + dependents.length} connections
+                                </Text>
+                            </Group>
+                            <Group gap={4}>
+                                <History size={12} color="var(--mantine-color-dimmed)" />
+                                <Text size="xs" c="dimmed">
+                                    {descriptions.length} versions
+                                </Text>
+                            </Group>
                         </Group>
-                    </Paper>
+                    )}
                 </Box>
 
-                {/* Table Details */}
+                <Divider />
+
+                {/* ─── Table Details ───────────────────────────── */}
                 {selectedItemType === 'table' && (
-                    <Box>
-                        <Group gap="xs" mb="sm">
-                            <FileText size={16} color="var(--mantine-color-blue-4)" />
-                            <Text size="sm" fw={700}>TABLE DETAILS</Text>
-                        </Group>
-                        <Paper withBorder p="md" radius="md" style={{ backgroundColor: 'rgba(255, 255, 255, 0.02)' }}>
-                            <Suspense fallback={<Center p="md"><Loader size="sm" /></Center>}>
-                                <CustomRichTextEditor initialContent={descriptions[0]?.description || ''} isEditable={isEditing} />
-                                <Box mt="xl">
-                                    <ColumnsDocs columns={(itemData as any).columns} isEditing={isEditing} />
-                                </Box>
-                            </Suspense>
-                        </Paper>
-                    </Box>
+                    <Suspense fallback={<Center p="md"><Loader size="sm" /></Center>}>
+
+                        {/* Description Editor */}
+                        <Stack gap="xs">
+                            <Group gap="xs">
+                                <FileText size={16} color="var(--mantine-color-blue-4)" />
+                                <Text fw={700} size="sm" tt="uppercase">Description</Text>
+                            </Group>
+                            <CustomRichTextEditor
+                                rightSettings={
+                                    <Avatar.Group spacing="xs" >
+                                        <Avatar size="sm" color="initials" name="Ran" />
+                                        <Avatar size="sm" color="initials" name="John Doe" />
+                                        <Avatar size="sm" color="initials" name="Doe" />
+                                        <Avatar size="sm" color="initials" name="Doe" />
+                                        <Avatar size="sm" color="initials" name="Doe" />
+                                        <Avatar size="sm" color="initials" name="Doe" />
+                                    </Avatar.Group>
+                                }
+                                initialContent={descriptions[descriptions.length - 1]?.description || ''}
+                                isEditable={isEditing}
+                            />
+                        </Stack>
+
+                        {/* Connections Section */}
+                        <ConnectionsSection
+                            dependsOn={dependsOn}
+                            dependents={dependents}
+                            onNavigate={handleNavigateToTable}
+                        />
+
+                        {/* Columns Section */}
+                        <ColumnsDocs columns={(itemData as any).columns} isEditing={isEditing} />
+
+                    </Suspense>
                 )}
 
-                {/* History Versions Section */}
-                <Box>
-                    <Group justify="space-between" mb="lg">
-                        <Group gap="xs">
-                            <History size={16} color="var(--mantine-color-blue-4)" />
-                            <Text size="sm" fw={700}>VERSION HISTORY</Text>
-                        </Group>
-                        <Badge variant="light" size="xs">{descriptions.length} Versions</Badge>
-                    </Group>
-
-                    <Timeline active={0} bulletSize={24} lineWidth={2} color="blue">
-                        {descriptions.map((desc: any, i: number) => (
-                            <Timeline.Item
-                                key={i}
-                                bullet={desc.isAiGenerated ? <Sparkles size={12} /> : <User size={12} />}
-                                title={
-                                    <Group justify="space-between" wrap="nowrap">
-                                        <Text size="sm" fw={600}>{desc.author || 'System'}</Text>
-                                        <Text size="xs" c="dimmed">{new Date(desc.timestamp).toLocaleDateString()}</Text>
-                                    </Group>
-                                }
-                            >
-                                <Paper withBorder p="xs" mt="xs" radius="sm" style={{ backgroundColor: 'rgba(255, 255, 255, 0.01)' }}>
-                                    <Text size="xs" lineClamp={2} c="dimmed">
-                                        {desc.description}
-                                    </Text>
-                                    <Group justify="flex-end" mt="xs">
-                                        <Button
-                                            variant="subtle"
-                                            size="compact-xs"
-                                            leftSection={<RotateCcw size={10} />}
-                                            color="blue"
-                                        >
-                                            Restore
-                                        </Button>
-                                    </Group>
-                                </Paper>
-                            </Timeline.Item>
-                        ))}
-                    </Timeline>
-                </Box>
-
+                {/* ─── History (collapsed by default) ─────────── */}
+                {descriptions.length > 0 && (
+                    <HistorySection descriptions={descriptions} />
+                )}
 
             </Stack>
         </ScrollArea>

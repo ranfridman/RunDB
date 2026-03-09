@@ -10,7 +10,7 @@ import SubScript from '@tiptap/extension-subscript';
 import { common, createLowlight } from 'lowlight';
 import CodeBlockLowlight from '@tiptap/extension-code-block-lowlight';
 import { ContentCard } from '../ContentCard/ContentCard';
-import { Collapse, Group, ActionIcon, Text, Stack, Button } from '@mantine/core';
+import { Collapse, Group, ActionIcon, Text, Stack, Button, Avatar } from '@mantine/core';
 import { useHover } from '@mantine/hooks';
 import { Pencil, Save } from 'lucide-react';
 
@@ -20,9 +20,10 @@ interface CustomRichTextEditorProps {
     initialContent: string;
     isEditable: boolean;
     onChange?: (content: string) => void;
+    rightSettings?: React.ReactNode;
 }
 
-export const CustomRichTextEditor = ({ initialContent, isEditable, onChange }: CustomRichTextEditorProps) => {
+export const CustomRichTextEditor = ({ initialContent, isEditable, onChange, rightSettings }: CustomRichTextEditorProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const { hovered, ref } = useHover();
 
@@ -60,29 +61,40 @@ export const CustomRichTextEditor = ({ initialContent, isEditable, onChange }: C
         }
     }, [isEditing, editor]);
 
+    // Update editor content when initialContent prop changes
+    useEffect(() => {
+        if (editor && initialContent !== editor.getHTML()) {
+            editor.commands.setContent(initialContent);
+        }
+    }, [initialContent, editor]);
+
     if (!editor) return null;
 
     return (
         <Stack gap="5" ref={ref}>
-            <Group gap="5" >
-                <Text fw={600} fz="md">
-                    Description
-                </Text>
-                {isEditable && !isEditing && (
-                    <ActionIcon
-                        size={16}
-                        variant={'transparent'}
-                        c={isEditing ? undefined : "dimmed"}
-                        color="blue"
-                        onClick={() => setIsEditing(!isEditing)}
-                        style={{
-                            opacity: isEditing || hovered ? 1 : 0,
-                            transition: 'opacity 0.1s ease',
-                        }}
-                    >
-                        <Pencil size={12} />
-                    </ActionIcon>
-                )}
+            <Group justify="space-between">
+
+                <Group gap="5" >
+                    <Text fw={600} fz="md">
+                        Description
+                    </Text>
+                    {isEditable && !isEditing && (
+                        <ActionIcon
+                            size={16}
+                            variant={'transparent'}
+                            c={isEditing ? undefined : "dimmed"}
+                            color="blue"
+                            onClick={() => setIsEditing(!isEditing)}
+                            style={{
+                                opacity: isEditing || hovered ? 1 : 0,
+                                transition: 'opacity 0.1s ease',
+                            }}
+                        >
+                            <Pencil size={12} />
+                        </ActionIcon>
+                    )}
+                </Group>
+                {rightSettings}
             </Group>
             <RichTextEditor
                 p={0}
@@ -136,16 +148,18 @@ export const CustomRichTextEditor = ({ initialContent, isEditable, onChange }: C
                             <RichTextEditor.Undo />
                             <RichTextEditor.Redo />
                         </RichTextEditor.ControlsGroup>
+                        <RichTextEditor.ControlsGroup>
 
-                        <ActionIcon
-                            ml="auto"
-                            size={26}
-                            color="var(--mantine-color-default-border)"
-                            variant="outline"
-                            onClick={() => setIsEditing(false)}
-                        >
-                            <Save size={12} color="light-dark(var(--mantine-color-gray-7),var(--mantine-color-dark-1))" />
-                        </ActionIcon>
+                            <ActionIcon
+                                ml="auto"
+                                size={26}
+                                color="var(--mantine-color-default-border)"
+                                variant="outline"
+                                onClick={() => setIsEditing(false)}
+                            >
+                                <Save size={12} color="light-dark(var(--mantine-color-gray-7),var(--mantine-color-dark-1))" />
+                            </ActionIcon>
+                        </RichTextEditor.ControlsGroup>
                     </RichTextEditor.Toolbar>
                 </Collapse>
 

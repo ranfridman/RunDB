@@ -16,14 +16,13 @@ const theme = createTheme({
 
 const DocsPanelContent = () => {
     const uniqueId = useId();
-    const [activeTab, setActiveTab] = useState<string>('overview');
-
-    // Zustand (localized) usage
     const isEditing = useDocsPanelStore(state => state.isEditing);
     const setIsEditing = useDocsPanelStore(state => state.setIsEditing);
     const selectedItemId = useDocsPanelStore(state => state.selectedItemId);
     const selectedItemType = useDocsPanelStore(state => state.selectedItemType);
     const setSelected = useDocsPanelStore(state => state.setSelected);
+    const activeTab = useDocsPanelStore(state => state.activeTab);
+    const setActiveTab = useDocsPanelStore(state => state.setActiveTab);
 
     const tabs = [
         { value: 'overview', label: 'Overview', icon: <FileText size={14} /> },
@@ -61,14 +60,14 @@ const DocsPanelContent = () => {
                 gap={0}
             // px="sm"
             >
-                <Box h="100%" w="100%" >
+                <Box h="100%" w="100%">
                     <DocsHeader
                         isEditing={isEditing}
                         onToggleEditing={() => setIsEditing(!isEditing)}
                     />
                     <Divider w="100%" mt="xs" />
-                    <Group gap={0} align='top'>
-                        <Box w={selectedItemId ? "calc(100% - 620px)" : "100%"}>
+                    <Group gap={0} align='top' >
+                        <Box w={selectedItemId ? "calc(100% - 601px)" : "100%"}>
 
                             <Group
                                 gap={0}

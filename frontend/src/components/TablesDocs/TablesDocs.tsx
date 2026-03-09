@@ -4,19 +4,16 @@ import { useIntersection } from '@mantine/hooks';
 import { motion, AnimatePresence } from 'framer-motion';
 import { typeToColor, typeToIcon2 } from '../TypesTheme/TypesTheme';
 import { Bot, Search } from 'lucide-react';
-import { useDocsPanelStore } from '../DocsPanel/DocsPanelStore';
+import { useDocsPanelStore, type DbData } from '../DocsPanel/DocsPanelStore';
 
-import mockDbData from '../DocsPanel/mockDbData.json';
 import AnimatedNumber from '../Animations/AnimatedNumber';
-
-const rawTables = mockDbData.schemas[0].tables;
 
 const BATCH = 15;
 
 // ---- Single row (memoised, panel content only mounts when expanded) ----
 
 const TableRow = memo(({ rawTable, isSelected, onClick }: {
-    rawTable: (typeof rawTables)[number];
+    rawTable: DbData['schemas'][number]['tables'][number];
     isSelected: boolean;
     onClick: () => void;
 }) => {
@@ -87,7 +84,14 @@ export const TablesDocs = ({ isEditing: isEditingProp }: TablesDocsProps) => {
     const selectedItemId = useDocsPanelStore(s => s.selectedItemId);
     const setSelected = useDocsPanelStore(s => s.setSelected);
     const storeIsEditing = useDocsPanelStore(s => s.isEditing);
+    const dbData = useDocsPanelStore(s => s.dbData);
     const isEditing = isEditingProp ?? storeIsEditing;
+
+    const allTables = useMemo(() => {
+        return dbData.schemas.flatMap(s => s.tables.map(t => ({ ...t, schema: s.name })));
+    }, [dbData]);
+
+    const rawTables = allTables;
 
     const [search, setSearch] = useState('');
     const [count, setCount] = useState(BATCH);
