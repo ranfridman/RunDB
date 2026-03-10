@@ -1,6 +1,6 @@
 import { useState, useEffect, useRef } from 'react';
 import { Box, Group, Stack, Text, UnstyledButton, ThemeIcon, Badge, Card, Grid, Divider, Tooltip, Collapse } from '@mantine/core';
-import { Fingerprint, Activity, Hash, ChevronRight, AlertCircle, CheckCircle2, Key, Link2, Columns, FileText } from 'lucide-react';
+import { Fingerprint, Activity, Hash, ChevronRight, AlertCircle, CheckCircle2, Key, Link2, Columns, FileText, Dot } from 'lucide-react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useDocsPanelStore } from '../DocsPanel/DocsPanelStore';
 import { CustomRichTextEditor } from '../RichTextEditor/CustomRichTextEditor';
@@ -103,6 +103,11 @@ const ColumnRow = ({ column, isSelected, onClick, isEditing }: {
                                 {column.isForeignKey && (
                                     <Tooltip label="Foreign Key" position="top" withArrow>
                                         <Box><Link2 size={12} color="var(--mantine-color-blue-5)" /></Box>
+                                    </Tooltip>
+                                )}
+                                {!column.isForeignKey && !column.isPrimaryKey && (
+                                    <Tooltip label="Normal Column" position="top" withArrow>
+                                        <Dot size={10} color="light-dark(var(--mantine-color-gray-9), var(--mantine-color-gray-6))" />
                                     </Tooltip>
                                 )}
                             </Group>

@@ -23,6 +23,9 @@
     border-radius: var(--mantine-radius-md);
     padding: var(--mantine-spacing-md);
     margin: 0 8px;
+    overflow: hidden;
+    min-height: 0;
+    min-width: 0;
     /* Vertical margin removed, handled by divider */
     transition: transform 0.2s ease, box-shadow 0.2s ease;
 }
@@ -104,6 +107,9 @@
     align-items: center;
     justify-content: center;
     min-height: 0;
+    min-width: 0;
+    overflow: hidden;
+    width: 100%;
 }
 
 .addEdge {

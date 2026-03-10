@@ -5,9 +5,10 @@ interface DroppableCellProps {
     id: string;
     children: React.ReactNode;
     className?: string; // Accept className for styling
+    style?: React.CSSProperties;
 }
 
-export const DroppableCell = ({ id, children, className }: DroppableCellProps) => {
+export const DroppableCell = ({ id, children, className, style: incomingStyle }: DroppableCellProps) => {
     const { setNodeRef, isOver } = useDroppable({
         id: id,
     });
@@ -20,6 +21,9 @@ export const DroppableCell = ({ id, children, className }: DroppableCellProps) =
         border: isOver ? '2px dashed var(--mantine-color-yellow-4)' : undefined,
         borderRadius: 'var(--mantine-radius-lg)',
         transition: 'border 0.2s ease',
+        minHeight: 0,
+        minWidth: 0,
+        ...incomingStyle
     };
 
     return (

@@ -11,7 +11,7 @@ interface DocsHeaderProps {
 export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
     const setSelected = useDocsPanelStore(state => state.setSelected);
     const dbData = useDocsPanelStore(state => state.dbData);
-    const dbName = dbData.database.name;
+    const dbName = dbData?.database?.name || '';
 
     return (
         <Group justify="space-between" py={3}>
@@ -27,7 +27,7 @@ export const DocsHeader = ({ isEditing, onToggleEditing }: DocsHeaderProps) => {
                     variant="light"
                     color="gray"
                     size="md"
-                    onClick={() => setSelected(dbData.schemas[0].name, 'schema')}
+                    onClick={() => dbData?.schemas?.[0] && setSelected(dbData.schemas[0].name, 'schema')}
                 >
                     <Settings2 size={16} />
                 </ActionIcon>

@@ -54,6 +54,7 @@
     text-overflow: ellipsis;
     font-size: var(--mantine-font-size-xs);
     height: 2em;
+    padding: 10px;
     display: flex;
     align-items: center;
 }

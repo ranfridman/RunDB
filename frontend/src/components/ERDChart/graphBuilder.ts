@@ -43,9 +43,6 @@ export function buildGraph(dbData: DbData): { nodes: Node[]; edges: Edge[] } {
     const maxHeight = Math.max(...Array.from(levelHeights.values()), 0);
 
     // 2. Place nodes
-    const tableNodes: Node[] = [];
-    const schemaBounds = new Map<string, { minX: number; minY: number; maxX: number; maxY: number }>();
-
     sortedLevels.forEach((level, levelIndex) => {
         const bucket = levelBuckets.get(level)!;
         const x = START_X + levelIndex * LEVEL_H_GAP;
@@ -63,22 +60,13 @@ export function buildGraph(dbData: DbData): { nodes: Node[]; edges: Edge[] } {
             }));
 
             const nodeHeight = HEADER_HEIGHT + 8 + columns.length * COL_ROW_HEIGHT;
-            const nodeWidth = 220; // Default width from CSS
             const y = currentY;
 
             currentY += nodeHeight + NODE_V_GAP;
 
             const nodeId = `${entry.schema}.${t.name}`;
 
-            // Update schema bounds
-            const bounds = schemaBounds.get(entry.schema) || { minX: Infinity, minY: Infinity, maxX: -Infinity, maxY: -Infinity };
-            bounds.minX = Math.min(bounds.minX, x);
-            bounds.minY = Math.min(bounds.minY, y);
-            bounds.maxX = Math.max(bounds.maxX, x + nodeWidth);
-            bounds.maxY = Math.max(bounds.maxY, y + nodeHeight);
-            schemaBounds.set(entry.schema, bounds);
-
-            tableNodes.push({
+            nodes.push({
                 id: nodeId,
                 type: 'tableNode',
                 position: { x, y },
@@ -131,44 +119,5 @@ export function buildGraph(dbData: DbData): { nodes: Node[]; edges: Edge[] } {
         });
     });
 
-    // 3. If multiple schemas, add group nodes and make table nodes relative
-    if (dbData.schemas.length > 1) {
-        const PADDING = 40;
-        schemaBounds.forEach((bounds, schemaName) => {
-            const groupNodeId = `group-${schemaName}`;
-            const groupX = bounds.minX - PADDING;
-            const groupY = bounds.minY - PADDING - 24; // Extra top room for label
-            const groupW = (bounds.maxX - bounds.minX) + (PADDING * 2);
-            const groupH = (bounds.maxY - bounds.minY) + (PADDING * 2) + 24;
-
-            nodes.push({
-                id: groupNodeId,
-                type: 'group',
-                data: { label: `SCHEMA: ${schemaName}` },
-                position: { x: groupX, y: groupY },
-                style: {
-                    width: groupW,
-                    height: groupH,
-                    backgroundColor: 'rgba(51, 154, 240, 0.03)',
-                    border: '2px solid rgba(51, 154, 240, 0.2)',
-                    borderRadius: '16px',
-                    pointerEvents: 'none',
-                    zIndex: -1,
-                },
-            });
-
-            // Adjust child nodes
-            tableNodes.forEach(n => {
-                if (n.data.schema === schemaName) {
-                    n.parentId = groupNodeId;
-                    n.position.x -= groupX;
-                    n.position.y -= groupY;
-                    n.extent = 'parent';
-                }
-            });
-        });
-    }
-
-    nodes.push(...tableNodes);
     return { nodes, edges };
 }

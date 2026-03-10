@@ -13,13 +13,15 @@ export const DraggablePanel = ({ id, children }: DraggablePanelProps) => {
     });
 
     const style = {
-        transform: CSS.Translate.toString(transform),
+        visibility: isDragging ? 'hidden' as const : 'visible' as const,
         zIndex: isDragging ? 100 : 1,
-        opacity: isDragging ? 0.8 : 1,
+        opacity: isDragging ? 0 : 1,
         height: '100%',
         width: '100%',
         display: 'flex',
-        flexDirection: 'column' as const
+        flexDirection: 'column' as const,
+        minHeight: 0,
+        minWidth: 0
     };
 
     return (

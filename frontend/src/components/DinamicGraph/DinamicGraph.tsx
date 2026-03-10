@@ -57,7 +57,8 @@ export const DinamicGraph = () => {
     }));
 
     const chartProps: any = {
-        h: 400,
+        h: '100%',
+        w: '100%',
         data,
         dataKey: config.xAxisKey,
         series,
@@ -107,7 +108,7 @@ export const DinamicGraph = () => {
     const ChartComponent = CHART_COMPONENTS[chartType];
     return (
         <Box
-            style={{ height: '100%', width: '100%', position: 'relative', minHeight: 400, display: 'flex', justifyContent: 'center', alignItems: 'center' }}
+            style={{ height: '100%', width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
             tabIndex={-1}
         >
             {!showOptions && (
@@ -132,7 +133,7 @@ export const DinamicGraph = () => {
 
             <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
                 {series.length === 0 ? (
-                    <Center style={{ height: 400 }}>
+                    <Center style={{ height: '100%', flex: 1 }}>
                         <Stack align="center" gap="xs" style={{ opacity: 0.4 }}>
                             <ThemeIcon variant="light" color="gray" size="xl" radius="xl">
                                 <BarChart2 size={20} />
