@@ -1,4 +1,5 @@
-import { Box } from '@mantine/core';
+import { Box, ActionIcon } from '@mantine/core';
+import { ArrowUp, ArrowDown, Plus } from 'lucide-react';
 import { BoardCell } from './BoardCell';
 import { DashboardRow, PanelRegistry } from './types';
 import classes from '../Dashboard.module.css';
@@ -12,6 +13,8 @@ interface BoardRowProps {
     onToggleSlot: (rowIndex: number) => void;
     onColResizeStart: (rowIndex: number) => void;
     onRowResizeStart: (rowIndex: number) => void;
+    onMoveRowUp?: () => void;
+    onMoveRowDown?: () => void;
 }
 
 export const BoardRow = ({
@@ -22,7 +25,9 @@ export const BoardRow = ({
     onRemovePanel,
     onToggleSlot,
     onColResizeStart,
-    onRowResizeStart
+    onRowResizeStart,
+    onMoveRowUp,
+    onMoveRowDown
 }: BoardRowProps) => {
     const isLastRow = rowIndex === totalRows - 1;
 
@@ -43,10 +48,44 @@ export const BoardRow = ({
                         colSplit={row.colSplit}
                         panelRegistry={panelRegistry}
                         onRemovePanel={onRemovePanel}
-                        onToggleSlot={onToggleSlot}
                         onColResizeStart={() => onColResizeStart(rowIndex)}
                     />
                 ))}
+
+                <div className={classes.rowArrows}>
+                    {rowIndex > 0 && (
+                        <ActionIcon
+                            variant="default"
+                            size="sm"
+                            className={classes.rowControlBtn}
+                            onClick={onMoveRowUp}
+                        >
+                            <ArrowUp size={14} />
+                        </ActionIcon>
+                    )}
+                    {!isLastRow && (
+                        <ActionIcon
+                            variant="default"
+                            size="sm"
+                            className={classes.rowControlBtn}
+                            onClick={onMoveRowDown}
+                        >
+                            <ArrowDown size={14} />
+                        </ActionIcon>
+                    )}
+                </div>
+                <div className={classes.rowPlus}>
+                    {row.panels.length === 1 && (
+                        <ActionIcon
+                            variant="default"
+                            size="sm"
+                            className={classes.rowControlBtn}
+                            onClick={() => onToggleSlot(rowIndex)}
+                        >
+                            <Plus size={14} />
+                        </ActionIcon>
+                    )}
+                </div>
             </Box>
 
             {!isLastRow && (

@@ -1,14 +1,57 @@
 .grid {
     display: flex;
     flex-direction: column;
-    padding: var(--mantine-spacing-xs);
+    padding: var(--mantine-spacing-xs) 0;
     overflow: hidden;
     background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
 }
 
 .row {
+    position: relative;
     display: flex;
     width: 100%;
+}
+
+.rowArrows,
+.rowPlus {
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    z-index: 20;
+    padding: 4px;
+}
+
+.rowArrows {
+    left: -0.4em;
+}
+
+.rowPlus {
+    right: -0.4em;
+}
+
+.row:hover .rowArrows,
+.row:hover .rowPlus {
+    opacity: 1;
+}
+
+.rowControlBtn {
+    transition: all 0.2s ease !important;
+    background: light-dark(var(--mantine-color-white), var(--mantine-color-dark-6)) !important;
+    border: 1px solid light-dark(var(--mantine-color-gray-3), var(--mantine-color-dark-4)) !important;
+    color: var(--mantine-color-dimmed) !important;
+    box-shadow: var(--mantine-shadow-sm) !important;
+}
+
+.rowControlBtn:hover {
+    color: var(--mantine-color-yellow-6) !important;
+    border-color: var(--mantine-color-yellow-filled) !important;
+    background: var(--mantine-color-yellow-light) !important;
+    transform: scale(1.05);
 }
 
 .cell {
@@ -123,26 +166,6 @@
     min-width: 0;
     overflow: hidden;
     width: 100%;
-}
-
-.addEdge {
-    position: absolute;
-    right: 0;
-    top: 0;
-    bottom: 0;
-    width: 20px;
-    opacity: 0;
-    cursor: pointer;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    background: var(--mantine-color-yellow-light);
-    transition: opacity 0.2s;
-    color: var(--mantine-color-yellow-6);
-}
-
-.cell:hover .addEdge {
-    opacity: 1;
 }
 
 .dashboardHeader {

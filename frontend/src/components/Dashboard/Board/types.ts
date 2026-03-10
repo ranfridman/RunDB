@@ -18,7 +18,7 @@ export interface DashboardRow {
 export type PanelRegistry = Record<PanelType, {
     label: string,
     icon: ReactNode,
-    component: ComponentType<{ panel: Panel }>
+    component: ComponentType<{ panel: Panel; headerRef?: HTMLElement | null }>
 }>;
 
 export interface PanelActionsContextType {

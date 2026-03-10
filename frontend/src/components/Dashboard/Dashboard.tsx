@@ -10,7 +10,7 @@ import { DinamicGraph } from '../DinamicGraph/DinamicGraph';
 export const panelRegistry: PanelRegistry = {
     table: { label: 'Table', icon: <Database size={14} />, component: DinamicGraph },
     graph: { label: 'Graph', icon: <PieChart size={14} />, component: DinamicGraph },
-    new: { label: 'New Slot', icon: <Plus size={14} />, component: () => <Text size="xs" c="dimmed">Empty</Text> },
+    new: { label: 'New Slot', icon: <Plus size={14} />, component: () => <Text size="xs" c="dimmed">Empty</Text> as any },
 };
 
 export const Dashboard = () => {

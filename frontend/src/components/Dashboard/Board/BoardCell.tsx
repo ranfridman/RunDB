@@ -1,6 +1,6 @@
 import { useState, useContext } from 'react';
 import { Box, Group, ActionIcon, Text, TextInput } from '@mantine/core';
-import { Plus, Trash2, Pencil, Check } from 'lucide-react';
+import { Trash2, Pencil, Check } from 'lucide-react';
 import { DraggablePanel } from './DraggablePanel';
 import { DroppableCell } from './DroppableCell';
 import { Panel, PanelRegistry, PanelActionsContext } from './types';
@@ -15,7 +15,6 @@ interface BoardCellProps {
     colSplit: number;
     panelRegistry: PanelRegistry;
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
-    onToggleSlot: (rowIndex: number) => void;
     onColResizeStart?: () => void;
 }
 
@@ -27,7 +26,6 @@ export const BoardCell = ({
     colSplit,
     panelRegistry,
     onRemovePanel,
-    onToggleSlot,
     onColResizeStart
 }: BoardCellProps) => {
     const d = panelRegistry[panel.type];
@@ -71,11 +69,6 @@ export const BoardCell = ({
                         <d.component panel={panel} headerRef={headerRef} />
                     </div>
                 </DraggablePanel>
-                {rowPanelsCount === 1 && (
-                    <div className={classes.addEdge} onClick={() => onToggleSlot(rowIndex)}>
-                        <Plus size={14} />
-                    </div>
-                )}
             </DroppableCell>
 
             {isFirstPanel && rowPanelsCount === 2 && (

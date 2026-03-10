@@ -84,6 +84,24 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
         }
     };
 
+    const handleMoveRowUp = (rowIndex: number) => {
+        if (rowIndex <= 0) return;
+        const newRows = [...rows];
+        const temp = newRows[rowIndex - 1];
+        newRows[rowIndex - 1] = newRows[rowIndex];
+        newRows[rowIndex] = temp;
+        onRowsChange(newRows);
+    };
+
+    const handleMoveRowDown = (rowIndex: number) => {
+        if (rowIndex >= rows.length - 1) return;
+        const newRows = [...rows];
+        const temp = newRows[rowIndex + 1];
+        newRows[rowIndex + 1] = newRows[rowIndex];
+        newRows[rowIndex] = temp;
+        onRowsChange(newRows);
+    };
+
     const getActivePanelData = () => {
         for (const row of rows) {
             const p = row.panels.find(p => p.id === activeId);
@@ -103,7 +121,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                 onMouseLeave={handleMouseUp}
                 h={height}
             >
-                <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden', paddingTop: '3px' }}>
+                <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }} px="sm" pt="xs">
                     {rows.map((row, ri) => (
                         <BoardRow
                             key={row.id}
@@ -115,6 +133,8 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                             onToggleSlot={onToggleSlot}
                             onColResizeStart={(index) => dragInfo.current = { type: 'v', rowIndex: index }}
                             onRowResizeStart={(index) => dragInfo.current = { type: 'h', rowIndex: index }}
+                            onMoveRowUp={() => handleMoveRowUp(ri)}
+                            onMoveRowDown={() => handleMoveRowDown(ri)}
                         />
                     ))}
                 </Box>
