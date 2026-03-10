@@ -1,6 +1,8 @@
 import { Text, ActionIcon, Group, Popover, SimpleGrid, UnstyledButton, ThemeIcon } from "@mantine/core";
-import { Plus, Table2, Columns, LayoutGrid, List, PieChart, LayoutDashboard, AlignLeft, Newspaper, Map, Calendar, FileEdit } from "lucide-react";
+import { Plus, Table2, PieChart } from "lucide-react";
 import { useState } from "react";
+import { EditableTitle } from "../EditableTitle";
+import classes from "../Dashboard.module.css";
 
 const MENU_ITEMS = [
     { label: 'Table', icon: Table2 },
@@ -9,9 +11,11 @@ const MENU_ITEMS = [
 
 interface DashboardHeaderProps {
     onAddPanel: (name: string) => void;
+    title: string;
+    onTitleChange: (newTitle: string) => void;
 }
 
-export const DashboardHeader = ({ onAddPanel }: DashboardHeaderProps) => {
+export const DashboardHeader = ({ onAddPanel, title, onTitleChange }: DashboardHeaderProps) => {
     const [popoverOpened, setPopoverOpened] = useState(false);
 
     const handleAddPanel = (name: string) => {
@@ -20,8 +24,16 @@ export const DashboardHeader = ({ onAddPanel }: DashboardHeaderProps) => {
     };
 
     return (
-        <Group px="md" mb="xl" gap="sm">
-            <Text fw={600} size="lg" c="var(--mantine-color-text)">Analysis by team</Text>
+        <Group px="md" gap="sm" wrap="nowrap">
+            <EditableTitle
+                value={title}
+                onSave={onTitleChange}
+                fontSize="lg"
+                fontWeight={600}
+                textTransform="none"
+                color="var(--mantine-color-text)"
+                className={classes.dashboardTitle}
+            />
             <Popover opened={popoverOpened} onChange={setPopoverOpened} width={360} position="bottom-start" withArrow shadow="md" radius="lg">
                 <Popover.Target>
                     <ActionIcon onClick={() => setPopoverOpened((o) => !o)} variant="light" color="gray" radius="xl" size="sm">

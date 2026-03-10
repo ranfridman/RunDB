@@ -1,4 +1,4 @@
-import { ReactNode, ComponentType } from 'react';
+import { ReactNode, ComponentType, createContext } from 'react';
 
 export type PanelType = 'graph' | 'table' | 'new';
 
@@ -20,3 +20,9 @@ export type PanelRegistry = Record<PanelType, {
     icon: ReactNode,
     component: ComponentType<{ panel: Panel }>
 }>;
+
+export interface PanelActionsContextType {
+    updatePanel: (id: string, updates: Partial<Panel>) => void;
+}
+
+export const PanelActionsContext = createContext<PanelActionsContextType | null>(null);

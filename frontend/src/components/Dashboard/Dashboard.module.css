@@ -1,9 +1,7 @@
 .grid {
     display: flex;
     flex-direction: column;
-    padding: var(--mantine-spacing-md);
-    gap: var(--mantine-spacing-md);
-    padding-top: var(--mantine-spacing-lg);
+    padding: var(--mantine-spacing-xs);
     overflow: hidden;
     background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
 }
@@ -88,9 +86,6 @@
     display: flex;
     justify-content: space-between;
     align-items: center;
-    padding-bottom: var(--mantine-spacing-xs);
-    border-bottom: 1px solid var(--mantine-color-gray-2);
-    margin-bottom: var(--mantine-spacing-sm);
 }
 
 .panelLabel {
@@ -98,6 +93,24 @@
     font-weight: 700;
     text-transform: uppercase;
     color: var(--mantine-color-dimmed);
+}
+
+.editableContainer {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.editableContainer:hover .editIconTrigger {
+    opacity: 1 !important;
+}
+
+.dashboardTitle {
+    font-size: var(--mantine-font-size-lg);
+    font-weight: 600;
+    color: var(--mantine-color-text);
 }
 
 .cellContent {

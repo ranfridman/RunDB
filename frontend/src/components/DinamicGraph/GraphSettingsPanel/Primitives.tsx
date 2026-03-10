@@ -1,4 +1,6 @@
-import { Box, Group, Switch, Text } from '@mantine/core';
+import { Box, Group, Switch, Text, Menu, UnstyledButton } from '@mantine/core';
+import { ChevronRight, Check } from 'lucide-react';
+import { useState } from 'react';
 
 /** Pill-button segmented control */
 export const PillGroup = ({ value, onChange, options }: {
@@ -46,7 +48,7 @@ export const ToggleRow = ({ label, checked, onChange }: {
     checked: boolean;
     onChange: (v: boolean) => void;
 }) => (
-    <Group justify="space-between" align="center" wrap="nowrap" style={{ padding: '1px 0' }}>
+    <Group justify="space-between" align="center" wrap="nowrap" style={{ padding: '6px 8px' }}>
         <Text size="xs" c={checked ? undefined : 'dimmed'} fw={checked ? 500 : 400}
             style={{ transition: 'color 0.15s' }}>
             {label}
@@ -61,3 +63,109 @@ export const ToggleRow = ({ label, checked, onChange }: {
         />
     </Group>
 );
+
+/** Menu row for selecting options */
+export const MenuRow = ({ icon: Icon, label, value, options, onSelect, opened, onOpenChange }: any) => {
+    const [hover, setHover] = useState(false);
+
+    const opts = options?.map((o: any) => typeof o === 'string' ? { label: o, value: o } : o) || [];
+
+    const content = (
+        <UnstyledButton
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            style={{
+                width: '100%',
+                padding: '6px 8px',
+                borderRadius: 4,
+                background: hover ? 'light-dark(rgba(0,0,0,0.03), rgba(255,255,255,0.05))' : 'transparent',
+                transition: 'background 0.1s'
+            }}
+        >
+            <Group justify="space-between" align="center" wrap="nowrap">
+                <Group gap={8} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                    {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
+                    <Text size="xs" fw={400} truncate="end" style={{ color: 'light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))' }}>{label}</Text>
+                </Group>
+                <Group gap={4} wrap="nowrap" style={{ flexShrink: 0, minWidth: 0, maxWidth: '50%' }}>
+                    {value && <Text size="xs" c="dimmed" truncate="end">{opts.find((o: any) => o.value === value)?.label || value}</Text>}
+                    {options && options.length > 0 && <ChevronRight size={14} style={{ color: 'var(--mantine-color-gray-4)', flexShrink: 0 }} />}
+                </Group>
+            </Group>
+        </UnstyledButton>
+    );
+
+    if (opts.length > 0) {
+        return (
+            <Menu
+                position="right-start"
+                offset={7}
+                shadow="md"
+                withinPortal={true}
+                closeOnItemClick={false}
+                opened={opened}
+                onChange={onOpenChange}
+            >
+                <Menu.Target>
+                    {content}
+                </Menu.Target>
+                <Menu.Dropdown>
+                    {opts.map((opt: any) => (
+                        <Menu.Item
+                            key={opt.value}
+                            onClick={() => onSelect?.(opt.value)}
+                            leftSection={value === opt.value ? <Check size={14} /> : <Box w={14} h={14} />}
+                        >
+                            {opt.label}
+                        </Menu.Item>
+                    ))}
+                </Menu.Dropdown>
+            </Menu>
+        );
+    }
+    return content;
+};
+/** Menu row for custom dropdown content */
+export const MenuRowCustom = ({ icon: Icon, label, value, children, opened, onOpenChange }: any) => {
+    const [hover, setHover] = useState(false);
+
+    return (
+        <Menu
+            position="right-start"
+            offset={15}
+            shadow="md"
+            withinPortal={true}
+            closeOnItemClick={false}
+            opened={opened}
+            onChange={onOpenChange}
+        >
+            <Menu.Target>
+                <UnstyledButton
+                    onMouseEnter={() => setHover(true)}
+                    onMouseLeave={() => setHover(false)}
+                    style={{
+                        width: '100%',
+                        padding: '6px 8px',
+                        borderRadius: 4,
+                        background: hover ? 'light-dark(rgba(0,0,0,0.03), rgba(255,255,255,0.05))' : 'transparent',
+                        transition: 'background 0.1s'
+                    }}
+                >
+                    <Group justify="space-between" align="center" wrap="nowrap">
+                        <Group gap={8} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                            {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
+                            <Text size="xs" fw={400} truncate="end" style={{ color: 'light-dark(var(--mantine-color-gray-8), var(--mantine-color-dark-0))' }}>{label}</Text>
+                        </Group>
+                        <Group gap={4} wrap="nowrap" style={{ flexShrink: 0, minWidth: 0, maxWidth: '50%' }}>
+                            {value && <Text size="xs" c="dimmed" truncate="end">{value}</Text>}
+                            <ChevronRight size={14} style={{ color: 'var(--mantine-color-gray-4)', flexShrink: 0 }} />
+                        </Group>
+                    </Group>
+                </UnstyledButton>
+            </Menu.Target>
+            <Menu.Dropdown p={0}>
+                {children}
+            </Menu.Dropdown>
+        </Menu>
+    );
+};

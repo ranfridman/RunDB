@@ -1,4 +1,5 @@
-import { useState } from 'react';
+import { useState, useEffect, memo } from 'react';
+import ReactDOM from 'react-dom';
 import {
     Box,
     Text,
@@ -8,8 +9,9 @@ import {
     Center,
     ThemeIcon,
     Tooltip,
+    Popover,
 } from '@mantine/core';
-import { Settings, BarChart2 } from 'lucide-react';
+import { BarChart2, Settings2 } from 'lucide-react';
 import '@mantine/charts/styles.css';
 
 import { ChartConfig, ChartType, CHART_SUPPORTED_PROPS } from './GraphSettingsPanel/types';
@@ -17,8 +19,9 @@ import { GraphSettingsPanel } from './GraphSettingsPanel/GraphSettingsPanel';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { data } from './mockData';
 import { CHART_COMPONENTS, CHART_ICONS, DEFAULT_COLORS } from './constants';
+import { Panel } from '../Dashboard/Board/types';
 
-export const DinamicGraph = () => {
+export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerRef?: HTMLElement | null }) => {
     const [chartType, setChartType] = useState<ChartType>('area');
     const [showOptions, setShowOptions] = useState(false);
 
@@ -100,35 +103,82 @@ export const DinamicGraph = () => {
         }));
         chartProps.dataKey = { x: 'x', y: 'y' };
         delete chartProps.series;
+    } else if (chartType === 'heatmap') {
+        const heatmapData: Record<string, number> = {};
+        const activeSeriesName = config.yAxisKeys[0];
+
+        data.forEach((d: any) => {
+            const rawX = d[config.xAxisKey] || '';
+            const dayParts = String(rawX).split(' ');
+            const dayStr = dayParts.length > 1 ? dayParts[1].padStart(2, '0') : '01';
+            const dateStr = `2024-01-${dayStr}`;
+
+            if (activeSeriesName && d[activeSeriesName] !== undefined) {
+                heatmapData[dateStr] = typeof d[activeSeriesName] === 'number' ? d[activeSeriesName] : (parseFloat(d[activeSeriesName]) || 0);
+            }
+        });
+
+        chartProps.data = heatmapData;
+        const daysLen = Object.keys(heatmapData).length;
+        chartProps.startDate = '2024-01-01';
+        chartProps.endDate = `2024-01-${String(Math.max(1, daysLen)).padStart(2, '0')}`;
+
+        if (activeSeriesName && config.seriesColors[activeSeriesName]) {
+            chartProps.colors = ['transparent', config.seriesColors[activeSeriesName]];
+        }
+
+        delete chartProps.series;
+        delete chartProps.dataKey;
+        delete chartProps.withLegend;
+        delete chartProps.gridAxis;
+        delete chartProps.tickLine;
+        delete chartProps.withXAxis;
+        delete chartProps.withYAxis;
     }
 
     CHART_SUPPORTED_PROPS[chartType].forEach(prop => {
         chartProps[prop] = config[prop as keyof ChartConfig];
     });
     const ChartComponent = CHART_COMPONENTS[chartType];
+    const settingsElement = (
+        <Popover width={300} position="bottom-end" shadow="md" keepMounted opened={showOptions} onChange={setShowOptions} trapFocus={false}>
+            <Popover.Target>
+                <div onPointerDown={(e) => e.stopPropagation()}>
+                    <Tooltip label="Chart settings" position="top" withArrow>
+                        <ActionIcon
+                            size="sm"
+                            variant={showOptions ? 'filled' : 'subtle'}
+                            color={showOptions ? 'blue' : 'gray'}
+                            onClick={() => setShowOptions((o) => !o)}
+                        >
+                            <Settings2 size={16} />
+                        </ActionIcon>
+                    </Tooltip>
+                </div>
+            </Popover.Target>
+            <Popover.Dropdown p={0}>
+                <GraphSettingsPanel
+                    panel={panel}
+                    chartType={chartType}
+                    setChartType={setChartType}
+                    config={config}
+                    setConfig={setConfig}
+                    onClose={() => setShowOptions(false)}
+                    availableKeys={availableKeys}
+                />
+            </Popover.Dropdown>
+        </Popover>
+    );
+
     return (
         <Box
             style={{ height: '100%', width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
             tabIndex={-1}
         >
-            {!showOptions && (
-                <ActionIcon
-                    size="md"
-                    variant="subtle"
-                    onClick={() => setShowOptions(true)}
-                    style={{
-                        position: 'absolute',
-                        top: 3,
-                        left: 10,
-                        zIndex: 25,
-                        backgroundColor: 'light-dark(rgba(0,0,0,0.05), rgba(255,255,255,0.05))',
-                        backdropFilter: 'blur(10px)',
-                        borderRadius: '50%',
-                        color: 'inherit'
-                    }}
-                >
-                    <Settings size={18} />
-                </ActionIcon>
+            {headerRef ? ReactDOM.createPortal(settingsElement, headerRef) : (
+                <Box pos="absolute" top={3} right={10} style={{ zIndex: 25 }}>
+                    {settingsElement}
+                </Box>
             )}
 
             <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
@@ -145,17 +195,6 @@ export const DinamicGraph = () => {
                     <ChartComponent {...chartProps} />
                 )}
             </ChartErrorBoundary>
-
-            {showOptions && (
-                <GraphSettingsPanel
-                    chartType={chartType}
-                    setChartType={setChartType}
-                    config={config}
-                    setConfig={setConfig}
-                    onClose={() => setShowOptions(false)}
-                    availableKeys={availableKeys}
-                />
-            )}
         </Box>
     );
-};
+});

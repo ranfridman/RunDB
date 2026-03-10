@@ -1,8 +1,10 @@
-import { Box, Group, ActionIcon, Text } from '@mantine/core';
-import { Plus, Trash2 } from 'lucide-react';
+import { useState, useContext } from 'react';
+import { Box, Group, ActionIcon, Text, TextInput } from '@mantine/core';
+import { Plus, Trash2, Pencil, Check } from 'lucide-react';
 import { DraggablePanel } from './DraggablePanel';
 import { DroppableCell } from './DroppableCell';
-import { Panel, PanelRegistry } from './types';
+import { Panel, PanelRegistry, PanelActionsContext } from './types';
+import { EditableTitle } from '../EditableTitle';
 import classes from '../Dashboard.module.css';
 
 interface BoardCellProps {
@@ -30,6 +32,8 @@ export const BoardCell = ({
 }: BoardCellProps) => {
     const d = panelRegistry[panel.type];
     const isFirstPanel = panelIndex === 0;
+    const actions = useContext(PanelActionsContext);
+    const [headerRef, setHeaderRef] = useState<HTMLDivElement | null>(null);
 
     return (
         <Box
@@ -41,22 +45,30 @@ export const BoardCell = ({
             <DroppableCell id={panel.id} className={classes.cell} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <DraggablePanel id={panel.id}>
                     <div className={classes.panelHeader}>
-                        <Group gap={6}>
-                            <Box c="yellow.6">{d.icon}</Box>
-                            <Text className={classes.panelLabel}>{panel.name || d.label}</Text>
+                        <Group gap={6} align="center">
+                            <Box c="yellow.6" style={{ display: 'flex', alignItems: 'center' }}>{d.icon}</Box>
+                            <EditableTitle
+                                value={panel.name || d.label}
+                                onSave={(newName) => actions?.updatePanel(panel.id, { name: newName })}
+                                placeholder={d.label}
+                                className={classes.panelLabel}
+                            />
                         </Group>
-                        <ActionIcon
-                            variant="subtle"
-                            size="xs"
-                            color="gray"
-                            onPointerDown={(e) => e.stopPropagation()}
-                            onClick={() => onRemovePanel(rowIndex, panelIndex)}
-                        >
-                            <Trash2 size={12} />
-                        </ActionIcon>
+                        <Group gap={4}>
+                            <div ref={setHeaderRef} style={{ display: 'flex', alignItems: 'center' }} />
+                            <ActionIcon
+                                variant="subtle"
+                                size="xs"
+                                color="gray"
+                                onPointerDown={(e) => e.stopPropagation()}
+                                onClick={() => onRemovePanel(rowIndex, panelIndex)}
+                            >
+                                <Trash2 size={12} />
+                            </ActionIcon>
+                        </Group>
                     </div>
                     <div className={classes.cellContent}>
-                        <d.component panel={panel} />
+                        <d.component panel={panel} headerRef={headerRef} />
                     </div>
                 </DraggablePanel>
                 {rowPanelsCount === 1 && (

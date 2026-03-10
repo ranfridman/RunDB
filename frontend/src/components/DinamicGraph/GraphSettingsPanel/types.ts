@@ -1,4 +1,4 @@
-export type ChartType = 'area' | 'bar' | 'line' | 'scatter' | 'pie';
+export type ChartType = 'area' | 'bar' | 'line' | 'scatter' | 'pie' | 'heatmap';
 
 export interface ChartConfig {
     withTooltip: boolean;
@@ -26,6 +26,7 @@ export const CHART_SUPPORTED_PROPS: Record<ChartType, (keyof ChartConfig)[]> = {
     line: ['curveType', 'strokeWidth', 'withDots'],
     scatter: [],
     pie: ['withLabels', 'labelsType', 'strokeWidth', 'tooltipDataSource'],
+    heatmap: [],
 };
 
 export interface TabProps {

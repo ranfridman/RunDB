@@ -1,10 +1,10 @@
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Box, Text, Group, Stack, Badge, RingProgress } from "@mantine/core"
 import { Database, PieChart, Plus } from "lucide-react"
 import classes from './Dashboard.module.css';
 import { Board } from './Board/Board';
 import { DashboardHeader } from './Header/DashboardHeader';
-import { DashboardRow, PanelType, PanelRegistry, Panel } from './Board/types';
+import { DashboardRow, PanelType, PanelRegistry, Panel, PanelActionsContext } from './Board/types';
 import { DinamicGraph } from '../DinamicGraph/DinamicGraph';
 
 export const panelRegistry: PanelRegistry = {
@@ -14,8 +14,9 @@ export const panelRegistry: PanelRegistry = {
 };
 
 export const Dashboard = () => {
+    const [title, setTitle] = useState('Analysis by team');
     const [rows, setRows] = useState<DashboardRow[]>([
-        { id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'table' }, { id: 'p2', type: 'graph' }] },
+        { id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'table', name: 'Main Data' }, { id: 'p2', type: 'graph', name: 'Analysis' }] },
     ]);
 
     const addPanel = (name: string) => {
@@ -39,18 +40,31 @@ export const Dashboard = () => {
         next[i] = r; return next;
     });
 
-    return (
-        <Box className={classes.grid} mih="80vh">
-            <DashboardHeader onAddPanel={addPanel} />
+    const updatePanel = (id: string, updates: Partial<Panel>) => {
+        setRows(prev => prev.map(row => ({
+            ...row,
+            panels: row.panels.map(p => p.id === id ? { ...p, ...updates } : p)
+        })));
+    };
 
-            <Board
-                rows={rows}
-                onRowsChange={setRows}
-                onRemovePanel={del}
-                onToggleSlot={toggle}
-                panelRegistry={panelRegistry}
-                height={rows.length * 400}
-            />
-        </Box>
+    return (
+        <PanelActionsContext.Provider value={{ updatePanel }}>
+            <Box className={classes.grid} mih="80vh">
+                <DashboardHeader
+                    onAddPanel={addPanel}
+                    title={title}
+                    onTitleChange={setTitle}
+                />
+
+                <Board
+                    rows={rows}
+                    onRowsChange={setRows}
+                    onRemovePanel={del}
+                    onToggleSlot={toggle}
+                    panelRegistry={panelRegistry}
+                    height={rows.length * 400}
+                />
+            </Box>
+        </PanelActionsContext.Provider>
     );
 };
