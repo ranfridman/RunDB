@@ -23,6 +23,7 @@ export type PanelRegistry = Record<PanelType, {
 
 export interface PanelActionsContextType {
     updatePanel: (id: string, updates: Partial<Panel>) => void;
+    isEditMode: boolean;
 }
 
 export const PanelActionsContext = createContext<PanelActionsContextType | null>(null);

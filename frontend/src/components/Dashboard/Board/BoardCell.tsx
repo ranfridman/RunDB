@@ -31,6 +31,7 @@ export const BoardCell = ({
     const d = panelRegistry[panel.type];
     const isFirstPanel = panelIndex === 0;
     const actions = useContext(PanelActionsContext);
+    const isEditMode = actions?.isEditMode ?? false;
     const [headerRef, setHeaderRef] = useState<HTMLDivElement | null>(null);
 
     return (
@@ -43,26 +44,29 @@ export const BoardCell = ({
             <DroppableCell id={panel.id} className={classes.cell} style={{ flex: 1, display: 'flex', flexDirection: 'column' }}>
                 <DraggablePanel id={panel.id}>
                     <div className={classes.panelHeader}>
-                        <Group gap={6} align="center">
+                        <Group gap={6} align="center" pb="sm">
                             <Box c="yellow.6" style={{ display: 'flex', alignItems: 'center' }}>{d.icon}</Box>
                             <EditableTitle
                                 value={panel.name || d.label}
                                 onSave={(newName) => actions?.updatePanel(panel.id, { name: newName })}
                                 placeholder={d.label}
                                 className={classes.panelLabel}
+                                disabled={!isEditMode}
                             />
                         </Group>
                         <Group gap={4}>
                             <div ref={setHeaderRef} style={{ display: 'flex', alignItems: 'center' }} />
-                            <ActionIcon
-                                variant="subtle"
-                                size="xs"
-                                color="gray"
-                                onPointerDown={(e) => e.stopPropagation()}
-                                onClick={() => onRemovePanel(rowIndex, panelIndex)}
-                            >
-                                <Trash2 size={12} />
-                            </ActionIcon>
+                            {isEditMode && (
+                                <ActionIcon
+                                    variant="subtle"
+                                    size="xs"
+                                    color="gray"
+                                    onPointerDown={(e) => e.stopPropagation()}
+                                    onClick={() => onRemovePanel(rowIndex, panelIndex)}
+                                >
+                                    <Trash2 size={12} />
+                                </ActionIcon>
+                            )}
                         </Group>
                     </div>
                     <div className={classes.cellContent}>
@@ -71,7 +75,7 @@ export const BoardCell = ({
                 </DraggablePanel>
             </DroppableCell>
 
-            {isFirstPanel && rowPanelsCount === 2 && (
+            {isEditMode && isFirstPanel && rowPanelsCount === 2 && (
                 <div
                     className={classes.vDivider}
                     onMouseDown={(e) => {

@@ -13,6 +13,8 @@ interface EditableTitleProps {
     color?: string;
     className?: string;
     autoSelect?: boolean;
+    disabled?: boolean;
+    style?: React.CSSProperties;
 }
 
 export const EditableTitle = ({
@@ -25,6 +27,8 @@ export const EditableTitle = ({
     color = 'dimmed',
     className,
     autoSelect = true,
+    disabled = false,
+    style,
 }: EditableTitleProps) => {
     const [isEditing, setIsEditing] = useState(false);
     const [tempValue, setTempValue] = useState(value);
@@ -54,6 +58,15 @@ export const EditableTitle = ({
         if (e.key === 'Escape') handleCancel();
     };
 
+    const measureRef = useRef<HTMLDivElement>(null);
+    const [inputWidth, setInputWidth] = useState(0);
+
+    useEffect(() => {
+        if (isEditing && measureRef.current) {
+            setInputWidth(measureRef.current.offsetWidth);
+        }
+    }, [isEditing, tempValue]);
+
     if (isEditing) {
         return (
             <Group
@@ -61,35 +74,58 @@ export const EditableTitle = ({
                 wrap="nowrap"
                 onPointerDown={(e) => e.stopPropagation()}
                 onClick={(e) => e.stopPropagation()}
+                style={{ ...style }}
             >
-                <TextInput
-                    ref={inputRef}
-                    size="xs"
-                    value={tempValue}
-                    onChange={(e) => setTempValue(e.currentTarget.value)}
-                    onKeyDown={handleKeyDown}
-                    onBlur={handleSave}
-                    autoFocus
-                    variant="filled"
-                    radius="sm"
-                    placeholder={placeholder}
-                    styles={{
-                        input: {
-                            height: 24,
-                            minHeight: 24,
+                <div style={{ position: 'relative', display: 'flex' }}>
+                    {/* Hidden element to measure text width */}
+                    <div
+                        ref={measureRef}
+                        style={{
+                            position: 'absolute',
+                            visibility: 'hidden',
+                            whiteSpace: 'pre',
+                            width: 'max-content',
+                            height: 0,
+                            padding: '0 8px',
                             fontSize: typeof fontSize === 'string' ? `var(--mantine-font-size-${fontSize})` : fontSize,
                             fontWeight,
-                            padding: '0 8px',
-                            minWidth: 120,
-                        }
-                    }}
-                />
+                            pointerEvents: 'none',
+                        }}
+                    >
+                        {tempValue || placeholder || ' '}
+                    </div>
+                    <TextInput
+                        ref={inputRef}
+                        size="xs"
+                        value={tempValue}
+                        onChange={(e) => setTempValue(e.currentTarget.value)}
+                        onKeyDown={handleKeyDown}
+                        onBlur={handleSave}
+                        autoFocus
+                        variant="filled"
+                        radius="sm"
+                        placeholder={placeholder}
+                        maxLength={128}
+                        styles={{
+                            input: {
+                                height: 24,
+                                minHeight: 24,
+                                fontSize: typeof fontSize === 'string' ? `var(--mantine-font-size-${fontSize})` : fontSize,
+                                fontWeight,
+                                padding: '0 8px',
+                                width: inputWidth ? `${inputWidth}px` : 'auto',
+                                minWidth: 60,
+                                transition: 'width 0.05s ease',
+                            },
+                        }}
+                    />
+                </div>
                 <ActionIcon
                     size="sm"
                     variant="light"
                     color="blue"
                     onMouseDown={(e) => {
-                        e.preventDefault(); // Prevent onBlur from firing first
+                        e.preventDefault();
                         handleSave();
                     }}
                 >
@@ -100,12 +136,37 @@ export const EditableTitle = ({
                     variant="light"
                     color="gray"
                     onMouseDown={(e) => {
-                        e.preventDefault(); // Prevent onBlur from firing first
+                        e.preventDefault();
                         handleCancel();
                     }}
                 >
                     <X size={14} />
                 </ActionIcon>
+            </Group>
+        );
+    }
+
+    if (disabled) {
+        return (
+            <Group
+                gap={6}
+                wrap="nowrap"
+                className={`${className || ''}`}
+                style={style}
+            >
+                <Text
+                    size={fontSize as any}
+                    fw={fontWeight}
+                    c={color}
+                    style={{
+                        textTransform,
+                        whiteSpace: 'nowrap',
+                        overflow: 'hidden',
+                        textOverflow: 'ellipsis'
+                    }}
+                >
+                    {value || placeholder}
+                </Text>
             </Group>
         );
     }
@@ -121,6 +182,7 @@ export const EditableTitle = ({
                     setIsEditing(true);
                 }}
                 className={`${classes.editableContainer} ${className || ''}`}
+                style={style}
             >
                 <Text
                     size={fontSize as any}

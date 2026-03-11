@@ -1,7 +1,8 @@
 import { Box, ActionIcon } from '@mantine/core';
 import { ArrowUp, ArrowDown, Plus } from 'lucide-react';
+import { useContext } from 'react';
 import { BoardCell } from './BoardCell';
-import { DashboardRow, PanelRegistry } from './types';
+import { DashboardRow, PanelRegistry, PanelActionsContext } from './types';
 import classes from '../Dashboard.module.css';
 
 interface BoardRowProps {
@@ -30,6 +31,8 @@ export const BoardRow = ({
     onMoveRowDown
 }: BoardRowProps) => {
     const isLastRow = rowIndex === totalRows - 1;
+    const actions = useContext(PanelActionsContext);
+    const isEditMode = actions?.isEditMode ?? false;
 
     return (
         <Box
@@ -52,43 +55,47 @@ export const BoardRow = ({
                     />
                 ))}
 
-                <div className={classes.rowArrows}>
-                    {rowIndex > 0 && (
-                        <ActionIcon
-                            variant="default"
-                            size="sm"
-                            className={classes.rowControlBtn}
-                            onClick={onMoveRowUp}
-                        >
-                            <ArrowUp size={14} />
-                        </ActionIcon>
-                    )}
-                    {!isLastRow && (
-                        <ActionIcon
-                            variant="default"
-                            size="sm"
-                            className={classes.rowControlBtn}
-                            onClick={onMoveRowDown}
-                        >
-                            <ArrowDown size={14} />
-                        </ActionIcon>
-                    )}
-                </div>
-                <div className={classes.rowPlus}>
-                    {row.panels.length === 1 && (
-                        <ActionIcon
-                            variant="default"
-                            size="sm"
-                            className={classes.rowControlBtn}
-                            onClick={() => onToggleSlot(rowIndex)}
-                        >
-                            <Plus size={14} />
-                        </ActionIcon>
-                    )}
-                </div>
+                {isEditMode && (
+                    <div className={classes.rowArrows}>
+                        {rowIndex > 0 && (
+                            <ActionIcon
+                                variant="default"
+                                size="sm"
+                                className={classes.rowControlBtn}
+                                onClick={onMoveRowUp}
+                            >
+                                <ArrowUp size={14} />
+                            </ActionIcon>
+                        )}
+                        {!isLastRow && (
+                            <ActionIcon
+                                variant="default"
+                                size="sm"
+                                className={classes.rowControlBtn}
+                                onClick={onMoveRowDown}
+                            >
+                                <ArrowDown size={14} />
+                            </ActionIcon>
+                        )}
+                    </div>
+                )}
+                {isEditMode && (
+                    <div className={classes.rowPlus}>
+                        {row.panels.length === 1 && (
+                            <ActionIcon
+                                variant="default"
+                                size="sm"
+                                className={classes.rowControlBtn}
+                                onClick={() => onToggleSlot(rowIndex)}
+                            >
+                                <Plus size={14} />
+                            </ActionIcon>
+                        )}
+                    </div>
+                )}
             </Box>
 
-            {!isLastRow && (
+            {isEditMode && !isLastRow && (
                 <div
                     className={classes.hDivider}
                     onMouseDown={(e) => {

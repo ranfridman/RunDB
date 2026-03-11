@@ -12,9 +12,10 @@ interface BoardProps {
     onToggleSlot: (rowIndex: number) => void;
     panelRegistry: PanelRegistry;
     height?: string | number;
+    isEditMode: boolean;
 }
 
-export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry, height }: BoardProps) => {
+export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry, height, isEditMode }: BoardProps) => {
     const [activeId, setActiveId] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragInfo = useRef<{ type: 'h' | 'v', rowIndex: number } | null>(null);
@@ -28,7 +29,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
     );
 
     const handleMouseMove = (e: React.MouseEvent) => {
-        if (!dragInfo.current || !containerRef.current) return;
+        if (!isEditMode || !dragInfo.current || !containerRef.current) return;
         const { type, rowIndex } = dragInfo.current;
         const rect = containerRef.current.getBoundingClientRect();
         const next = rows.map(r => ({ ...r }));
@@ -57,10 +58,12 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
     };
 
     const handleDragStart = (event: any) => {
+        if (!isEditMode) return;
         setActiveId(event.active.id);
     };
 
     const handleDragEnd = (event: DragEndEvent) => {
+        if (!isEditMode) return;
         const { active, over } = event;
         setActiveId(null);
         if (!over) return;
@@ -85,6 +88,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
     };
 
     const handleMoveRowUp = (rowIndex: number) => {
+        if (!isEditMode) return;
         if (rowIndex <= 0) return;
         const newRows = [...rows];
         const temp = newRows[rowIndex - 1];
@@ -94,6 +98,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
     };
 
     const handleMoveRowDown = (rowIndex: number) => {
+        if (!isEditMode) return;
         if (rowIndex >= rows.length - 1) return;
         const newRows = [...rows];
         const temp = newRows[rowIndex + 1];
@@ -116,7 +121,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
             <Box
                 className={classes.grid}
                 ref={containerRef}
-                onMouseMove={handleMouseMove}
+                onMouseMove={isEditMode ? handleMouseMove : undefined}
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 h={height}
@@ -140,7 +145,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                 </Box>
 
                 <DragOverlay>
-                    {activeId && activeData ? (
+                    {isEditMode && activeId && activeData ? (
                         <Box
                             className={classes.cell}
                             style={{

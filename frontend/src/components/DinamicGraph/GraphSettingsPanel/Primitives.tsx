@@ -1,4 +1,4 @@
-import { Box, Group, Switch, Text, Menu, UnstyledButton } from '@mantine/core';
+import { Box, Group, Switch, Text, Menu, UnstyledButton, ActionIcon, Tooltip } from '@mantine/core';
 import { ChevronRight, Check } from 'lucide-react';
 import { useState } from 'react';
 
@@ -43,16 +43,23 @@ export const PillGroup = ({ value, onChange, options }: {
 );
 
 /** Label + switch toggle row */
-export const ToggleRow = ({ label, checked, onChange }: {
+export const ToggleRow = ({ icon: Icon, label, checked, onChange }: {
+    icon?: any;
     label: string;
     checked: boolean;
     onChange: (v: boolean) => void;
 }) => (
     <Group justify="space-between" align="center" wrap="nowrap" style={{ padding: '6px 8px' }}>
-        <Text size="xs" c={checked ? undefined : 'dimmed'} fw={checked ? 500 : 400}
-            style={{ transition: 'color 0.15s' }}>
-            {label}
-        </Text>
+        <Group gap={8} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+            {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
+            <Text size="xs"
+                c={checked ? undefined : 'light-dark(var(--mantine-color-gray-8), var(--mantine-color-midnight-4))'}
+                fw={checked ? 500 : 400}
+                truncate="end"
+                style={{ transition: 'color 0.15s' }}>
+                {label}
+            </Text>
+        </Group>
         <Switch
             size="xs"
             checked={checked}
@@ -125,6 +132,74 @@ export const MenuRow = ({ icon: Icon, label, value, options, onSelect, opened, o
     }
     return content;
 };
+
+/** Row with label and pill-button segmented control */
+export const SegmentedRow = ({ icon: Icon, label, value, onChange, options }: {
+    icon?: any;
+    label: string;
+    value: string;
+    onChange: (v: string) => void;
+    options: string[];
+}) => (
+    <Group justify='space-between' py="3">
+        <Group gap={8} mb="xs" wrap="nowrap">
+            {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
+            <Text size="xs" fw={500} c="dimmed" truncate="end">
+                {label}
+            </Text>
+        </Group>
+        <PillGroup value={value} onChange={onChange} options={options} />
+    </Group>
+);
+/** Compact Button Group on the right */
+export const CompactSegmentRow = ({ icon: Icon, label, value, options, onChange }: {
+    icon?: any;
+    label: string;
+    value: string;
+    options: { value: string; icon: any; label: string }[];
+    onChange: (v: string) => void;
+}) => (
+    <Group justify="space-between" align="center" wrap="nowrap" h={32} px={8} py={4}>
+        <Group gap={8} wrap="nowrap" style={{ flex: 1 }}>
+            {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
+            <Text size="xs" fw={500} c="dimmed" truncate="end">{label}</Text>
+        </Group>
+
+        <Group gap={0} style={{
+            background: 'light-dark(rgba(0,0,0,0.03), rgba(255,255,255,0.05))',
+            borderRadius: 6,
+            padding: 2,
+            border: '1px solid light-dark(rgba(0,0,0,0.05), rgba(255,255,255,0.06))'
+        }}>
+            {options.map((opt) => {
+                const active = value === opt.value;
+                return (
+                    <Tooltip key={opt.value} label={opt.label} position="top" withArrow openDelay={400}>
+                        <ActionIcon
+                            size="sm"
+                            variant={active ? 'white' : 'subtle'}
+                            color={active ? 'blue' : 'gray'}
+                            onClick={() => onChange(opt.value)}
+                            style={{
+                                width: 28,
+                                height: 24,
+                                borderRadius: active ? 4 : 4,
+                                backgroundColor: active ? 'light-dark(#fff, rgba(255,255,255,0.1))' : 'transparent',
+                                boxShadow: active ? '0 1px 3px rgba(0,0,0,0.1)' : 'none',
+                                color: active ? 'var(--mantine-primary-color-filled)' : 'var(--mantine-color-dimmed)',
+                                transition: 'all 0.1s ease',
+                                border: 'none'
+                            }}
+                        >
+                            <opt.icon size={13} strokeWidth={active ? 2.5 : 2} />
+                        </ActionIcon>
+                    </Tooltip>
+                );
+            })}
+        </Group>
+    </Group>
+);
+
 /** Menu row for custom dropdown content */
 export const MenuRowCustom = ({ icon: Icon, label, value, children, opened, onOpenChange }: any) => {
     const [hover, setHover] = useState(false);

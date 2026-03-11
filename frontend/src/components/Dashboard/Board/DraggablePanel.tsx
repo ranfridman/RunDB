@@ -1,6 +1,7 @@
 import { useDraggable } from '@dnd-kit/core';
 import { Box } from '@mantine/core';
-import { CSS } from '@dnd-kit/utilities';
+import { useContext } from 'react';
+import { PanelActionsContext } from './types';
 
 interface DraggablePanelProps {
     id: string;
@@ -8,8 +9,12 @@ interface DraggablePanelProps {
 }
 
 export const DraggablePanel = ({ id, children }: DraggablePanelProps) => {
+    const actions = useContext(PanelActionsContext);
+    const isEditMode = actions?.isEditMode ?? false;
+
     const { attributes, listeners, setNodeRef, transform, isDragging } = useDraggable({
         id: id,
+        disabled: !isEditMode,
     });
 
     const style = {

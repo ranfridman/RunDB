@@ -175,6 +175,21 @@
     padding: 0 var(--mantine-spacing-xs);
 }
 
+.editToggle {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 6px 14px;
+    border-radius: 100px;
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    border: 1px solid transparent;
+    user-select: none;
+    height: 32px;
+}
+
 /* Remove graph focus outline */
 :global(.recharts-wrapper),
 :global(.recharts-wrapper *),

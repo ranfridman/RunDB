@@ -15,6 +15,7 @@ export const panelRegistry: PanelRegistry = {
 
 export const Dashboard = () => {
     const [title, setTitle] = useState('Analysis by team');
+    const [isEditMode, setIsEditMode] = useState(false);
     const [rows, setRows] = useState<DashboardRow[]>([
         { id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'table', name: 'Main Data' }, { id: 'p2', type: 'graph', name: 'Analysis' }] },
     ]);
@@ -48,12 +49,14 @@ export const Dashboard = () => {
     };
 
     return (
-        <PanelActionsContext.Provider value={{ updatePanel }}>
+        <PanelActionsContext.Provider value={{ updatePanel, isEditMode }}>
             <Box className={classes.grid} mih="80vh">
                 <DashboardHeader
                     onAddPanel={addPanel}
                     title={title}
                     onTitleChange={setTitle}
+                    isEditMode={isEditMode}
+                    onToggleEditMode={() => setIsEditMode(prev => !prev)}
                 />
 
                 <Board
@@ -63,6 +66,7 @@ export const Dashboard = () => {
                     onToggleSlot={toggle}
                     panelRegistry={panelRegistry}
                     height={rows.length * 400}
+                    isEditMode={isEditMode}
                 />
             </Box>
         </PanelActionsContext.Provider>

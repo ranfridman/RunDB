@@ -1,4 +1,4 @@
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, useContext } from 'react';
 import ReactDOM from 'react-dom';
 import {
     Box,
@@ -19,9 +19,11 @@ import { GraphSettingsPanel } from './GraphSettingsPanel/GraphSettingsPanel';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { data } from './mockData';
 import { CHART_COMPONENTS, CHART_ICONS, DEFAULT_COLORS } from './constants';
-import { Panel } from '../Dashboard/Board/types';
+import { Panel, PanelActionsContext } from '../Dashboard/Board/types';
 
 export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerRef?: HTMLElement | null }) => {
+    const actions = useContext(PanelActionsContext);
+    const isEditMode = actions?.isEditMode ?? false;
     const [chartType, setChartType] = useState<ChartType>('area');
     const [showOptions, setShowOptions] = useState(false);
 
@@ -147,8 +149,8 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
                     <Tooltip label="Chart settings" position="top" withArrow>
                         <ActionIcon
                             size="sm"
-                            variant={showOptions ? 'filled' : 'subtle'}
-                            color={showOptions ? 'blue' : 'gray'}
+                            variant='subtle'
+                            color='gray'
                             onClick={() => setShowOptions((o) => !o)}
                         >
                             <Settings2 size={16} />
@@ -175,10 +177,12 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
             style={{ height: '100%', width: '100%', position: 'relative', display: 'flex', flexDirection: 'column' }}
             tabIndex={-1}
         >
-            {headerRef ? ReactDOM.createPortal(settingsElement, headerRef) : (
-                <Box pos="absolute" top={3} right={10} style={{ zIndex: 25 }}>
-                    {settingsElement}
-                </Box>
+            {isEditMode && (
+                headerRef ? ReactDOM.createPortal(settingsElement, headerRef) : (
+                    <Box pos="absolute" top={3} right={10} style={{ zIndex: 25 }}>
+                        {settingsElement}
+                    </Box>
+                )
             )}
 
             <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
