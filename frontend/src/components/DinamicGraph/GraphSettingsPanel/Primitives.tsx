@@ -162,7 +162,7 @@ export const CompactSegmentRow = ({ icon: Icon, label, value, options, onChange 
     <Group justify="space-between" align="center" wrap="nowrap" h={32} px={8} py={4}>
         <Group gap={8} wrap="nowrap" style={{ flex: 1 }}>
             {Icon && <Icon size={14} style={{ color: 'var(--mantine-color-dimmed)', flexShrink: 0 }} />}
-            <Text size="xs" fw={500} c="dimmed" truncate="end">{label}</Text>
+            <Text size="xs" fw={500} c="var(--mantine-color-text)" truncate="end">{label}</Text>
         </Group>
 
         <Group gap={0} style={{

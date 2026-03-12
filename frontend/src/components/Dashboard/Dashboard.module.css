@@ -94,7 +94,7 @@
 }
 
 .hDivider {
-    height: 32px;
+    height: 24px;
     /* Fixed height for the gap */
     cursor: row-resize;
     margin: 0;
@@ -112,7 +112,7 @@
 
 .hDivider::after {
     content: '';
-    height: 3px;
+    height: 2px;
     /* Changed to vertical bar */
     width: 60px;
     background: var(--mantine-color-gray-4);

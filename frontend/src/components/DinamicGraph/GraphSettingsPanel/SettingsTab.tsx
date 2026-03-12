@@ -1,4 +1,4 @@
-import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt } from 'lucide-react';
+import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt, Percent, PaintBucket } from 'lucide-react';
 import { TabProps, CHART_SUPPORTED_PROPS } from './types';
 import { MenuRow, ToggleRow, CompactSegmentRow } from './Primitives';
 
@@ -34,7 +34,7 @@ export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey 
                     options={[
                         { value: 'default', icon: Layout, label: 'Default' },
                         { value: 'stacked', icon: Layers, label: 'Stacked' },
-                        { value: 'percent', icon: Maximize, label: 'Percent' }
+                        { value: 'percent', icon: Percent, label: 'Percent' }
                     ]}
                     onChange={(val: string) => setConfig(p => ({ ...p, type: val as any }))}
                 />
@@ -86,7 +86,7 @@ export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey 
                 supportedProps.includes('withGradient') && (
                     <ToggleRow
                         label="Gradient"
-                        icon={Palette}
+                        icon={PaintBucket}
                         checked={config.withGradient}
                         onChange={v => setConfig(p => ({ ...p, withGradient: v }))}
                     />
@@ -111,6 +111,17 @@ export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey 
                         icon={Type}
                         checked={config.withLabels}
                         onChange={v => setConfig(p => ({ ...p, withLabels: v }))}
+                    />
+                )
+            }
+
+            {
+                isPie && config.withLabels && (
+                    <ToggleRow
+                        label="Percentage"
+                        icon={Percent}
+                        checked={config.labelsType === 'percent'}
+                        onChange={v => setConfig(p => ({ ...p, labelsType: v ? 'percent' : 'value' }))}
                     />
                 )
             }

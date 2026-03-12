@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { ActionIcon, Group, Paper, ScrollArea, Stack, Text, TextInput, Divider, Menu, UnstyledButton, Box } from '@mantine/core';
-import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3 } from 'lucide-react';
+import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3, Palette } from 'lucide-react';
 import { ChartConfig, ChartType } from './types';
 import { Panel, PanelActionsContext } from '../../Dashboard/Board/types';
 import { DataColorsTab } from './DataColorsTab';
@@ -41,7 +41,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                 flexDirection: 'column'
             }}
         >
-            <ScrollArea.Autosize mah="100%" p="xs" offsetScrollbars scrollbarSize={2}>
+            <ScrollArea.Autosize scrollbars="y" mah="100%" p="xs" offsetScrollbars scrollbarSize={2}>
                 <Stack gap="xs">
                     {/* Header */}
                     <Group justify="space-between" align="center" >
@@ -53,7 +53,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
 
 
 
-                    <Divider opacity={0.5} mx="-sm" />
+                    <Divider opacity={0.5} />
 
                     {/* Layout Section */}
                     <Group justify="space-between" align="center" style={{ cursor: 'pointer' }}>
@@ -123,7 +123,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                     <Stack gap={2} mt="xs">
                         <Text size="xs" fw={500} c="dimmed" mb={4}>Data</Text>
                         <MenuRowCustom
-                            icon={Hash}
+                            icon={Palette}
                             label="Metrics & Colors"
                             value={`${config.yAxisKeys.length} active`}
                             opened={openSubMenu === 'y-metrics' || (openSubMenu && availableKeys.includes(openSubMenu))}

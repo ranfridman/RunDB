@@ -125,6 +125,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                 onMouseUp={handleMouseUp}
                 onMouseLeave={handleMouseUp}
                 h={height}
+                pt={0}
             >
                 <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }} px="sm" pt="xs">
                     {rows.map((row, ri) => (

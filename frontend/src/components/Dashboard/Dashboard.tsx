@@ -22,7 +22,7 @@ export const Dashboard = () => {
 
     const addPanel = (name: string) => {
         const type: PanelType = name === 'Chart' ? 'graph' : 'table';
-        setRows(prev => [{ id: `r${Date.now()}`, height: 1, colSplit: 100, panels: [{ id: `p${Date.now()}`, type, name }] }, ...prev]);
+        setRows(prev => [{ id: `r${Date.now()}`, height: 1, colSplit: 50, panels: [{ id: `p${Date.now()}`, type, name }] }, ...prev]);
     };
 
     const del = (ri: number, pi: number) => setRows(prev => {
@@ -36,9 +36,16 @@ export const Dashboard = () => {
     });
 
     const toggle = (i: number) => setRows(prev => {
-        const next = [...prev]; const r = { ...next[i] };
-        r.panels = r.panels.length === 1 ? [...r.panels, { id: `p${Date.now()}`, type: 'new' }] : [r.panels[0]];
-        next[i] = r; return next;
+        const next = [...prev];
+        const r = { ...next[i] };
+        if (r.panels.length === 1) {
+            r.panels = [...r.panels, { id: `p${Date.now()}`, type: 'new' }];
+            r.colSplit = 50;
+        } else {
+            r.panels = [r.panels[0]];
+        }
+        next[i] = r;
+        return next;
     });
 
     const updatePanel = (id: string, updates: Partial<Panel>) => {
@@ -50,7 +57,7 @@ export const Dashboard = () => {
 
     return (
         <PanelActionsContext.Provider value={{ updatePanel, isEditMode }}>
-            <Box className={classes.grid} mih="80vh">
+            <Box className={classes.grid} mih="89vh">
                 <DashboardHeader
                     onAddPanel={addPanel}
                     title={title}

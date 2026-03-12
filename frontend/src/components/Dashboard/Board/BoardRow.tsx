@@ -95,7 +95,7 @@ export const BoardRow = ({
                 )}
             </Box>
 
-            {isEditMode && !isLastRow && (
+            {(isEditMode && !isLastRow) ?
                 <div
                     className={classes.hDivider}
                     onMouseDown={(e) => {
@@ -104,7 +104,7 @@ export const BoardRow = ({
                         onRowResizeStart(rowIndex);
                     }}
                 />
-            )}
+                : <Box py="xs"></Box>}
         </Box>
     );
 };
