@@ -6,12 +6,16 @@ import { Board } from './Board/Board';
 import { DashboardHeader } from './Header/DashboardHeader';
 import { DashboardRow, PanelType, PanelRegistry, Panel, PanelActionsContext } from './Board/types';
 import { DinamicGraph } from '../DinamicGraph/DinamicGraph';
+import { ComplexTable } from '../ComplexTable/ComplexTable';
+import { data } from '../DinamicGraph/mockData';
 
 export const panelRegistry: PanelRegistry = {
-    table: { label: 'Table', icon: <Database size={14} />, component: DinamicGraph },
-    graph: { label: 'Graph', icon: <PieChart size={14} />, component: DinamicGraph },
+    table: { label: 'Table', icon: <Database size={14} />, component: (props: any) => <ComplexTable {...props} data={data} height="100%" /> },
+    graph: { label: 'Graph', icon: <PieChart size={14} />, component: (props: any) => <DinamicGraph {...props} data={data} /> },
     new: { label: 'New Slot', icon: <Plus size={14} />, component: () => <Text size="xs" c="dimmed">Empty</Text> as any },
 };
+
+
 
 export const Dashboard = () => {
     const [title, setTitle] = useState('Analysis by team');

@@ -1,4 +1,4 @@
-/* .tableCard {
+.tableCard {
     height: 100%;
     display: flex;
     flex-direction: column;
@@ -45,16 +45,18 @@
     display: flex;
     align-items: center;
     color: var(--mantine-color-blue-filled);
-} */
+}
+
 
 .cellContent {
-    max-width: 10em;
+    min-width: 80px;
+    max-width: 300px;
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
     font-size: var(--mantine-font-size-xs);
-    height: 2em;
-    padding: 10px;
+    height: 2.2em;
+    padding: 4px 12px;
     display: flex;
     align-items: center;
 }

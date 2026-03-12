@@ -1,4 +1,4 @@
-export const data = Array.from({ length: 40 }, (_, i) => {
+export const data = Array.from({ length: 10 }, (_, i) => {
     const day = i + 1;
     const date = new Date(2024, 0, day);
     const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });

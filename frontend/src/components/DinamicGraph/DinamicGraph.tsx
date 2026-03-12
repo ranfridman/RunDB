@@ -17,11 +17,10 @@ import '@mantine/charts/styles.css';
 import { ChartConfig, ChartType, CHART_SUPPORTED_PROPS } from './GraphSettingsPanel/types';
 import { GraphSettingsPanel } from './GraphSettingsPanel/GraphSettingsPanel';
 import { ChartErrorBoundary } from './ChartErrorBoundary';
-import { data } from './mockData';
 import { CHART_COMPONENTS, CHART_ICONS, DEFAULT_COLORS } from './constants';
 import { Panel, PanelActionsContext } from '../Dashboard/Board/types';
 
-export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerRef?: HTMLElement | null }) => {
+export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Panel, headerRef?: HTMLElement | null, data?: any[] }) => {
     const actions = useContext(PanelActionsContext);
     const isEditMode = actions?.isEditMode ?? false;
     const [chartType, setChartType] = useState<ChartType>('area');
@@ -56,6 +55,29 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
         };
     });
 
+    // Update config when data keys change (e.g. when data is first loaded or changed)
+    useEffect(() => {
+        if (data.length > 0) {
+            const currentKeys = Object.keys(data[0]);
+            const hasNewKeys = currentKeys.some(key => !config.yAxisKeys.includes(key) && key !== config.xAxisKey);
+            
+            if (hasNewKeys) {
+                const newColors = { ...config.seriesColors };
+                currentKeys.forEach((key, index) => {
+                    if (!newColors[key]) {
+                        newColors[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+                    }
+                });
+
+                setConfig(prev => ({
+                    ...prev,
+                    yAxisKeys: currentKeys.filter(key => key !== prev.xAxisKey),
+                    seriesColors: newColors
+                }));
+            }
+        }
+    }, [data]);
+
     const series = config.yAxisKeys.map((name) => ({
         name,
         color: config.seriesColors[name] || '#000',
@@ -76,10 +98,10 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
     };
 
     if (chartType === 'pie') {
-        const latestData = data[data.length - 1] as any;
+        const latestData = (data[data.length - 1] || {}) as any;
         chartProps.data = series.map((s) => ({
             name: s.name,
-            value: latestData[s.name],
+            value: latestData[s.name] || 0,
             color: s.color,
         }));
         chartProps.tooltipDataSource = config.tooltipDataSource;

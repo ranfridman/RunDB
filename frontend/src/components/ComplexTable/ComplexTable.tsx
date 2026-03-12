@@ -53,7 +53,7 @@ export function ComplexTable({
   title,
   searchable = true,
   maxRows = 10,
-  height = '50vh'
+  height = '100%'
 }: ComplexTableProps) {
   const [search, setSearch] = useState('')
   const [sortField, setSortField] = useState<string | null>(null)
@@ -160,7 +160,7 @@ export function ComplexTable({
   }
 
   return (
-    <Card radius="md" p={0} className={classes.tableCard} bg="transparent">
+    <Card radius="md" p={0} className={classes.tableCard} bg="transparent" h={height} style={{ border: 'none' }}>
       {(title || searchable) && (
         <Box p="sm" className={classes.tableHeader} >
           <Flex justify="space-between" align="center" gap="md">
@@ -196,15 +196,16 @@ export function ComplexTable({
 
       <Divider />
 
-      <ScrollArea scrollbarSize={4} h={height} offsetScrollbars>
-        <Table
-          c="gray.1"
-          verticalSpacing="xs"
-          horizontalSpacing="md"
-          highlightOnHover
-          className={classes.table}
-        // style={{ minWidth: columns.length * 120 }}
-        >
+      <Box style={{ flex: 1, minHeight: 0, position: 'relative' }}>
+        <ScrollArea h="100%" scrollbarSize={4} offsetScrollbars>
+          <Table
+            c="gray.1"
+            verticalSpacing="xs"
+            horizontalSpacing="md"
+            highlightOnHover
+            className={classes.table}
+            style={{ minWidth: Math.max(800, columns.length * 150) }}
+          >
           <Table.Thead className={classes.thead}>
             <Table.Tr>
               {columns.map(col => (
@@ -266,7 +267,8 @@ export function ComplexTable({
           </Table.Tbody>
         </Table>
       </ScrollArea>
-      <Divider />
+    </Box>
+    <Divider />
       <Group justify="space-between" align="center" px="md">
 
         <Pagination
