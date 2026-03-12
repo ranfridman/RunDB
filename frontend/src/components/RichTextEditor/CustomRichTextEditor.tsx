@@ -77,7 +77,7 @@ export const CustomRichTextEditor = ({ initialContent, isEditable, onChange, rig
 
                 <Group gap="5" >
                     {icon}
-                    <Text fw={600} fz="sm" >
+                    <Text fw={700} fz="sm" >
                         Description
                     </Text>
                     {isEditable && !isEditing && (

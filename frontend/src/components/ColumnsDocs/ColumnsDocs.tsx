@@ -25,6 +25,8 @@ export interface ColumnData {
 }
 
 interface ColumnsDocsProps {
+    schema: string;
+    tableName: string;
     columns: ColumnData[];
     isEditing?: boolean;
 }
@@ -81,7 +83,6 @@ const ColumnRow = ({ column, isSelected, onClick, isEditing }: {
                     onClick={onClick}
                     style={{
                         backgroundColor: isSelected ? 'var(--mantine-color-secondary-9)' : 'transparent',
-                        borderBottom: '1px solid var(--mantine-color-dark-6)',
                         transition: 'background-color 0.2s ease, border-color 0.2s ease'
                     }}
                     styles={{
@@ -155,7 +156,6 @@ const ColumnRow = ({ column, isSelected, onClick, isEditing }: {
                         </Grid.Col>
                     </Grid>
                 </UnstyledButton>
-
                 <Collapse in={isSelected}>
                     <Box px="md" pb="md" bg="var(--mantine-color-secondary-9)">
                         {shouldRenderEditor && (
@@ -174,7 +174,7 @@ const ColumnRow = ({ column, isSelected, onClick, isEditing }: {
 };
 
 
-export const ColumnsDocs = ({ columns, isEditing }: ColumnsDocsProps) => {
+export const ColumnsDocs = ({ schema, tableName, columns, isEditing }: ColumnsDocsProps) => {
     const setSelected = useDocsPanelStore(state => state.setSelected);
     const selectedItemId = useDocsPanelStore(state => state.selectedItemId);
     const selectedItemType = useDocsPanelStore(state => state.selectedItemType);
@@ -189,11 +189,12 @@ export const ColumnsDocs = ({ columns, isEditing }: ColumnsDocsProps) => {
     }, [selectedItemId, selectedItemType]);
 
     const handleColumnClick = (name: string) => {
-        if (expandedColumn === name) {
+        const fullId = `${schema}.${tableName}.${name}`;
+        if (expandedColumn === fullId) {
             setExpandedColumn(null); // Just collapse locally
         } else {
-            setSelected(name, 'column'); // Select globally so right panel picks it up
-            setExpandedColumn(name);
+            setSelected(fullId, 'column'); // Select globally so right panel picks it up
+            setExpandedColumn(fullId);
         }
     };
 
@@ -201,7 +202,7 @@ export const ColumnsDocs = ({ columns, isEditing }: ColumnsDocsProps) => {
         <Stack gap="xs">
             <Group gap="xs">
                 <Hash size={16} color="var(--mantine-color-blue-4)" />
-                <Text fw={700} size="sm" tt="uppercase">Columns</Text>
+                <Text fw={700} size="sm" >Columns</Text>
                 <Badge size="xs" variant="light" color="blue" radius="sm">{columns.length}</Badge>
             </Group>
 
@@ -232,7 +233,7 @@ export const ColumnsDocs = ({ columns, isEditing }: ColumnsDocsProps) => {
                         <ColumnRow
                             key={column.name}
                             column={column}
-                            isSelected={expandedColumn === column.name}
+                            isSelected={expandedColumn === `${schema}.${tableName}.${column.name}`}
                             onClick={() => handleColumnClick(column.name)}
                             isEditing={isEditing || false}
                         />

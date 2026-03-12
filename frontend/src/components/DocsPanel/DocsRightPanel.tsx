@@ -101,7 +101,7 @@ const ConnectionsSection = ({ dependsOn, dependents, onNavigate }: {
         <Stack gap="xs">
             <Group gap="xs">
                 <GitBranch size={16} color="var(--mantine-color-blue-4)" />
-                <Text fw={700} size="sm" tt="uppercase">Connections</Text>
+                <Text fw={700} size="sm" >Connections</Text>
                 <Badge size="xs" variant="light" color="blue" radius="sm">{totalConnections}</Badge>
             </Group>
 
@@ -214,11 +214,9 @@ export const DocsRightPanel = () => {
         setSelected(tableName, 'table');
     };
 
-    const itemIcon = selectedItemType === 'table'
+    const itemIcon = (selectedItemType === 'table' || selectedItemType === 'column')
         ? <Table2 size={14} />
-        : selectedItemType === 'column'
-            ? <Columns size={14} />
-            : <Layers size={14} />;
+        : <Layers size={14} />;
 
     const viewportRef = useRef<HTMLDivElement>(null);
 
@@ -247,36 +245,23 @@ export const DocsRightPanel = () => {
                                     color="blue"
                                     styles={{ root: { textTransform: 'uppercase' } }}
                                 >
-                                    {selectedItemType}
+                                    {(selectedItemType === 'table' || selectedItemType === 'column') ? 'table' : selectedItemType}
                                 </Badge>
                             </Group>
 
-                            {/* Breadcrumb */}
+                            {/* Breadcrumb & Title */}
                             <Group gap={4} wrap="nowrap" mt={6}>
-                                {selectedItemType === 'column' && (
+                                {(selectedItemType === 'table' || selectedItemType === 'column') && (
                                     <>
-                                        <UnstyledButton onClick={() => { }}>
-                                            <Text size="xs" c="dimmed" style={{ '&:hover': { textDecoration: 'underline' } }}>
-                                                {(itemData as any).schema}
-                                            </Text>
-                                        </UnstyledButton>
-                                        <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
-                                        <UnstyledButton onClick={() => handleNavigateToTable((itemData as any).table)}>
-                                            <Text size="xs" c="blue.4" fw={500} style={{ cursor: 'pointer', '&:hover': { textDecoration: 'underline' } }}>
-                                                {(itemData as any).table}
-                                            </Text>
-                                        </UnstyledButton>
+                                        <Text size="xs" c="dimmed">{tableData?.schema}</Text>
                                         <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
                                     </>
                                 )}
-                                {selectedItemType === 'table' && (
-                                    <>
-                                        <Text size="xs" c="dimmed">{(itemData as any).schema}</Text>
-                                        <ChevronRight size={10} color="var(--mantine-color-dark-3)" />
-                                    </>
-                                )}
-                                <Text size="md" fw={700}>{selectedItemId}</Text>
+                                <Text size="md" fw={700} c={selectedItemType !== 'schema' ? 'blue.4' : undefined}>
+                                    {selectedItemType === 'schema' ? itemData.name : tableData?.name}
+                                </Text>
                             </Group>
+
                         </Box>
 
                         <ActionIcon variant="subtle" color="gray" size="sm" onClick={() => setSelected(null, null)}>
@@ -329,7 +314,12 @@ export const DocsRightPanel = () => {
                         />
 
                         {/* Columns Section */}
-                        <ColumnsDocs columns={(tableData as any).columns} isEditing={isEditing} />
+                        <ColumnsDocs
+                            schema={tableData.schema}
+                            tableName={tableData.name}
+                            columns={(tableData as any).columns}
+                            isEditing={isEditing}
+                        />
 
                     </Suspense>
                 )}
