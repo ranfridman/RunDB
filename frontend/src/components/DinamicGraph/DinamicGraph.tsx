@@ -106,28 +106,9 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
         chartProps.dataKey = { x: 'x', y: 'y' };
         delete chartProps.series;
     } else if (chartType === 'heatmap') {
-        const heatmapData: Record<string, number> = {};
-        const activeSeriesName = config.yAxisKeys[0];
-
-        data.forEach((d: any) => {
-            const rawX = d[config.xAxisKey] || '';
-            const dayParts = String(rawX).split(' ');
-            const dayStr = dayParts.length > 1 ? dayParts[1].padStart(2, '0') : '01';
-            const dateStr = `2024-01-${dayStr}`;
-
-            if (activeSeriesName && d[activeSeriesName] !== undefined) {
-                heatmapData[dateStr] = typeof d[activeSeriesName] === 'number' ? d[activeSeriesName] : (parseFloat(d[activeSeriesName]) || 0);
-            }
-        });
-
-        chartProps.data = heatmapData;
-        const daysLen = Object.keys(heatmapData).length;
-        chartProps.startDate = '2024-01-01';
-        chartProps.endDate = `2024-01-${String(Math.max(1, daysLen)).padStart(2, '0')}`;
-
-        if (activeSeriesName && config.seriesColors[activeSeriesName]) {
-            chartProps.colors = ['transparent', config.seriesColors[activeSeriesName]];
-        }
+        chartProps.data = data;
+        chartProps.xAxisKey = config.xAxisKey;
+        chartProps.yAxisKeys = config.yAxisKeys;
 
         delete chartProps.series;
         delete chartProps.dataKey;
@@ -185,7 +166,7 @@ export const DinamicGraph = memo(({ panel, headerRef }: { panel?: Panel, headerR
                 )
             )}
 
-            <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${config.yAxisKeys.join(',')}`}>
+            <ChartErrorBoundary key={`${chartType}-${config.xAxisKey}-${(config.yAxisKeys || []).join(',')}`}>
                 {series.length === 0 ? (
                     <Center style={{ height: '100%', flex: 1 }}>
                         <Stack align="center" gap="xs" style={{ opacity: 0.4 }}>

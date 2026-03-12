@@ -1,22 +1,24 @@
-export const data = [
-    { date: 'Jan 01', Technology: 2400, Healthcare: 4000, Finance: 1200, Logistics: 3400, Energy: 2100, Retail: 5600 },
-    { date: 'Jan 02', Technology: 1398, Healthcare: 3000, Finance: 1550, Logistics: 2300, Energy: 2500, Retail: 4200 },
-    { date: 'Jan 03', Technology: 9800, Healthcare: 2000, Finance: 1400, Logistics: 3001, Energy: 2800, Retail: 3800 },
-    { date: 'Jan 04', Technology: 3908, Healthcare: 2780, Finance: 1890, Logistics: 4500, Energy: 2900, Retail: 2500 },
-    { date: 'Jan 05', Technology: 4800, Healthcare: 1890, Finance: 2390, Logistics: 4800, Energy: 3200, Retail: 3100 },
-    { date: 'Jan 06', Technology: 3800, Healthcare: 2390, Finance: 3490, Logistics: 3900, Energy: 3300, Retail: 4200 },
-    { date: 'Jan 07', Technology: 4300, Healthcare: 3490, Finance: 4300, Logistics: 2100, Energy: 3500, Retail: 5600 },
-    { date: 'Jan 08', Technology: 5100, Healthcare: 4100, Finance: 3200, Logistics: 2800, Energy: 3800, Retail: 4800 },
-    { date: 'Jan 09', Technology: 6200, Healthcare: 3800, Finance: 2100, Logistics: 3500, Energy: 4200, Retail: 3500 },
-    { date: 'Jan 10', Technology: 5800, Healthcare: 4500, Finance: 2800, Logistics: 4200, Energy: 4500, Retail: 2800 },
-    { date: 'Jan 11', Technology: 4500, Healthcare: 5200, Finance: 3500, Logistics: 5100, Energy: 4800, Retail: 1900 },
-    { date: 'Jan 12', Technology: 3800, Healthcare: 4800, Finance: 4200, Logistics: 4500, Energy: 5100, Retail: 3300 },
-    { date: 'Jan 13', Technology: 2900, Healthcare: 3500, Finance: 5100, Logistics: 3200, Energy: 5400, Retail: 4100 },
-    { date: 'Jan 14', Technology: 3500, Healthcare: 2900, Finance: 4800, Logistics: 2800, Energy: 5800, Retail: 5200 },
-    { date: 'Jan 15', Technology: 4200, Healthcare: 2100, Finance: 4200, Logistics: 2100, Energy: 6200, Retail: 5900 },
-    { date: 'Jan 16', Technology: 5100, Healthcare: 2800, Finance: 3500, Logistics: 1500, Energy: 6500, Retail: 6400 },
-    { date: 'Jan 17', Technology: 6300, Healthcare: 3500, Finance: 2800, Logistics: 2300, Energy: 6800, Retail: 7100 },
-    { date: 'Jan 18', Technology: 7200, Healthcare: 4200, Finance: 2100, Logistics: 3400, Energy: 7100, Retail: 7800 },
-    { date: 'Jan 19', Technology: 8100, Healthcare: 5100, Finance: 1500, Logistics: 4500, Energy: 7400, Retail: 8200 },
-    { date: 'Jan 20', Technology: 9000, Healthcare: 5800, Finance: 1200, Logistics: 5100, Energy: 7700, Retail: 8500 },
-];
+export const data = Array.from({ length: 40 }, (_, i) => {
+    const day = i + 1;
+    const date = new Date(2024, 0, day);
+    const dateStr = date.toLocaleDateString('en-US', { month: 'short', day: '2-digit' });
+
+    return {
+        date: dateStr,
+        Technology: Math.floor(2000 + Math.random() * 8000),
+        Healthcare: Math.floor(1500 + Math.random() * 5000),
+        Finance: Math.floor(1000 + Math.random() * 6000),
+        Logistics: Math.floor(2000 + Math.random() * 4000),
+        Energy: Math.floor(1800 + Math.random() * 7000),
+        Retail: Math.floor(2500 + Math.random() * 7500),
+        AI: Math.floor(3000 + Math.random() * 9000),
+        Cyber: Math.floor(4000 + Math.random() * 6000),
+        FinTech: Math.floor(2000 + Math.random() * 5500),
+        Ecommerce: Math.floor(3500 + Math.random() * 8500),
+        Gaming: Math.floor(1000 + Math.random() * 4500),
+        SaaS: Math.floor(5000 + Math.random() * 5000),
+        Cloud: Math.floor(4500 + Math.random() * 6000),
+        Mobile: Math.floor(1200 + Math.random() * 3800),
+        Infrastructure: Math.floor(3000 + Math.random() * 4000),
+    };
+});
