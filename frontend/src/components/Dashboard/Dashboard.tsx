@@ -8,11 +8,21 @@ import { DashboardRow, PanelType, PanelRegistry, Panel, PanelActionsContext } fr
 import { DinamicGraph } from '../DinamicGraph/DinamicGraph';
 import { ComplexTable } from '../ComplexTable/ComplexTable';
 import { data } from '../DinamicGraph/mockData';
+import { PromptInput } from "../PromptInput/PromptInput";
+import { EmptyDashboardCell } from "./EmptyDashboardCell/EmptyDashboardCell";
 
 export const panelRegistry: PanelRegistry = {
-    table: { label: 'Table', icon: <Database size={14} />, component: (props: any) => <ComplexTable {...props} data={data} height="100%" /> },
-    graph: { label: 'Graph', icon: <PieChart size={14} />, component: (props: any) => <DinamicGraph {...props} data={data} /> },
-    new: { label: 'New Slot', icon: <Plus size={14} />, component: () => <Text size="xs" c="dimmed">Empty</Text> as any },
+    table: {
+        label: 'Table',
+        icon: <Database size={14} />,
+        component: (props: any) => <ComplexTable {...props} data={props.panel.data || []} height="100%" />
+    },
+    graph: {
+        label: 'Graph',
+        icon: <PieChart size={14} />,
+        component: (props: any) => <DinamicGraph {...props} data={props.panel.data || []} />
+    },
+    new: { label: 'New Slot', icon: <Plus size={14} />, component: (props: any) => <EmptyDashboardCell {...props} /> },
 };
 
 
@@ -21,8 +31,12 @@ export const Dashboard = () => {
     const [title, setTitle] = useState('Analysis by team');
     const [isEditMode, setIsEditMode] = useState(false);
     const [rows, setRows] = useState<DashboardRow[]>([
-        { id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'table', name: 'Main Data' }, { id: 'p2', type: 'graph', name: 'Analysis' }] },
+        {
+            id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'new', name: 'Main Data' },
+            ]
+        },
     ]);
+    const [showPrompt, setShowPrompt] = useState(false);
 
     const addPanel = (name: string) => {
         const type: PanelType = name === 'Chart' ? 'graph' : 'table';
@@ -69,6 +83,19 @@ export const Dashboard = () => {
                     isEditMode={isEditMode}
                     onToggleEditMode={() => setIsEditMode(prev => !prev)}
                 />
+
+                {showPrompt && (
+                    <Box p="md" style={{ maxWidth: 800, margin: '0 auto', width: '100%' }}>
+                        <PromptInput
+                            modes={[]}
+                            onSubmit={(value) => {
+                                addPanel(value.length > 30 ? value.substring(0, 30) + '...' : value);
+                                setShowPrompt(false);
+                            }}
+                            onClose={() => setShowPrompt(false)}
+                        />
+                    </Box>
+                )}
 
                 <Board
                     rows={rows}

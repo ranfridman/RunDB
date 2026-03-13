@@ -6,6 +6,8 @@ export interface Panel {
     id: string;
     type: PanelType;
     name?: string;
+    data?: any[];
+    chartType?: string;
 }
 
 export interface DashboardRow {

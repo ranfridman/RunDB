@@ -23,8 +23,21 @@ import { Panel, PanelActionsContext } from '../Dashboard/Board/types';
 export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Panel, headerRef?: HTMLElement | null, data?: any[] }) => {
     const actions = useContext(PanelActionsContext);
     const isEditMode = actions?.isEditMode ?? false;
-    const [chartType, setChartType] = useState<ChartType>('area');
+    const [chartType, setChartType] = useState<ChartType>((panel?.chartType as ChartType) || 'area');
     const [showOptions, setShowOptions] = useState(false);
+
+    useEffect(() => {
+        if (panel?.chartType && panel.chartType !== chartType) {
+            setChartType(panel.chartType as ChartType);
+        }
+    }, [panel?.chartType, chartType]);
+
+    const handleSetChartType = (newType: ChartType) => {
+        setChartType(newType);
+        if (panel?.id && actions?.updatePanel) {
+            actions.updatePanel(panel.id, { chartType: newType });
+        }
+    };
 
     const availableKeys = Object.keys(data[0] || {});
 
@@ -55,13 +68,29 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
         };
     });
 
-    // Update config when data keys change (e.g. when data is first loaded or changed)
+    // Update config when data structure changes completely
     useEffect(() => {
-        if (data.length > 0) {
+        if (data && data.length > 0) {
             const currentKeys = Object.keys(data[0]);
-            const hasNewKeys = currentKeys.some(key => !config.yAxisKeys.includes(key) && key !== config.xAxisKey);
-            
-            if (hasNewKeys) {
+
+            // Re-evaluate keys if current keys are invalid or structure changed
+            const isXKeyValid = currentKeys.includes(config.xAxisKey);
+            const availableYKeys = config.yAxisKeys.filter(k => currentKeys.includes(k));
+            const hasNewKeys = currentKeys.some(k => !config.yAxisKeys.includes(k) && k !== config.xAxisKey);
+
+            if (!isXKeyValid || availableYKeys.length === 0 || hasNewKeys) {
+                // Pick a default X key: favor 'date', 'name', 'id' or just the first key
+                const newXKey = currentKeys.find(k => k.toLowerCase().includes('date')) ||
+                    currentKeys.find(k => k.toLowerCase().includes('name')) ||
+                    currentKeys.find(k => k.toLowerCase().includes('id')) ||
+                    currentKeys[0];
+
+                // For Y keys, take everything else. If only one key total, use it as Y as well (unlikely but safe)
+                let newYKeys = currentKeys.filter(k => k !== newXKey);
+                if (newYKeys.length === 0 && currentKeys.length > 0) {
+                    newYKeys = [currentKeys[0]];
+                }
+
                 const newColors = { ...config.seriesColors };
                 currentKeys.forEach((key, index) => {
                     if (!newColors[key]) {
@@ -71,7 +100,8 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
 
                 setConfig(prev => ({
                     ...prev,
-                    yAxisKeys: currentKeys.filter(key => key !== prev.xAxisKey),
+                    xAxisKey: newXKey,
+                    yAxisKeys: newYKeys,
                     seriesColors: newColors
                 }));
             }
@@ -165,7 +195,7 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
                 <GraphSettingsPanel
                     panel={panel}
                     chartType={chartType}
-                    setChartType={setChartType}
+                    setChartType={handleSetChartType}
                     config={config}
                     setConfig={setConfig}
                     onClose={() => setShowOptions(false)}

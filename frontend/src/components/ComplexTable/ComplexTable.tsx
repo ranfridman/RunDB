@@ -206,69 +206,69 @@ export function ComplexTable({
             className={classes.table}
             style={{ minWidth: Math.max(800, columns.length * 150) }}
           >
-          <Table.Thead className={classes.thead}>
-            <Table.Tr>
-              {columns.map(col => (
-                <Table.Th
-                  bg="gray.9"
-                  key={col.key}
-                  onClick={() => handleSort(col.key)}
-                  className={col.sortable !== false ? classes.sortableHeader : ''}
-                  style={{ width: col.width, maxWidth: 500 }}
-                  pr={0}
-                >
-                  <Group gap={4} wrap="nowrap"
-                    // justify={col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start'}
-                    justify="space-between"
+            <Table.Thead className={classes.thead}>
+              <Table.Tr>
+                {columns.map(col => (
+                  <Table.Th
+                    bg="gray.9"
+                    key={col.key}
+                    onClick={() => handleSort(col.key)}
+                    className={col.sortable !== false ? classes.sortableHeader : ''}
+                    style={{ width: col.width, maxWidth: 500 }}
+                    pr={0}
                   >
-                    <Text size="xs" fw={500} lineClamp={1} className={classes.headerText}>
-                      {col.label || col.key}
-                    </Text>
-                    {col.sortable !== false && (
-                      <Box className={classes.sortIcon} >
-                        {sortField === col.key ? (
-                          sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
-                        ) : (
-                          <ArrowUpDown size={12} style={{ opacity: 0.3 }} />
-                        )}
-                      </Box>
-                    )}
-                    <Divider orientation="vertical" p={0} mx={0} />
-                  </Group>
-                </Table.Th>
-              ))}
-            </Table.Tr>
-          </Table.Thead>
-
-          <Table.Tbody>
-            {displayData.map((row, i) => (
-              <Table.Tr key={i} >
-                {columns.map(col => {
-                  const cellData = row[col.key]
-                  const text = typeof cellData === 'object' && cellData !== null && 'text' in cellData ? cellData.text : String(cellData)
-                  const node = typeof cellData === 'object' && cellData !== null && 'node' in cellData ? cellData.node : cellData
-
-                  return (
-                    <Table.Td
-                      key={col.key}
-                      align={col.align}
-                      height={10}
+                    <Group gap={4} wrap="nowrap"
+                      // justify={col.align === 'right' ? 'flex-end' : col.align === 'center' ? 'center' : 'flex-start'}
+                      justify="space-between"
                     >
-                      <Box className={classes.cellContent} title={text}>
-                        {col.render ? col.render(cellData, row) : (
-                          node || <Text size="xs" c="dimmed">—</Text>
-                        )}
-                      </Box>
-                    </Table.Td>
-                  )
-                })}
+                      <Text size="xs" fw={500} lineClamp={1} className={classes.headerText}>
+                        {col.label || col.key}
+                      </Text>
+                      {col.sortable !== false && (
+                        <Box className={classes.sortIcon} >
+                          {sortField === col.key ? (
+                            sortDirection === 'asc' ? <ArrowUp size={12} /> : <ArrowDown size={12} />
+                          ) : (
+                            <ArrowUpDown size={12} style={{ opacity: 0.3 }} />
+                          )}
+                        </Box>
+                      )}
+                      <Divider orientation="vertical" p={0} mx={0} />
+                    </Group>
+                  </Table.Th>
+                ))}
               </Table.Tr>
-            ))}
-          </Table.Tbody>
-        </Table>
-      </ScrollArea>
-    </Box>
-    <Divider />
+            </Table.Thead>
+
+            <Table.Tbody>
+              {displayData.map((row, i) => (
+                <Table.Tr key={i} >
+                  {columns.map(col => {
+                    const cellData = row[col.key]
+                    const text = typeof cellData === 'object' && cellData !== null && 'text' in cellData ? cellData.text : String(cellData)
+                    const node = typeof cellData === 'object' && cellData !== null && 'node' in cellData ? cellData.node : cellData
+
+                    return (
+                      <Table.Td
+                        key={col.key}
+                        align={col.align}
+                        height={10}
+                      >
+                        <Box className={classes.cellContent} title={text}>
+                          {col.render ? col.render(cellData, row) : (
+                            node || <Text size="xs" c="dimmed">—</Text>
+                          )}
+                        </Box>
+                      </Table.Td>
+                    )
+                  })}
+                </Table.Tr>
+              ))}
+            </Table.Tbody>
+          </Table>
+        </ScrollArea>
+      </Box>
+      <Divider />
       <Group justify="space-between" align="center" px="md">
 
         <Pagination
