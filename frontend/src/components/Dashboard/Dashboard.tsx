@@ -38,9 +38,27 @@ export const Dashboard = () => {
     ]);
     const [showPrompt, setShowPrompt] = useState(false);
 
-    const addPanel = (name: string) => {
-        const type: PanelType = name === 'Chart' ? 'graph' : 'table';
-        setRows(prev => [{ id: `r${Date.now()}`, height: 1, colSplit: 50, panels: [{ id: `p${Date.now()}`, type, name }] }, ...prev]);
+    const addPanel = (label: string) => {
+        const configs: Record<string, Partial<Panel>> = {
+            'AI': { type: 'new', initialView: 'ai', name: 'AI Analysis' },
+            'SQL': { type: 'new', initialView: 'sql', name: 'SQL Query' },
+            'Empty': { type: 'new', name: 'New Slot' },
+            'Chart': { type: 'graph', data, name: 'Chart' },
+            'Table': { type: 'table', data, name: 'Table' }
+        };
+
+        const config = configs[label] || configs['Empty'];
+
+        setRows(prev => [{
+            id: `r${Date.now()}`,
+            height: 1,
+            colSplit: 50,
+            panels: [{
+                id: `p${Date.now()}`,
+                type: 'new',
+                ...config,
+            }]
+        }, ...prev]);
     };
 
     const del = (ri: number, pi: number) => setRows(prev => {

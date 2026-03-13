@@ -1,10 +1,11 @@
 import { Text, ActionIcon, Popover, SimpleGrid, UnstyledButton, ThemeIcon } from "@mantine/core";
-import { Plus, Table2, PieChart } from "lucide-react";
+import { Plus, Table2, Sparkles, CodeXml } from "lucide-react";
 import { useState } from "react";
 
 const MENU_ITEMS = [
-    { label: 'Table', icon: Table2 },
-    { label: 'Chart', icon: PieChart },
+    { label: 'AI', icon: Sparkles, color: 'violet' },
+    { label: 'SQL', icon: CodeXml, color: 'teal' },
+    { label: 'Empty', icon: Plus, color: 'gray' },
 ];
 
 interface AddPanelMenuProps {
@@ -27,7 +28,7 @@ export const AddPanelMenu = ({ onAddPanel }: AddPanelMenuProps) => {
                 </ActionIcon>
             </Popover.Target>
             <Popover.Dropdown p="lg">
-                <Text size="sm" fw={600} mb="xl" c="dimmed">Start from scratch</Text>
+                <Text size="sm" fw={600} mb="md" c="dimmed">Start from scratch</Text>
                 <SimpleGrid cols={4} spacing="md" verticalSpacing="xl">
                     {MENU_ITEMS.map((item) => (
                         <UnstyledButton
@@ -43,7 +44,7 @@ export const AddPanelMenu = ({ onAddPanel }: AddPanelMenuProps) => {
                             onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
                             onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
                         >
-                            <ThemeIcon variant="transparent" c="var(--mantine-color-text)" size="md">
+                            <ThemeIcon variant="transparent" c={item.color} size="md">
                                 <item.icon size={26} strokeWidth={1.5} />
                             </ThemeIcon>
                             <Text size="11px" fw={500} c="var(--mantine-color-text)">{item.label}</Text>

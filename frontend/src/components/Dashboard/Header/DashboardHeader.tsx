@@ -18,7 +18,7 @@ export const DashboardHeader = ({ onAddPanel, title, onTitleChange, isEditMode, 
 
     return (
         <Group px="md" gap={0} wrap="nowrap" justify="space-between">
-            <Group gap={3}>
+            <Group gap={3} align="center">
 
                 <EditableTitle
                     value={title}

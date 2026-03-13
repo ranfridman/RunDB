@@ -14,7 +14,7 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
     const theme = useMantineTheme();
     const actions = useContext(PanelActionsContext);
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
-    const [view, setView] = useState<'options' | 'ai' | 'sql' | 'visual'>('options');
+    const [view, setView] = useState<'options' | 'ai' | 'sql' | 'visual'>(panel.initialView || 'options');
     const [sqlValue, setSqlValue] = useState('SELECT * FROM tables LIMIT 10;');
     const [visualValue, setVisualValue] = useState('[\n  { "name": "A", "value": 10, "category": "alpha", "score": 88, "active": true },\n  { "name": "B", "value": 24, "category": "beta", "score": 72, "active": false },\n  { "name": "C", "value": 37, "category": "alpha", "score": 95, "active": true },\n  { "name": "D", "value": 15, "category": "gamma", "score": 61, "active": true },\n  { "name": "E", "value": 52, "category": "beta", "score": 79, "active": false }\n]');
     const handleAdd = (type: 'table' | 'graph', method: 'Visual' | 'SQL' | 'AI') => {

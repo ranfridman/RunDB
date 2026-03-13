@@ -8,6 +8,7 @@ export interface Panel {
     name?: string;
     data?: any[];
     chartType?: string;
+    initialView?: 'options' | 'ai' | 'sql' | 'visual';
 }
 
 export interface DashboardRow {
