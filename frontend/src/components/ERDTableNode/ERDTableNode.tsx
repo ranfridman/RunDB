@@ -38,7 +38,7 @@ export const ERDTableNode = memo(({ data }: { data: TableNodeData }) => {
                             key={col.name}
                             className={classes}
                             onClick={() => {
-                                setSelected(col.name, 'column');
+                                setSelected(`${data.schema}.${data.label}.${col.name}`, 'column');
                             }}
                             style={{ cursor: 'pointer' }}
                         >
