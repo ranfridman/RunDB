@@ -47,7 +47,7 @@ const HeatmapCell = memo(({
             }}
             onMouseEnter={(e) => {
                 if (width >= 12 && height >= 12) {
-                    (e.currentTarget as HTMLElement).style.transform = 'scale(1.1)';
+                    (e.currentTarget as HTMLElement).style.transform = 'scale(1.05)';
                 }
             }}
             onMouseLeave={(e) => {
@@ -62,7 +62,7 @@ const HeatmapCell = memo(({
 
     return (
         <Tooltip
-            label={`${label} - ${xLabel}: ${val}`}
+            label={val}
             withArrow
             position="top"
             openDelay={50}

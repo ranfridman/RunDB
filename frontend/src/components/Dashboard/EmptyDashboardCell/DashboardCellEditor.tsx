@@ -67,21 +67,25 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
             style={{ width: '100%', maxWidth: 700 }}
         >
             <Stack gap="md" w="100%" h="100%">
-                <Box pos="relative" mb="sm" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-                    <Group gap="xs">
-                        {current.icon}
-                        <Text fw={600} size="sm" variant="gradient" gradient={current.gradient}>
-                            {current.title}
-                        </Text>
-                    </Group>
-                    <ActionIcon variant="subtle" color="gray" onClick={onClose} pos="absolute" right={0}>
-                        <X size={18} />
-                    </ActionIcon>
-                </Box>
+                {step === 'input' && (
+                    <Box pos="relative" mb="sm" style={{ display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+                        <Group gap="xs">
+                            {current.icon}
+                            <Text fw={600} size="sm" variant="gradient" gradient={current.gradient}>
+                                {current.title}
+                            </Text>
+                        </Group>
+                        <ActionIcon variant="subtle" color="gray" onClick={onClose} pos="absolute" right={0}>
+                            <X size={18} />
+                        </ActionIcon>
+                    </Box>
+                )}
 
                 <Box w="100%">
                     {step === 'pick-type' ? (
                         <VisualTypeSelector
+                            onClose={onClose}
+                            onBack={() => setStep('input')}
                             onSelect={(type) => {
                                 const panelType = type === 'table' ? 'table' : 'graph';
                                 onSubmit(
@@ -108,10 +112,12 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                                 style={{
                                     border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[4]})`,
                                     borderRadius: theme.radius.lg,
-                                    backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[6]})`,
+                                    backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[8]})`,
                                     position: 'relative',
                                     minHeight: rem(120),
                                     display: 'flex',
+
+
                                     flexDirection: 'column'
                                 }}
                             >
@@ -152,7 +158,7 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                                 style={{
                                     border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[4]})`,
                                     borderRadius: theme.radius.lg,
-                                    backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[6]})`,
+                                    backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[8]})`,
                                     position: 'relative',
                                     minHeight: rem(120),
                                     display: 'flex',

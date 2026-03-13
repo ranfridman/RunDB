@@ -50,7 +50,7 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
         return {
             withTooltip: true,
             withLegend: false,
-            gridAxis: 'x',
+            gridAxis: 'xy',
             tickLine: 'y',
             type: 'default',
             curveType: 'linear',
@@ -65,6 +65,9 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
             xAxisKey: 'date',
             yAxisKeys: availableKeys.filter(key => key !== 'date'),
             seriesColors: initialColors,
+            withPolarGrid: true,
+            withPolarAngleAxis: true,
+            withPolarRadiusAxis: false,
         };
     });
 
@@ -169,6 +172,15 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
         delete chartProps.tickLine;
         delete chartProps.withXAxis;
         delete chartProps.withYAxis;
+    } else if (chartType === 'radar') {
+        chartProps.withPolarGrid = config.withPolarGrid;
+        chartProps.withPolarAngleAxis = config.withPolarAngleAxis;
+        chartProps.withPolarRadiusAxis = config.withPolarRadiusAxis;
+
+        delete chartProps.gridAxis;
+        delete chartProps.tickLine;
+        delete chartProps.withXAxis;
+        delete chartProps.withYAxis;
     }
 
     CHART_SUPPORTED_PROPS[chartType].forEach(prop => {
@@ -176,7 +188,7 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
     });
     const ChartComponent = CHART_COMPONENTS[chartType];
     const settingsElement = (
-        <Popover width={300} position="bottom-end" shadow="md" keepMounted opened={showOptions} onChange={setShowOptions} trapFocus={false}>
+        <Popover width={300} position="bottom-end" keepMounted opened={showOptions} onChange={setShowOptions} trapFocus={false}>
             <Popover.Target>
                 <div onPointerDown={(e) => e.stopPropagation()}>
                     <Tooltip label="Chart settings" position="top" withArrow>
@@ -191,7 +203,7 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
                     </Tooltip>
                 </div>
             </Popover.Target>
-            <Popover.Dropdown p={0}>
+            <Popover.Dropdown style={{ border: "none" }} p={0}>
                 <GraphSettingsPanel
                     panel={panel}
                     chartType={chartType}

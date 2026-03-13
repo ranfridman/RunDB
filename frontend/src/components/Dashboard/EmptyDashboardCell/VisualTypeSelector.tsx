@@ -1,106 +1,87 @@
 import React from 'react';
-import { Group, Paper, Stack, Text, UnstyledButton, useMantineTheme, SimpleGrid, rem, ThemeIcon, Box } from '@mantine/core';
-import { Table as TableIcon, ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, Grid3x3, ArrowRight } from 'lucide-react';
+import { ActionIcon, Box, Group, SimpleGrid, Stack, Text, ThemeIcon, UnstyledButton } from '@mantine/core';
+import { ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, Grid3x3, Table as TableIcon, ArrowLeft, X, Hexagon } from 'lucide-react';
 import { motion } from 'framer-motion';
+import classes from './VisualTypeSelector.module.css';
 
-export type VisualType = 'table' | 'area' | 'bar' | 'line' | 'scatter' | 'pie' | 'heatmap';
+export type VisualType = 'table' | 'area' | 'bar' | 'line' | 'scatter' | 'pie' | 'heatmap' | 'radar';
 
 interface VisualTypeSelectorProps {
     onSelect: (type: VisualType) => void;
+    onClose?: () => void;
+    onBack?: () => void;
 }
 
 const types = [
-    { id: 'table', label: 'Table', description: 'Raw data view', Icon: TableIcon, color: 'blue' },
-    { id: 'area', label: 'Area Chart', description: 'Trend with volume', Icon: ChartArea, color: 'yellow' },
-    { id: 'bar', label: 'Bar Chart', description: 'Categorical compare', Icon: ChartBar, color: 'orange' },
-    { id: 'line', label: 'Line Chart', description: 'Simple trends', Icon: ChartLine, color: 'red' },
-    { id: 'pie', label: 'Pie Chart', description: 'Part-to-whole', Icon: ChartPie, color: 'teal' },
-    { id: 'scatter', label: 'Scatter', description: 'Relationships', Icon: ChartScatter, color: 'grape' },
-    { id: 'heatmap', label: 'Heatmap', description: 'Density patterns', Icon: Grid3x3, color: 'green' },
+    { id: 'table', label: 'Table', Icon: TableIcon, color: 'blue' },
+    { id: 'area', label: 'Area', Icon: ChartArea, color: 'indigo' },
+    { id: 'bar', label: 'Bar', Icon: ChartBar, color: 'violet' },
+    { id: 'line', label: 'Line', Icon: ChartLine, color: 'teal' },
+    { id: 'pie', label: 'Pie', Icon: ChartPie, color: 'pink' },
+    { id: 'scatter', label: 'Scatter', Icon: ChartScatter, color: 'grape' },
+    { id: 'heatmap', label: 'Heatmap', Icon: Grid3x3, color: 'orange' },
+    { id: 'radar', label: 'Radar', Icon: Hexagon, color: 'indigo' },
 ];
 
-export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect }) => {
-    const theme = useMantineTheme();
-
+export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect, onClose, onBack }) => {
     return (
-        <Stack gap="xl" w="100%" py="md">
-            <Box>
-                <Text size="lg" fw={700} ta="center" variant="gradient" gradient={{ from: 'blue', to: 'cyan' }}>
-                    Visualize Your Data
-                </Text>
-                <Text size="sm" c="dimmed" ta="center" mt={4}>
-                    Choose the best way to represent your query results
-                </Text>
-            </Box>
+        <Stack gap="md" w="100%" py="xs" >
+            <Group justify="space-between" align="center" px="xs">
+                {onBack ? (
+                    <ActionIcon variant="subtle" color="gray" onClick={onBack} size="sm">
+                        <ArrowLeft size={16} />
+                    </ActionIcon>
+                ) : <Box w={24} />}
 
-            <SimpleGrid cols={{ base: 2, sm: 3, md: 4 }} spacing="md">
+                <Stack gap={0} align="center">
+                    <Text size="xs" fw={800} ta="center" c="dimmed" style={{ textTransform: 'uppercase', letterSpacing: '1px' }}>
+                        Visualization Type
+                    </Text>
+                    <Text size="11px" c="dimmed" fw={500}>
+                        Choose how to display your data
+                    </Text>
+                </Stack>
+
+                {onClose ? (
+                    <ActionIcon variant="subtle" color="gray" onClick={onClose} size="sm">
+                        <X size={16} />
+                    </ActionIcon>
+                ) : <Box w={24} />}
+            </Group>
+
+            <SimpleGrid cols={{ base: 3, xs: 4, sm: 5, md: 8 }} spacing="xs" w="100%">
                 {types.map((t, index) => (
                     <motion.div
                         key={t.id}
-                        initial={{ opacity: 0, y: 20 }}
-                        animate={{ opacity: 1, y: 0 }}
-                        transition={{ delay: index * 0.05 }}
+                        initial={{ opacity: 0, scale: 0.95 }}
+                        animate={{ opacity: 1, scale: 1 }}
+                        whileHover={{ y: -3 }}
+                        transition={{ delay: index * 0.04, type: 'spring', stiffness: 300, damping: 20 }}
                     >
-                        <Paper
-                            component="button"
+                        <UnstyledButton
+                            p="sm"
                             onClick={() => onSelect(t.id as VisualType)}
-                            p="md"
-                            radius="lg"
-                            withBorder
-                            style={{
-                                width: '100%',
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                textAlign: 'center',
-                                cursor: 'pointer',
-                                transition: 'all 0.2s ease',
-                                backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[6]})`,
-                                position: 'relative',
-                                overflow: 'hidden',
-                                height: '100%',
-                            }}
-                            className="visual-type-card"
+                            className={classes.card}
+                            style={{ '--type-color': `var(--mantine-color-${t.color}-5)` } as any}
+                            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
                         >
                             <ThemeIcon
-                                size={44}
+                                size={38}
                                 radius="md"
-                                variant="light"
+                                variant="transparent"
                                 color={t.color}
-                                mb="sm"
+                                className={classes.icon}
                             >
-                                <t.Icon size={24} />
+                                <t.Icon size={20} strokeWidth={2.2} />
                             </ThemeIcon>
-                            
-                            <Text size="sm" fw={700} mb={2}>{t.label}</Text>
-                            <Text size="xs" c="dimmed" lh={1.2}>{t.description}</Text>
-                            
-                            <Box className="hover-arrow" style={{ 
-                                position: 'absolute', 
-                                bottom: rem(8), 
-                                right: rem(8),
-                                opacity: 0,
-                                transform: 'translateX(-5px)',
-                                transition: 'all 0.2s ease'
-                            }}>
-                                <ArrowRight size={14} color={theme.colors[t.color][6]} />
-                            </Box>
-                        </Paper>
+
+                            <Text size="xs" fw={700} className={classes.label}>
+                                {t.label}
+                            </Text>
+                        </UnstyledButton>
                     </motion.div>
                 ))}
             </SimpleGrid>
-
-            <style dangerouslySetInnerHTML={{ __html: `
-                .visual-type-card:hover {
-                    border-color: ${theme.colors.blue[5]};
-                    transform: translateY(-4px);
-                    box-shadow: ${theme.shadows.md};
-                }
-                .visual-type-card:hover .hover-arrow {
-                    opacity: 1 !important;
-                    transform: translateX(0) !important;
-                }
-            `}} />
         </Stack>
     );
 };

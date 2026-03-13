@@ -55,7 +55,7 @@ export const PromptInput: React.FC<PromptInputProps> = ({
             style={{
                 border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[4]})`,
                 borderRadius: theme.radius.lg,
-                backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[6]})`,
+                backgroundColor: `light-dark(${theme.white}, ${theme.colors.dark[8]})`,
                 boxShadow: theme.shadows.xs,
             }}
         >

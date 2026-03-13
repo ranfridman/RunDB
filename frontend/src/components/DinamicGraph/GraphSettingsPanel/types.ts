@@ -1,4 +1,11 @@
-export type ChartType = 'area' | 'bar' | 'line' | 'scatter' | 'pie' | 'heatmap';
+export type ChartType = 'area' | 'bar' | 'line' | 'scatter' | 'pie' | 'heatmap' | 'radar';
+
+export interface ReferenceLine {
+    id: string;
+    y: number;
+    color: string;
+    label?: string;
+}
 
 export interface ChartConfig {
     withTooltip: boolean;
@@ -18,15 +25,21 @@ export interface ChartConfig {
     xAxisKey: string;
     yAxisKeys: string[];
     seriesColors: Record<string, string>;
+    referenceLines?: ReferenceLine[];
+    // Radar Chart specific
+    withPolarGrid?: boolean;
+    withPolarAngleAxis?: boolean;
+    withPolarRadiusAxis?: boolean;
 }
 
 export const CHART_SUPPORTED_PROPS: Record<ChartType, (keyof ChartConfig)[]> = {
-    area: ['type', 'curveType', 'strokeWidth', 'withGradient', 'withDots'],
-    bar: ['type'],
-    line: ['curveType', 'strokeWidth', 'withDots'],
+    area: ['type', 'curveType', 'strokeWidth', 'withGradient', 'withDots', 'referenceLines'],
+    bar: ['type', 'referenceLines'],
+    line: ['curveType', 'strokeWidth', 'withDots', 'referenceLines'],
     scatter: [],
     pie: ['withLabels', 'labelsType', 'strokeWidth', 'tooltipDataSource'],
     heatmap: [],
+    radar: ['withPolarGrid', 'withPolarAngleAxis', 'withPolarRadiusAxis', 'withLegend'],
 };
 
 export interface TabProps {

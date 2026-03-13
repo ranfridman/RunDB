@@ -16,8 +16,7 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
     const [hoveredIndex, setHoveredIndex] = useState<number | null>(null);
     const [view, setView] = useState<'options' | 'ai' | 'sql' | 'visual'>('options');
     const [sqlValue, setSqlValue] = useState('SELECT * FROM tables LIMIT 10;');
-    const [visualValue, setVisualValue] = useState('[\n  { "name": "A", "value": 10 }\n]');
-
+    const [visualValue, setVisualValue] = useState('[\n  { "name": "A", "value": 10, "category": "alpha", "score": 88, "active": true },\n  { "name": "B", "value": 24, "category": "beta", "score": 72, "active": false },\n  { "name": "C", "value": 37, "category": "alpha", "score": 95, "active": true },\n  { "name": "D", "value": 15, "category": "gamma", "score": 61, "active": true },\n  { "name": "E", "value": 52, "category": "beta", "score": 79, "active": false }\n]');
     const handleAdd = (type: 'table' | 'graph', method: 'Visual' | 'SQL' | 'AI') => {
         if (method === 'AI') {
             setView('ai');
@@ -75,9 +74,9 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
             w="100%"
             p="md"
             style={{
-                backgroundColor: `light-dark(${theme.colors.gray[0]}, ${theme.colors.dark[8]})`,
-                borderRadius: theme.radius.lg,
-                border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[5]})`,
+                // backgroundColor: `light-dark(${theme.colors.gray[0]}, ${theme.colors.dark[8]})`,
+                // borderRadius: theme.radius.lg,
+                // border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[5]})`,
                 overflow: 'auto', // Enable scrolling if too small
             }}
         >
@@ -144,8 +143,8 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
                                                     textAlign: 'left',
                                                     cursor: 'pointer',
                                                     backgroundColor: hoveredIndex === index
-                                                        ? `light-dark(${theme.white}, ${theme.colors.dark[6]})`
-                                                        : `light-dark(${theme.colors.gray[0]}, ${theme.colors.dark[7]})`,
+                                                        ? `light-dark(${theme.white}, ${theme.colors.dark[9]})`
+                                                        : `light-dark(${theme.colors.gray[0]}, ${theme.colors.dark[8]})`,
                                                     borderColor: hoveredIndex === index
                                                         ? (opt.isPremium ? theme.colors.violet[5] : theme.colors[opt.color][5])
                                                         : `light-dark(${theme.colors.gray[3]}, ${theme.colors.dark[4]})`,

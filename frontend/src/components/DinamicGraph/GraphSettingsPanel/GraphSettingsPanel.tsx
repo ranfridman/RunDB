@@ -1,11 +1,12 @@
 import { useState, useEffect, useContext } from 'react';
 import { ActionIcon, Group, Paper, ScrollArea, Stack, Text, TextInput, Divider, Menu, UnstyledButton, Box } from '@mantine/core';
-import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3, Palette } from 'lucide-react';
+import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3, Palette, Hexagon, PanelLeftRightDashed } from 'lucide-react';
 import { ChartConfig, ChartType } from './types';
 import { Panel, PanelActionsContext } from '../../Dashboard/Board/types';
 import { DataColorsTab } from './DataColorsTab';
 import { SettingsTab } from './SettingsTab';
 import { MenuRow, MenuRowCustom } from './Primitives';
+import { ReferenceLinesTab } from './ReferenceLinesTab';
 
 interface GraphSettingsPanelProps {
     panel?: Panel;
@@ -24,6 +25,7 @@ const icons: Record<ChartType, React.FC<any>> = {
     pie: PieChartIcon,
     scatter: Hash,
     heatmap: Grid3x3,
+    radar: Hexagon,
 };
 
 
@@ -34,6 +36,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
         <Paper
             p={0}
             onMouseDown={(e) => e.stopPropagation()}
+            withBorder
             style={{
                 width: 300,
                 maxHeight: 500,
@@ -42,7 +45,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
             }}
         >
             <ScrollArea.Autosize scrollbars="y" mah="100%" p="xs" offsetScrollbars scrollbarSize={2}>
-                <Stack gap="xs">
+                <Stack gap="5">
                     {/* Header */}
                     <Group justify="space-between" align="center" >
                         <Text fw={600} size="sm">View settings</Text>
@@ -56,7 +59,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                     <Divider opacity={0.5} />
 
                     {/* Layout Section */}
-                    <Group justify="space-between" align="center" style={{ cursor: 'pointer' }}>
+                    {/* <Group justify="space-between" align="center" style={{ cursor: 'pointer' }}>
                         <Group gap={8}>
                             <PieChartIcon size={16} color="var(--mantine-color-dimmed)" />
                             <Text size="sm" fw={500}>Layout</Text>
@@ -65,20 +68,20 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                             <Text size="sm" c="dimmed">Chart</Text>
                             <ChevronRight size={14} color="var(--mantine-color-gray-4)" />
                         </Group>
-                    </Group>
+                    </Group> */}
 
                     {/* Chart Type Selection */}
-                    <Stack gap={8} mt="xs">
+                    <Stack gap={8}>
                         <Text size="xs" fw={500} c="dimmed">Chart type</Text>
-                        <Group gap={8}>
-                            {(['bar', 'area', 'line', 'pie', 'scatter', 'heatmap'] as ChartType[]).map(type => {
+                        <Group gap={8} justify='space-'>
+                            {(['bar', 'area', 'line', 'pie', 'scatter', 'heatmap', 'radar'] as ChartType[]).map(type => {
                                 const IconComp = icons[type];
                                 const isSelected = chartType === type;
                                 return (
                                     <ActionIcon
                                         key={type}
-                                        size="lg"
-                                        radius="md"
+                                        size="md"
+                                        radius="sm"
                                         variant={isSelected ? "light" : "default"}
                                         color={isSelected ? "blue" : "gray"}
                                         onClick={() => setChartType(type)}
@@ -87,7 +90,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                                             borderColor: isSelected ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-gray-3)',
                                         }}
                                     >
-                                        <IconComp size={20} strokeWidth={isSelected ? 2.5 : 2} style={{ color: isSelected ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-gray-5)' }} />
+                                        <IconComp size={16} strokeWidth={isSelected ? 2.5 : 2} style={{ color: isSelected ? 'var(--mantine-color-blue-filled)' : 'var(--mantine-color-gray-5)' }} />
                                     </ActionIcon>
                                 )
                             })}
@@ -99,7 +102,7 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                         <Text size="xs" fw={500} c="dimmed" mb={4}>X axis</Text>
                         <MenuRow
                             icon={ArrowUpFromLine}
-                            label="What to show"
+                            label="Axis Values"
                             value={config.xAxisKey}
                             options={availableKeys}
                             onSelect={(val: string) => setConfig(p => ({ ...p, xAxisKey: val }))}
@@ -107,16 +110,29 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                             onOpenChange={(o: boolean) => setOpenSubMenu(o ? 'x-axis' : null)}
                         />
                         <MenuRow
-                            icon={Layers}
-                            label="Group by"
+                            icon={PanelLeftRightDashed}
+                            label="Background Grid"
                             value={config.gridAxis !== 'none' ? config.gridAxis : 'None'}
                             options={['none', 'x', 'y', 'xy']}
                             onSelect={(val: string) => setConfig(p => ({ ...p, gridAxis: val as any }))}
                             opened={openSubMenu === 'group-by'}
                             onOpenChange={(o: boolean) => setOpenSubMenu(o ? 'group-by' : null)}
                         />
-                        <MenuRow icon={GitMerge} label="Sub-tasks" />
-                        <MenuRow icon={Minus} label="Reference line" value="0 lines" />
+                        {/* <MenuRow icon={GitMerge} label="Sub-tasks" /> */}
+                        <MenuRowCustom
+                            icon={Minus}
+                            label="Reference line"
+                            value={`${config.referenceLines?.length || 0} lines`}
+                            opened={openSubMenu === 'ref-lines'}
+                            onOpenChange={(o: boolean) => setOpenSubMenu(o ? 'ref-lines' : null)}
+                        >
+                            <ReferenceLinesTab
+                                chartType={chartType}
+                                setChartType={setChartType}
+                                config={config}
+                                setConfig={setConfig}
+                            />
+                        </MenuRowCustom>
                     </Stack>
 
                     {/* Data / Colors */}
@@ -141,9 +157,9 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                                 />
                             </Box>
                         </MenuRowCustom>
+                        {/* <Divider opacity={0.5} mx="-sm" mt="sm" /> */}
                     </Stack>
 
-                    <Divider opacity={0.5} mx="-sm" mt="sm" />
 
                     <Stack gap={2} mt="xs" mb="sm">
                         <Text size="xs" fw={500} c="dimmed" mb={4}>Chart options</Text>

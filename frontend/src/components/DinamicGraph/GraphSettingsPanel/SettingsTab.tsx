@@ -1,11 +1,12 @@
-import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt, Percent, PaintBucket } from 'lucide-react';
+import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt, Percent, PaintBucket, Hexagon, Target } from 'lucide-react';
 import { TabProps, CHART_SUPPORTED_PROPS } from './types';
 import { MenuRow, ToggleRow, CompactSegmentRow } from './Primitives';
 
 export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey }: TabProps & { openKey: string | null, setOpenKey: (key: string | null) => void }) => {
     const isPie = chartType === 'pie';
     const isHeatmap = chartType === 'heatmap';
-    const hideAxesSettings = isPie || isHeatmap;
+    const isRadar = chartType === 'radar';
+    const hideAxesSettings = isPie || isHeatmap || isRadar;
     const supportedProps = CHART_SUPPORTED_PROPS[chartType];
 
     return (
@@ -17,12 +18,39 @@ export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey 
                 onChange={v => setConfig(p => ({ ...p, withTooltip: v }))}
             />
 
-            {!hideAxesSettings && (
+            {(!hideAxesSettings || supportedProps.includes('withLegend')) && (
                 <ToggleRow
                     label="Show Legend"
                     icon={LayoutList}
                     checked={config.withLegend}
                     onChange={v => setConfig(p => ({ ...p, withLegend: v }))}
+                />
+            )}
+
+            {supportedProps.includes('withPolarGrid') && (
+                <ToggleRow
+                    label="Polar Grid"
+                    icon={Grid2x2}
+                    checked={config.withPolarGrid || false}
+                    onChange={v => setConfig(p => ({ ...p, withPolarGrid: v }))}
+                />
+            )}
+
+            {supportedProps.includes('withPolarAngleAxis') && (
+                <ToggleRow
+                    label="Angle Axis"
+                    icon={Type}
+                    checked={config.withPolarAngleAxis || false}
+                    onChange={v => setConfig(p => ({ ...p, withPolarAngleAxis: v }))}
+                />
+            )}
+
+            {supportedProps.includes('withPolarRadiusAxis') && (
+                <ToggleRow
+                    label="Radius Axis"
+                    icon={Target}
+                    checked={config.withPolarRadiusAxis || false}
+                    onChange={v => setConfig(p => ({ ...p, withPolarRadiusAxis: v }))}
                 />
             )}
 

@@ -1,5 +1,5 @@
-import { AreaChart, BarChart, LineChart, ScatterChart, PieChart } from '@mantine/charts';
-import { ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, Grid3x3 } from 'lucide-react';
+import { AreaChart, BarChart, LineChart, ScatterChart, PieChart, RadarChart } from '@mantine/charts';
+import { ChartArea, ChartBar, ChartLine, ChartPie, ChartScatter, Grid3x3, Hexagon } from 'lucide-react';
 import { MatrixHeatmap } from './MatrixHeatmap';
 
 export const CHART_COMPONENTS = {
@@ -9,6 +9,7 @@ export const CHART_COMPONENTS = {
     scatter: ScatterChart as any,
     pie: PieChart as any,
     heatmap: MatrixHeatmap as any,
+    radar: RadarChart as any,
 };
 
 export const CHART_ICONS = {
@@ -18,6 +19,7 @@ export const CHART_ICONS = {
     scatter: { Icon: ChartScatter, color: 'var(--mantine-color-grape-6)' },
     pie: { Icon: ChartPie, color: 'var(--mantine-color-teal-6)' },
     heatmap: { Icon: Grid3x3, color: 'var(--mantine-color-green-6)' },
+    radar: { Icon: Hexagon, color: 'var(--mantine-color-indigo-6)' },
 };
 
 export const DEFAULT_COLORS = [

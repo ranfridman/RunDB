@@ -34,7 +34,7 @@ export const DataColorsTab = ({ config, setConfig, availableKeys, openKey, setOp
                                     />
                                 </Menu.Target>
                                 <Menu.Dropdown p="sm">
-                                    <Text size="xs" fw={600} c="dimmed" mb={7} style={{ letterSpacing: '0.05em' }}>COLOR</Text>
+                                    <Text size="xs" fw={600} c="dimmed" mb={7} style={{ letterSpacing: '0.05em' }}>Color Picker</Text>
                                     <SimpleGrid cols={5} spacing={5}>
                                         {PRESET_COLORS.map(pc => (
                                             <Tooltip key={pc} label={pc} fz={10} withArrow>
