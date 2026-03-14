@@ -19,12 +19,7 @@ const PanelDataWrapper = ({ Component, props }: { Component: any, props: any }) 
     const query = !panel.data ? panel.sqlQuery : undefined;
     const { data: queryData } = useSQLQuery(query);
     const data = panel.data?.length === 0 ? queryData?.data : panel.data;
-    return (
-        <div>
-            {JSON.stringify(panel.sqlQuery)}
-            <Component {...props} data={data} />;
-        </div>
-    )
+    return <Component {...props} data={data} />;
 };
 
 export const panelRegistry: PanelRegistry = {
