@@ -19,8 +19,8 @@ const types = [
     { id: 'line', label: 'Line', Icon: ChartLine, color: 'teal' },
     { id: 'pie', label: 'Pie', Icon: ChartPie, color: 'pink' },
     { id: 'scatter', label: 'Scatter', Icon: ChartScatter, color: 'grape' },
-    { id: 'heatmap', label: 'Heatmap', Icon: Grid3x3, color: 'orange' },
-    { id: 'radar', label: 'Radar', Icon: Hexagon, color: 'indigo' },
+    { id: 'heatmap', label: 'Heatmap', Icon: Grid3x3, color: 'lime' },
+    { id: 'radar', label: 'Radar', Icon: Hexagon, color: 'cyan' },
 ];
 
 export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect, onClose, onBack }) => {
