@@ -119,7 +119,7 @@ export const DinamicGraph = memo(({ panel, headerRef, data = EMPTY_DATA }: { pan
 
             const isXKeyValid = currentKeys.includes(config.xAxisKey);
             const availableYKeys = config.yAxisKeys.filter(k => currentKeys.includes(k));
-            
+
             // Only reset if our current selection is completely invalid for the new data
             // We no longer check "hasNewKeys" aggressively to avoid resets when changing X axis
             const needsReset = isInitial || !isXKeyValid || (availableYKeys.length === 0 && currentKeys.length > 1);
