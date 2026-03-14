@@ -6,6 +6,16 @@
     background: light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-8));
 }
 
+.isResizing {
+    cursor: grabbing;
+    user-select: none;
+}
+
+.isResizing * {
+    pointer-events: none;
+    user-select: none;
+}
+
 .row {
     position: relative;
     display: flex;

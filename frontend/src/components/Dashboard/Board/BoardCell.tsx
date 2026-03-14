@@ -1,4 +1,4 @@
-import { useState, useContext } from 'react';
+import React, { useState, useContext } from 'react';
 import { Box, Group, ActionIcon, Text, TextInput } from '@mantine/core';
 import { Trash2, Pencil, Check } from 'lucide-react';
 import { DraggablePanel } from './DraggablePanel';
@@ -14,7 +14,7 @@ interface BoardCellProps {
     rowPanelsCount: number;
     panelRegistry: PanelRegistry;
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
-    onColResizeStart?: (panelIndex: number) => void;
+    onColResizeStart?: (e: React.PointerEvent, panelIndex: number) => void;
 }
 
 export const BoardCell = ({
@@ -79,11 +79,9 @@ export const BoardCell = ({
             {isEditMode && panelIndex < rowPanelsCount - 1 && (
                 <div
                     className={classes.vDivider}
-                    onMouseDown={(e) => {
+                    onPointerDown={(e) => {
                         if (onColResizeStart) {
-                            e.preventDefault();
-                            e.stopPropagation();
-                            onColResizeStart(panelIndex);
+                            onColResizeStart(e, panelIndex);
                         }
                     }}
                 />

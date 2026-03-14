@@ -1,6 +1,6 @@
 import { Box, ActionIcon } from '@mantine/core';
 import { ArrowUp, ArrowDown, Plus } from 'lucide-react';
-import { useContext } from 'react';
+import React, { useContext } from 'react';
 import { BoardCell } from './BoardCell';
 import { DashboardRow, PanelRegistry, PanelActionsContext } from './types';
 import classes from '../Dashboard.module.css';
@@ -12,8 +12,8 @@ interface BoardRowProps {
     panelRegistry: PanelRegistry;
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
     onToggleSlot: (rowIndex: number) => void;
-    onColResizeStart: (rowIndex: number, panelIndex: number) => void;
-    onRowResizeStart: (rowIndex: number) => void;
+    onColResizeStart: (e: React.PointerEvent, panelIndex: number) => void;
+    onRowResizeStart: (e: React.PointerEvent) => void;
     onMoveRowUp?: () => void;
     onMoveRowDown?: () => void;
 }
@@ -50,7 +50,7 @@ export const BoardRow = ({
                         rowPanelsCount={row.panels.length}
                         panelRegistry={panelRegistry}
                         onRemovePanel={onRemovePanel}
-                        onColResizeStart={(pi) => onColResizeStart(rowIndex, pi)}
+                        onColResizeStart={(e: React.PointerEvent, pi: number) => onColResizeStart(e, pi)}
                     />
                 ))}
 
@@ -94,13 +94,11 @@ export const BoardRow = ({
                 )}
             </Box>
 
-            {(isEditMode && !isLastRow) ?
+            {isEditMode ?
                 <div
                     className={classes.hDivider}
-                    onMouseDown={(e) => {
-                        e.preventDefault();
-                        e.stopPropagation();
-                        onRowResizeStart(rowIndex);
+                    onPointerDown={(e) => {
+                        onRowResizeStart(e);
                     }}
                 />
                 : <Box py="xs"></Box>}

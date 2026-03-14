@@ -21,6 +21,16 @@ export interface DashboardRow {
     panels: Panel[];
 }
 
+export interface BoardProps {
+    rows: DashboardRow[];
+    onRowsChange: (rows: DashboardRow[] | ((prev: DashboardRow[]) => DashboardRow[])) => void;
+    onRemovePanel: (rowIndex: number, panelIndex: number) => void;
+    onToggleSlot: (rowIndex: number) => void;
+    panelRegistry: PanelRegistry;
+    height?: string | number;
+    isEditMode: boolean;
+}
+
 export type PanelRegistry = Record<PanelType, {
     label: string,
     icon: ReactNode,

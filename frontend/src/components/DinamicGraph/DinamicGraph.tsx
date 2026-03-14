@@ -20,7 +20,48 @@ import { ChartErrorBoundary } from './ChartErrorBoundary';
 import { CHART_COMPONENTS, CHART_ICONS, DEFAULT_COLORS } from './constants';
 import { Panel, PanelActionsContext } from '../Dashboard/Board/types';
 
-export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Panel, headerRef?: HTMLElement | null, data?: any[] }) => {
+const EMPTY_DATA: any[] = [];
+
+// Move default config logic outside to ensure it's stable and reusable
+const getDefaultConfig = (keys: string[]): ChartConfig => {
+    const initialColors = keys.reduce((acc, key, index) => {
+        acc[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
+        return acc;
+    }, {} as Record<string, string>);
+
+    const xKey = keys.find(k => k.toLowerCase().includes('date')) ||
+        keys.find(k => k.toLowerCase().includes('name')) ||
+        keys.find(k => k.toLowerCase().includes('id')) ||
+        keys[0];
+
+    const yKeys = keys.filter(k => k !== xKey);
+
+    return {
+        withTooltip: true,
+        withLegend: false,
+        gridAxis: 'xy' as const,
+        tickLine: 'y' as const,
+        type: 'default' as const,
+        curveType: 'linear' as const,
+        strokeWidth: 2,
+        withGradient: true,
+        withXAxis: true,
+        withYAxis: true,
+        withDots: true,
+        withLabels: true,
+        labelsType: 'value' as const,
+        tooltipDataSource: 'segment' as const,
+        xAxisKey: xKey || 'date',
+        yAxisKeys: yKeys.length > 0 ? yKeys : (keys.length > 0 ? [keys[0]] : []),
+        seriesColors: initialColors,
+        withPolarGrid: true,
+        withPolarAngleAxis: true,
+        withPolarRadiusAxis: false,
+        orientation: 'horizontal' as const,
+    };
+};
+
+export const DinamicGraph = memo(({ panel, headerRef, data = EMPTY_DATA }: { panel?: Panel, headerRef?: HTMLElement | null, data?: any[] }) => {
     const actions = useContext(PanelActionsContext);
     const isEditMode = actions?.isEditMode ?? false;
     const [chartType, setChartType] = useState<ChartType>((panel?.chartType as ChartType) || 'area');
@@ -45,91 +86,57 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
         if (panel?.chartConfig) {
             return panel.chartConfig;
         }
-        const initialColors = availableKeys.reduce((acc, key, index) => {
-            acc[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
-            return acc;
-        }, {} as Record<string, string>);
-
-        return {
-            withTooltip: true,
-            withLegend: false,
-            gridAxis: 'xy',
-            tickLine: 'y',
-            type: 'default',
-            curveType: 'linear',
-            strokeWidth: 2,
-            withGradient: true,
-            withXAxis: true,
-            withYAxis: true,
-            withDots: true,
-            withLabels: true,
-            labelsType: 'value',
-            tooltipDataSource: 'segment',
-            xAxisKey: 'date',
-            yAxisKeys: availableKeys.filter(key => key !== 'date'),
-            seriesColors: initialColors,
-            withPolarGrid: true,
-            withPolarAngleAxis: true,
-            withPolarRadiusAxis: false,
-            orientation: 'horizontal',
-        };
+        return getDefaultConfig(availableKeys);
     });
 
+    // 1. Sync local config UP to dashboard state
     useEffect(() => {
         if (panel?.id && actions?.updatePanel && config) {
-            // Sync config to panel state only if it changed to avoid infinite cycles
-            if (JSON.stringify(panel.chartConfig) !== JSON.stringify(config)) {
+            // Only sync if actual data is present (don't sync "empty" initial state)
+            // Use a shallow comparison for performance before deep comparison
+            const hasActualData = availableKeys.length > 0;
+            if (hasActualData && JSON.stringify(panel.chartConfig) !== JSON.stringify(config)) {
                 actions.updatePanel(panel.id, { chartConfig: config });
             }
         }
-    }, [config, panel?.id, panel?.chartConfig, actions]);
+    }, [config, panel?.id, panel?.chartConfig, actions, availableKeys.length]);
 
-    // Update local config if panel configuration changes externally
+    // 2. Sync dashboard state DOWN to local config (handles drag & drop and external updates)
     useEffect(() => {
         if (panel?.chartConfig && JSON.stringify(panel.chartConfig) !== JSON.stringify(config)) {
             setConfig(panel.chartConfig);
         }
     }, [panel?.chartConfig]);
 
-    // Update config when data structure changes completely
+    // 3. Initialize config when data arrives or structure changes
     useEffect(() => {
         if (data && data.length > 0) {
             const currentKeys = Object.keys(data[0]);
+            if (currentKeys.length === 0) return;
 
-            // Re-evaluate keys if current keys are invalid or structure changed
+            // "Initial" means we have data but yAxisKeys is empty (and we haven't initialized yet)
+            const isInitial = config.yAxisKeys.length === 0 && config.xAxisKey === 'date';
+
             const isXKeyValid = currentKeys.includes(config.xAxisKey);
             const availableYKeys = config.yAxisKeys.filter(k => currentKeys.includes(k));
-            const hasNewKeys = currentKeys.some(k => !config.yAxisKeys.includes(k) && k !== config.xAxisKey);
+            
+            // Only reset if our current selection is completely invalid for the new data
+            // We no longer check "hasNewKeys" aggressively to avoid resets when changing X axis
+            const needsReset = isInitial || !isXKeyValid || (availableYKeys.length === 0 && currentKeys.length > 1);
 
-            if (!isXKeyValid || availableYKeys.length === 0 || hasNewKeys) {
-                // Pick a default X key: favor 'date', 'name', 'id' or just the first key
-                const newXKey = currentKeys.find(k => k.toLowerCase().includes('date')) ||
-                    currentKeys.find(k => k.toLowerCase().includes('name')) ||
-                    currentKeys.find(k => k.toLowerCase().includes('id')) ||
-                    currentKeys[0];
+            if (needsReset) {
+                const newConfig = {
+                    ...config,
+                    ...getDefaultConfig(currentKeys)
+                };
 
-                // For Y keys, take everything else. If only one key total, use it as Y as well (unlikely but safe)
-                let newYKeys = currentKeys.filter(k => k !== newXKey);
-                if (newYKeys.length === 0 && currentKeys.length > 0) {
-                    newYKeys = [currentKeys[0]];
+                // Only update if it's actually different to avoid infinite loops
+                if (JSON.stringify(newConfig) !== JSON.stringify(config)) {
+                    setConfig(newConfig);
                 }
-
-                const newColors = { ...config.seriesColors };
-                currentKeys.forEach((key, index) => {
-                    if (!newColors[key]) {
-                        newColors[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
-                    }
-                });
-
-                setConfig(prev => ({
-                    ...prev,
-                    xAxisKey: newXKey,
-                    yAxisKeys: newYKeys,
-                    seriesColors: newColors
-                }));
             }
         }
-    }, [data]);
+    }, [data, config]);
 
     const series = config.yAxisKeys.map((name) => ({
         name,

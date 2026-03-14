@@ -1,22 +1,15 @@
 import { DndContext, DragEndEvent, DragOverlay, closestCenter, PointerSensor, useSensor, useSensors } from '@dnd-kit/core';
 import { Box, Group, Text } from '@mantine/core';
-import { useState, useRef } from 'react';
+import { useState, useRef, useEffect } from 'react';
 import { BoardRow } from './BoardRow';
-import { PanelRegistry, DashboardRow } from './types';
+import { PanelRegistry, DashboardRow, BoardProps } from './types';
 import classes from '../Dashboard.module.css';
 
-interface BoardProps {
-    rows: DashboardRow[];
-    onRowsChange: (rows: DashboardRow[]) => void;
-    onRemovePanel: (rowIndex: number, panelIndex: number) => void;
-    onToggleSlot: (rowIndex: number) => void;
-    panelRegistry: PanelRegistry;
-    height?: string | number;
-    isEditMode: boolean;
-}
+
 
 export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry, height, isEditMode }: BoardProps) => {
     const [activeId, setActiveId] = useState<string | null>(null);
+    const [isResizing, setIsResizing] = useState(false);
     const containerRef = useRef<HTMLDivElement>(null);
     const dragInfo = useRef<{ type: 'h' | 'v', rowIndex: number, panelIndex?: number } | null>(null);
 
@@ -28,46 +21,65 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
         })
     );
 
-    const handleMouseMove = (e: React.MouseEvent) => {
+    const handlePointerMove = (e: React.PointerEvent) => {
         if (!isEditMode || !dragInfo.current || !containerRef.current) return;
         const { type, rowIndex } = dragInfo.current;
         const rect = containerRef.current.getBoundingClientRect();
-        const next = rows.map(r => ({ ...r }));
 
         if (type === 'h') {
-            const r1 = next[rowIndex];
-            const r2 = next[rowIndex + 1];
-            if (r1 && r2) {
-                const move = (e.movementY / rect.height) * rows.length;
-                const clampedMove = Math.min(Math.max(move, -r1.height + 0.2), r2.height - 0.2);
-                r1.height += clampedMove;
-                r2.height -= clampedMove;
-                onRowsChange(next);
-            }
+            const move = e.movementY / 400;
+            onRowsChange(prev => prev.map((r, i) => 
+                i === rowIndex ? { ...r, height: Math.max(0.2, (r.height || 1) + move) } : r
+            ));
         } else {
-            const r = next[rowIndex];
             const pi = dragInfo.current.panelIndex ?? 0;
-            const p1 = r.panels[pi];
-            const p2 = r.panels[pi + 1];
+            onRowsChange(prev => {
+                const next = [...prev];
+                const r = next[rowIndex];
+                if (!r) return prev;
+                
+                const updatedRow = { ...r, panels: [...r.panels] };
+                const p1 = { ...updatedRow.panels[pi] };
+                const p2 = { ...updatedRow.panels[pi + 1] };
 
-            if (p1 && p2) {
-                const totalFlex = r.panels.reduce((sum, p) => sum + (p.flex || 1), 0);
-                const moveFlex = (e.movementX / rect.width) * totalFlex;
+                if (p1 && p2) {
+                    const totalFlex = updatedRow.panels.reduce((sum, p) => sum + (p.flex || 1), 0);
+                    const moveFlex = (e.movementX / rect.width) * totalFlex;
 
-                const f1 = p1.flex || 1;
-                const f2 = p2.flex || 1;
+                    const f1 = p1.flex || 1;
+                    const f2 = p2.flex || 1;
 
-                const clampedMove = Math.min(Math.max(moveFlex, -f1 + 0.1), f2 - 0.1);
-                p1.flex = f1 + clampedMove;
-                p2.flex = f2 - clampedMove;
-                onRowsChange(next);
-            }
+                    const clampedMove = Math.min(Math.max(moveFlex, -f1 + 0.1), f2 - 0.1);
+                    p1.flex = f1 + clampedMove;
+                    p2.flex = f2 - clampedMove;
+                    
+                    updatedRow.panels[pi] = p1;
+                    updatedRow.panels[pi + 1] = p2;
+                    next[rowIndex] = updatedRow;
+                    return next;
+                }
+                return prev;
+            });
         }
     };
 
-    const handleMouseUp = () => {
-        dragInfo.current = null;
-        document.body.style.cursor = '';
+    const handlePointerUp = (e: React.PointerEvent) => {
+        if (dragInfo.current) {
+            containerRef.current?.releasePointerCapture(e.pointerId);
+            dragInfo.current = null;
+            setIsResizing(false);
+            document.body.style.cursor = '';
+        }
+    };
+
+    const handleResizeStart = (e: React.PointerEvent, type: 'h' | 'v', rowIndex: number, panelIndex?: number) => {
+        if (!isEditMode) return;
+        e.preventDefault();
+        e.stopPropagation();
+        dragInfo.current = { type, rowIndex, panelIndex };
+        setIsResizing(true);
+        document.body.style.cursor = type === 'h' ? 'row-resize' : 'col-resize';
+        containerRef.current?.setPointerCapture(e.pointerId);
     };
 
     const handleDragStart = (event: any) => {
@@ -132,13 +144,13 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
     return (
         <DndContext sensors={sensors} collisionDetection={closestCenter} onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
             <Box
-                className={classes.grid}
+                className={`${classes.grid} ${isResizing ? classes.isResizing : ''}`}
                 ref={containerRef}
-                onMouseMove={isEditMode ? handleMouseMove : undefined}
-                onMouseUp={handleMouseUp}
-                onMouseLeave={handleMouseUp}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
                 h={height}
                 pt={0}
+                pb={isEditMode ? 100 : 0}
             >
                 <Box flex={1} display="flex" style={{ flexDirection: 'column', overflow: 'hidden' }} px="sm" pt="xs">
                     {rows.map((row, ri) => (
@@ -150,8 +162,8 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                             panelRegistry={panelRegistry}
                             onRemovePanel={onRemovePanel}
                             onToggleSlot={onToggleSlot}
-                            onColResizeStart={(ri, pi) => dragInfo.current = { type: 'v', rowIndex: ri, panelIndex: pi }}
-                            onRowResizeStart={(index) => dragInfo.current = { type: 'h', rowIndex: index }}
+                            onColResizeStart={(e, pi) => handleResizeStart(e, 'v', ri, pi)}
+                            onRowResizeStart={(e) => handleResizeStart(e, 'h', ri)}
                             onMoveRowUp={() => handleMoveRowUp(ri)}
                             onMoveRowDown={() => handleMoveRowDown(ri)}
                         />

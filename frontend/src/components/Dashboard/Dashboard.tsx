@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react"
+import { useState, useEffect, useMemo } from "react"
 import { Box, Text, Group, Stack, Badge, RingProgress } from "@mantine/core"
 import { Database, PieChart, Plus } from "lucide-react"
 import classes from './Dashboard.module.css';
@@ -11,16 +11,18 @@ import { data } from '../DinamicGraph/mockData';
 import { PromptInput } from "../PromptInput/PromptInput";
 import { EmptyDashboardCell } from "./EmptyDashboardCell/EmptyDashboardCell";
 
+const EMPTY_DATA: any[] = [];
+
 export const panelRegistry: PanelRegistry = {
     table: {
         label: 'Table',
         icon: <Database size={14} />,
-        component: (props: any) => <ComplexTable {...props} data={props.panel.data || []} height="100%" />
+        component: (props: any) => <ComplexTable {...props} data={props.panel.data || EMPTY_DATA} height="100%" />
     },
     graph: {
         label: 'Graph',
         icon: <PieChart size={14} />,
-        component: (props: any) => <DinamicGraph {...props} data={props.panel.data || []} />
+        component: (props: any) => <DinamicGraph {...props} data={props.panel.data || EMPTY_DATA} />
     },
     new: { label: 'New Slot', icon: <Plus size={14} />, component: (props: any) => <EmptyDashboardCell {...props} /> },
 };
@@ -90,8 +92,10 @@ export const Dashboard = () => {
         })));
     };
 
+    const actionsValue = useMemo(() => ({ updatePanel, isEditMode }), [updatePanel, isEditMode]);
+
     return (
-        <PanelActionsContext.Provider value={{ updatePanel, isEditMode }}>
+        <PanelActionsContext.Provider value={actionsValue}>
             <Box className={classes.grid} mih="89vh">
                 <DashboardHeader
                     onAddPanel={addPanel}
@@ -120,7 +124,7 @@ export const Dashboard = () => {
                     onRemovePanel={del}
                     onToggleSlot={toggle}
                     panelRegistry={panelRegistry}
-                    height={rows.length * 400}
+                    height={rows.reduce((acc, r) => acc + (r.height || 1), 0) * 400 + (isEditMode ? 100 : 0)}
                     isEditMode={isEditMode}
                 />
             </Box>

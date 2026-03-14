@@ -37,7 +37,7 @@ export const CHART_SUPPORTED_PROPS: Record<ChartType, (keyof ChartConfig)[]> = {
     area: ['type', 'curveType', 'strokeWidth', 'withGradient', 'withDots', 'referenceLines', 'orientation'],
     bar: ['type', 'referenceLines', 'orientation'],
     line: ['curveType', 'strokeWidth', 'withDots', 'referenceLines', 'orientation'],
-    scatter: [],
+    scatter: ['referenceLines'],
     pie: ['withLabels', 'labelsType', 'strokeWidth', 'tooltipDataSource'],
     heatmap: [],
     radar: ['withPolarGrid', 'withPolarAngleAxis', 'withPolarRadiusAxis', 'withLegend'],
