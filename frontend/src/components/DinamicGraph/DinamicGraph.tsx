@@ -42,6 +42,9 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
     const availableKeys = Object.keys(data[0] || {});
 
     const [config, setConfig] = useState<ChartConfig>(() => {
+        if (panel?.chartConfig) {
+            return panel.chartConfig;
+        }
         const initialColors = availableKeys.reduce((acc, key, index) => {
             acc[key] = DEFAULT_COLORS[index % DEFAULT_COLORS.length];
             return acc;
@@ -68,8 +71,25 @@ export const DinamicGraph = memo(({ panel, headerRef, data = [] }: { panel?: Pan
             withPolarGrid: true,
             withPolarAngleAxis: true,
             withPolarRadiusAxis: false,
+            orientation: 'horizontal',
         };
     });
+
+    useEffect(() => {
+        if (panel?.id && actions?.updatePanel && config) {
+            // Sync config to panel state only if it changed to avoid infinite cycles
+            if (JSON.stringify(panel.chartConfig) !== JSON.stringify(config)) {
+                actions.updatePanel(panel.id, { chartConfig: config });
+            }
+        }
+    }, [config, panel?.id, panel?.chartConfig, actions]);
+
+    // Update local config if panel configuration changes externally
+    useEffect(() => {
+        if (panel?.chartConfig && JSON.stringify(panel.chartConfig) !== JSON.stringify(config)) {
+            setConfig(panel.chartConfig);
+        }
+    }, [panel?.chartConfig]);
 
     // Update config when data structure changes completely
     useEffect(() => {

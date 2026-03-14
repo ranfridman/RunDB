@@ -30,12 +30,13 @@ export interface ChartConfig {
     withPolarGrid?: boolean;
     withPolarAngleAxis?: boolean;
     withPolarRadiusAxis?: boolean;
+    orientation?: 'vertical' | 'horizontal';
 }
 
 export const CHART_SUPPORTED_PROPS: Record<ChartType, (keyof ChartConfig)[]> = {
-    area: ['type', 'curveType', 'strokeWidth', 'withGradient', 'withDots', 'referenceLines'],
-    bar: ['type', 'referenceLines'],
-    line: ['curveType', 'strokeWidth', 'withDots', 'referenceLines'],
+    area: ['type', 'curveType', 'strokeWidth', 'withGradient', 'withDots', 'referenceLines', 'orientation'],
+    bar: ['type', 'referenceLines', 'orientation'],
+    line: ['curveType', 'strokeWidth', 'withDots', 'referenceLines', 'orientation'],
     scatter: [],
     pie: ['withLabels', 'labelsType', 'strokeWidth', 'tooltipDataSource'],
     heatmap: [],

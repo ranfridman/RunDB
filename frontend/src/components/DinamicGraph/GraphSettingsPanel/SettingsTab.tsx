@@ -1,4 +1,4 @@
-import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt, Percent, PaintBucket, Hexagon, Target } from 'lucide-react';
+import { MessageSquareText, LayoutList, Layers, Activity, Grid2x2, MoveRight, MoveUp, Palette, CircleDot, Type, TrendingUp, GitCommit, Layout, Maximize, ChartSpline, ChartLine, ChartGantt, Percent, PaintBucket, Hexagon, Target, RectangleHorizontal, RectangleVertical } from 'lucide-react';
 import { TabProps, CHART_SUPPORTED_PROPS } from './types';
 import { MenuRow, ToggleRow, CompactSegmentRow } from './Primitives';
 
@@ -150,6 +150,20 @@ export const SettingsTab = ({ chartType, config, setConfig, openKey, setOpenKey 
                         icon={Percent}
                         checked={config.labelsType === 'percent'}
                         onChange={v => setConfig(p => ({ ...p, labelsType: v ? 'percent' : 'value' }))}
+                    />
+                )
+            }
+            {
+                supportedProps.includes('orientation') && (
+                    <CompactSegmentRow
+                        label="Orientation"
+                        icon={RectangleHorizontal}
+                        value={config.orientation || 'horizontal'}
+                        options={[
+                            { value: 'horizontal', icon: RectangleHorizontal, label: 'Horizontal' },
+                            { value: 'vertical', icon: RectangleVertical, label: 'Vertical' }
+                        ]}
+                        onChange={(val: string) => setConfig(p => ({ ...p, orientation: val as any }))}
                     />
                 )
             }

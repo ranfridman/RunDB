@@ -8,6 +8,7 @@ export interface Panel {
     name?: string;
     data?: any[];
     chartType?: string;
+    chartConfig?: any;
     initialView?: 'options' | 'ai' | 'sql' | 'visual';
     sourceView?: 'ai' | 'sql' | 'visual';
     sqlQuery?: string;
