@@ -12,7 +12,7 @@ interface BoardRowProps {
     panelRegistry: PanelRegistry;
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
     onToggleSlot: (rowIndex: number) => void;
-    onColResizeStart: (rowIndex: number) => void;
+    onColResizeStart: (rowIndex: number, panelIndex: number) => void;
     onRowResizeStart: (rowIndex: number) => void;
     onMoveRowUp?: () => void;
     onMoveRowDown?: () => void;
@@ -48,10 +48,9 @@ export const BoardRow = ({
                         rowIndex={rowIndex}
                         panelIndex={pi}
                         rowPanelsCount={row.panels.length}
-                        colSplit={row.colSplit}
                         panelRegistry={panelRegistry}
                         onRemovePanel={onRemovePanel}
-                        onColResizeStart={() => onColResizeStart(rowIndex)}
+                        onColResizeStart={(pi) => onColResizeStart(rowIndex, pi)}
                     />
                 ))}
 
@@ -81,7 +80,7 @@ export const BoardRow = ({
                 )}
                 {isEditMode && (
                     <div className={classes.rowPlus}>
-                        {row.panels.length === 1 && (
+                        {row.panels.length < 4 && (
                             <ActionIcon
                                 variant="default"
                                 size="sm"

@@ -9,12 +9,12 @@ export interface Panel {
     data?: any[];
     chartType?: string;
     initialView?: 'options' | 'ai' | 'sql' | 'visual';
+    flex?: number;
 }
 
 export interface DashboardRow {
     id: string;
     height: number;
-    colSplit: number;
     panels: Panel[];
 }
 

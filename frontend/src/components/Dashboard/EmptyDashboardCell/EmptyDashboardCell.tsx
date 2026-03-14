@@ -72,15 +72,15 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
         <Center
             h="100%"
             w="100%"
-            p="md"
+            p="0"
             style={{
                 // backgroundColor: `light-dark(${theme.colors.gray[0]}, ${theme.colors.dark[8]})`,
                 // borderRadius: theme.radius.lg,
                 // border: `1px solid light-dark(${theme.colors.gray[2]}, ${theme.colors.dark[5]})`,
-                overflow: 'auto', // Enable scrolling if too small
+                overflow: 'hidden', // Enable scrolling if too small
             }}
         >
-            <Stack align="center" w="100%" mah="100%">
+            <Stack align="center" w="100%" mah="100%" >
                 <AnimatePresence mode="wait">
                     {view === 'options' ? (
                         <motion.div
@@ -91,7 +91,7 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
                             transition={{ duration: 0.3 }}
                             style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                         >
-                            <Stack align="center" w="100%">
+                            <Stack align="center" w="100%" p={0}>
                                 <motion.div
                                     initial={{ opacity: 0, y: -10 }}
                                     animate={{ opacity: 1, y: 0 }}

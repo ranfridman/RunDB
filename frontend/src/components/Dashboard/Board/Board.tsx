@@ -18,7 +18,7 @@ interface BoardProps {
 export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRegistry, height, isEditMode }: BoardProps) => {
     const [activeId, setActiveId] = useState<string | null>(null);
     const containerRef = useRef<HTMLDivElement>(null);
-    const dragInfo = useRef<{ type: 'h' | 'v', rowIndex: number } | null>(null);
+    const dragInfo = useRef<{ type: 'h' | 'v', rowIndex: number, panelIndex?: number } | null>(null);
 
     const sensors = useSensors(
         useSensor(PointerSensor, {
@@ -46,9 +46,22 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
             }
         } else {
             const r = next[rowIndex];
-            const movePercent = (e.movementX / rect.width) * 100;
-            r.colSplit = Math.min(Math.max(r.colSplit + movePercent, 10), 90);
-            onRowsChange(next);
+            const pi = dragInfo.current.panelIndex ?? 0;
+            const p1 = r.panels[pi];
+            const p2 = r.panels[pi + 1];
+
+            if (p1 && p2) {
+                const totalFlex = r.panels.reduce((sum, p) => sum + (p.flex || 1), 0);
+                const moveFlex = (e.movementX / rect.width) * totalFlex;
+
+                const f1 = p1.flex || 1;
+                const f2 = p2.flex || 1;
+
+                const clampedMove = Math.min(Math.max(moveFlex, -f1 + 0.1), f2 - 0.1);
+                p1.flex = f1 + clampedMove;
+                p2.flex = f2 - clampedMove;
+                onRowsChange(next);
+            }
         }
     };
 
@@ -137,7 +150,7 @@ export const Board = ({ rows, onRowsChange, onRemovePanel, onToggleSlot, panelRe
                             panelRegistry={panelRegistry}
                             onRemovePanel={onRemovePanel}
                             onToggleSlot={onToggleSlot}
-                            onColResizeStart={(index) => dragInfo.current = { type: 'v', rowIndex: index }}
+                            onColResizeStart={(ri, pi) => dragInfo.current = { type: 'v', rowIndex: ri, panelIndex: pi }}
                             onRowResizeStart={(index) => dragInfo.current = { type: 'h', rowIndex: index }}
                             onMoveRowUp={() => handleMoveRowUp(ri)}
                             onMoveRowDown={() => handleMoveRowDown(ri)}

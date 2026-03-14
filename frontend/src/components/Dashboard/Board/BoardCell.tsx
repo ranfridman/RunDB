@@ -12,10 +12,9 @@ interface BoardCellProps {
     rowIndex: number;
     panelIndex: number;
     rowPanelsCount: number;
-    colSplit: number;
     panelRegistry: PanelRegistry;
     onRemovePanel: (rowIndex: number, panelIndex: number) => void;
-    onColResizeStart?: () => void;
+    onColResizeStart?: (panelIndex: number) => void;
 }
 
 export const BoardCell = ({
@@ -23,7 +22,6 @@ export const BoardCell = ({
     rowIndex,
     panelIndex,
     rowPanelsCount,
-    colSplit,
     panelRegistry,
     onRemovePanel,
     onColResizeStart
@@ -36,7 +34,7 @@ export const BoardCell = ({
 
     return (
         <Box
-            flex={rowPanelsCount > 1 && isFirstPanel ? `0 0 ${colSplit}%` : 1}
+            flex={panel.flex || 1}
             display="flex"
             pos="relative"
             style={{ minWidth: 0 }}
@@ -75,14 +73,14 @@ export const BoardCell = ({
                 </DraggablePanel>
             </DroppableCell>
 
-            {isEditMode && isFirstPanel && rowPanelsCount === 2 && (
+            {isEditMode && panelIndex < rowPanelsCount - 1 && (
                 <div
                     className={classes.vDivider}
                     onMouseDown={(e) => {
                         if (onColResizeStart) {
                             e.preventDefault();
                             e.stopPropagation();
-                            onColResizeStart();
+                            onColResizeStart(panelIndex);
                         }
                     }}
                 />

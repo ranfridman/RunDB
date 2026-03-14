@@ -32,7 +32,7 @@ export const Dashboard = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [rows, setRows] = useState<DashboardRow[]>([
         {
-            id: 'r1', height: 1.2, colSplit: 60, panels: [{ id: 'p1', type: 'new', name: 'Main Data' },
+            id: 'r1', height: 1.2, panels: [{ id: 'p1', type: 'new', name: 'Main Data', flex: 1 },
             ]
         },
     ]);
@@ -52,10 +52,10 @@ export const Dashboard = () => {
         setRows(prev => [{
             id: `r${Date.now()}`,
             height: 1,
-            colSplit: 50,
             panels: [{
                 id: `p${Date.now()}`,
                 type: 'new',
+                flex: 1,
                 ...config,
             }]
         }, ...prev]);
@@ -65,7 +65,9 @@ export const Dashboard = () => {
         const r = prev[ri];
         if (r.panels.length > 1) {
             const next = [...prev];
-            next[ri] = { ...r, panels: r.panels.filter((_, i) => i !== pi), colSplit: 50 };
+            const filteredPanels = r.panels.filter((_, i) => i !== pi);
+            // Re-normalize flex if needed, but for now just keep them
+            next[ri] = { ...r, panels: filteredPanels };
             return next;
         }
         return prev.length > 1 ? prev.filter((_, i) => i !== ri) : prev;
@@ -74,11 +76,8 @@ export const Dashboard = () => {
     const toggle = (i: number) => setRows(prev => {
         const next = [...prev];
         const r = { ...next[i] };
-        if (r.panels.length === 1) {
-            r.panels = [...r.panels, { id: `p${Date.now()}`, type: 'new' }];
-            r.colSplit = 50;
-        } else {
-            r.panels = [r.panels[0]];
+        if (r.panels.length < 4) {
+            r.panels = [...r.panels, { id: `p${Date.now()}`, type: 'new', flex: 1 }];
         }
         next[i] = r;
         return next;

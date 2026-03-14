@@ -25,7 +25,7 @@ const types = [
 
 export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect, onClose, onBack }) => {
     return (
-        <Stack gap="md" w="100%" py="xs" >
+        <Stack gap="md" w="100%"  >
             <Group justify="space-between" align="center" px="xs">
                 {onBack ? (
                     <ActionIcon variant="subtle" color="gray" onClick={onBack} size="sm">
@@ -49,7 +49,7 @@ export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect
                 ) : <Box w={24} />}
             </Group>
 
-            <SimpleGrid cols={{ base: 3, xs: 4, sm: 5, md: 8 }} spacing="xs" w="100%">
+            <SimpleGrid cols={{ base: 4, xs: 4, sm: 5, md: 4, }} spacing="xs" w="100%">
                 {types.map((t, index) => (
                     <motion.div
                         key={t.id}
