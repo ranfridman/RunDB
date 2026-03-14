@@ -60,3 +60,18 @@
   transition: color 0.2s ease;
   font-size: 11px;
 }
+
+.selected {
+  border-color: var(--type-color);
+  box-shadow: inset 0 0 0 1.5px var(--type-color), 0 4px 12px -2px rgba(0, 0, 0, 0.08);
+}
+
+.selected .icon {
+  color: var(--type-color);
+  transform: scale(1.05);
+}
+
+.selected .label {
+  color: var(--type-color);
+  font-weight: 800;
+}

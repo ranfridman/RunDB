@@ -1,6 +1,6 @@
 import { useState, useEffect, useContext } from 'react';
 import { ActionIcon, Group, Paper, ScrollArea, Stack, Text, TextInput, Divider, Menu, UnstyledButton, Box } from '@mantine/core';
-import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3, Palette, Hexagon, PanelLeftRightDashed } from 'lucide-react';
+import { X, Info, PieChart as PieChartIcon, ChevronRight, BarChart3, AlignEndHorizontal, LineChart, Hash, ArrowUpFromLine, Layers, Maximize2, GitMerge, Minus, Grid3x3, Palette, Hexagon, PanelLeftRightDashed, Pencil } from 'lucide-react';
 import { ChartConfig, ChartType } from './types';
 import { Panel, PanelActionsContext } from '../../Dashboard/Board/types';
 import { DataColorsTab } from './DataColorsTab';
@@ -29,8 +29,9 @@ const icons: Record<ChartType, React.FC<any>> = {
 };
 
 
-export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig, onClose, availableKeys }: GraphSettingsPanelProps) => {
+export const GraphSettingsPanel = ({ panel, chartType, setChartType, config, setConfig, onClose, availableKeys }: GraphSettingsPanelProps) => {
     const [openSubMenu, setOpenSubMenu] = useState<string | null>(null);
+    const actions = useContext(PanelActionsContext);
 
     return (
         <Paper
@@ -54,8 +55,15 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                         </ActionIcon>
                     </Group>
 
-
-
+                    <Divider opacity={0.5} />
+                    <EditButton
+                        onClick={() => {
+                            if (panel?.id) {
+                                actions?.updatePanel(panel.id, { type: 'new' });
+                                onClose();
+                            }
+                        }}
+                    />
                     <Divider opacity={0.5} />
 
                     {/* Layout Section */}
@@ -165,8 +173,35 @@ export const GraphSettingsPanel = ({ chartType, setChartType, config, setConfig,
                         <Text size="xs" fw={500} c="dimmed" mb={4}>Chart options</Text>
                         <SettingsTab chartType={chartType} setChartType={setChartType} config={config} setConfig={setConfig} openKey={openSubMenu} setOpenKey={setOpenSubMenu} />
                     </Stack>
+
                 </Stack>
             </ScrollArea.Autosize>
         </Paper>
+    );
+};
+
+const EditButton = ({ onClick }: { onClick: () => void }) => {
+    const [hover, setHover] = useState(false);
+    return (
+        <UnstyledButton
+            onMouseEnter={() => setHover(true)}
+            onMouseLeave={() => setHover(false)}
+            onClick={onClick}
+            style={{
+                width: '100%',
+                padding: '6px 8px',
+                borderRadius: 4,
+                background: hover ? 'light-dark(rgba(0,0,0,0.03), rgba(255,255,255,0.05))' : 'transparent',
+                transition: 'background 0.1s'
+            }}
+        >
+            <Group justify="space-between" align="center" wrap="nowrap">
+                <Group gap={8} wrap="nowrap" style={{ flex: 1, minWidth: 0 }}>
+                    <Pencil size={14} style={{ color: 'var(--mantine-color-blue-5)', flexShrink: 0 }} />
+                    <Text size="xs" fw={400} truncate="end" style={{ color: 'var(--mantine-color-blue-6)' }}>Edit source data</Text>
+                </Group>
+                <ChevronRight size={14} style={{ color: 'var(--mantine-color-blue-2)', flexShrink: 0 }} />
+            </Group>
+        </UnstyledButton>
     );
 };

@@ -55,15 +55,18 @@ export const BoardCell = ({
                         <Group gap={4}>
                             <div ref={setHeaderRef} style={{ display: 'flex', alignItems: 'center' }} />
                             {isEditMode && (
-                                <ActionIcon
-                                    variant="subtle"
-                                    size="xs"
-                                    color="gray"
-                                    onPointerDown={(e) => e.stopPropagation()}
-                                    onClick={() => onRemovePanel(rowIndex, panelIndex)}
-                                >
-                                    <Trash2 size={12} />
-                                </ActionIcon>
+                                <Group gap={4}>
+                                    <ActionIcon
+                                        variant="subtle"
+                                        size="xs"
+                                        color="gray"
+                                        onPointerDown={(e) => e.stopPropagation()}
+                                        onClick={() => onRemovePanel(rowIndex, panelIndex)}
+                                        title="Remove panel"
+                                    >
+                                        <Trash2 size={12} />
+                                    </ActionIcon>
+                                </Group>
                             )}
                         </Group>
                     </div>

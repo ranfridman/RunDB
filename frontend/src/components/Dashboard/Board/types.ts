@@ -9,6 +9,8 @@ export interface Panel {
     data?: any[];
     chartType?: string;
     initialView?: 'options' | 'ai' | 'sql' | 'visual';
+    sourceView?: 'ai' | 'sql' | 'visual';
+    sqlQuery?: string;
     flex?: number;
 }
 

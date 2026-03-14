@@ -14,6 +14,7 @@ interface DashboardCellEditorProps {
     onSqlValueChange: (val: string) => void;
     visualValue: string;
     onVisualValueChange: (val: string) => void;
+    currentChartType?: string;
 }
 
 export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
@@ -23,7 +24,8 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
     sqlValue,
     onSqlValueChange,
     visualValue,
-    onVisualValueChange
+    onVisualValueChange,
+    currentChartType
 }) => {
     const theme = useMantineTheme();
     const [step, setStep] = useState<'input' | 'pick-type'>('input');
@@ -86,6 +88,7 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                         <VisualTypeSelector
                             onClose={onClose}
                             onBack={() => setStep('input')}
+                            selectedType={currentChartType as any}
                             onSelect={(type) => {
                                 const panelType = type === 'table' ? 'table' : 'graph';
                                 onSubmit(
@@ -170,7 +173,7 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                                     onChange={(e) => onVisualValueChange(e.currentTarget.value)}
                                     placeholder='[{ "id": 1, "name": "Item 1" }, ...]'
                                     minRows={4}
-                                    maxRows={10}
+                                    maxRows={4}
                                     autosize
                                     variant="unstyled"
                                     styles={{

@@ -10,6 +10,7 @@ interface VisualTypeSelectorProps {
     onSelect: (type: VisualType) => void;
     onClose?: () => void;
     onBack?: () => void;
+    selectedType?: VisualType;
 }
 
 const types = [
@@ -23,7 +24,7 @@ const types = [
     { id: 'radar', label: 'Radar', Icon: Hexagon, color: 'cyan' },
 ];
 
-export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect, onClose, onBack }) => {
+export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect, onClose, onBack, selectedType }) => {
     return (
         <Stack gap="md" w="100%"  >
             <Group justify="space-between" align="center" px="xs">
@@ -61,9 +62,11 @@ export const VisualTypeSelector: React.FC<VisualTypeSelectorProps> = ({ onSelect
                         <UnstyledButton
                             p="sm"
                             onClick={() => onSelect(t.id as VisualType)}
-                            className={classes.card}
+                            className={`${classes.card} ${selectedType === t.id ? classes.selected : ''}`}
                             style={{ '--type-color': `var(--mantine-color-${t.color}-5)` } as any}
-                            bg="light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"
+                            bg={selectedType === t.id 
+                                ? `light-dark(var(--mantine-color-${t.color}-0), var(--mantine-color-dark-4))` 
+                                : "light-dark(var(--mantine-color-gray-0), var(--mantine-color-dark-9))"}
                         >
                             <ThemeIcon
                                 size={38}
