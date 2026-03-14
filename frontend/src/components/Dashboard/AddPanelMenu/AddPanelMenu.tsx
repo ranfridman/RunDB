@@ -2,6 +2,8 @@ import { Text, ActionIcon, Popover, SimpleGrid, UnstyledButton, ThemeIcon } from
 import { Plus, Table2, Sparkles, CodeXml } from "lucide-react";
 import { useState } from "react";
 
+import classes from './AddPanelMenu.module.css';
+
 const MENU_ITEMS = [
     { label: 'AI', icon: Sparkles, color: 'violet' },
     { label: 'SQL', icon: CodeXml, color: 'teal' },
@@ -34,15 +36,7 @@ export const AddPanelMenu = ({ onAddPanel }: AddPanelMenuProps) => {
                         <UnstyledButton
                             key={item.label}
                             onClick={() => handleAddPanel(item.label)}
-                            style={{
-                                display: 'flex',
-                                flexDirection: 'column',
-                                alignItems: 'center',
-                                gap: 10,
-                                transition: 'transform 0.1s ease',
-                            }}
-                            onMouseOver={(e) => e.currentTarget.style.transform = 'scale(1.05)'}
-                            onMouseOut={(e) => e.currentTarget.style.transform = 'scale(1)'}
+                            className={classes.menuButton}
                         >
                             <ThemeIcon variant="transparent" c={item.color} size="md">
                                 <item.icon size={26} strokeWidth={1.5} />
