@@ -16,9 +16,10 @@ const EMPTY_DATA: any[] = [];
 
 const PanelDataWrapper = ({ Component, props }: { Component: any, props: any }) => {
     const { panel } = props;
-    const query = !panel.data ? panel.sqlQuery : undefined;
+    const needFetch = !panel.data || panel.data.length === 0;
+    const query = needFetch ? panel.sqlQuery : undefined;
     const { data: queryData } = useSQLQuery(query);
-    const data = panel.data?.length === 0 ? queryData?.data : panel.data;
+    const data = needFetch ? queryData?.data : panel.data;
     return <Component {...props} data={data} />;
 };
 
