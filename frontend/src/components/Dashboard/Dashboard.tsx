@@ -94,6 +94,45 @@ export const Dashboard = () => {
 
     const actionsValue = useMemo(() => ({ updatePanel, isEditMode }), [updatePanel, isEditMode]);
 
+    const handleExport = () => {
+        const jsonString = JSON.stringify({ title, rows }, null, 2);
+        const blob = new Blob([jsonString], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const downloadAnchorNode = document.createElement('a');
+        downloadAnchorNode.setAttribute("href", url);
+        downloadAnchorNode.setAttribute("download", `${title || 'dashboard'}.json`);
+        document.body.appendChild(downloadAnchorNode);
+        downloadAnchorNode.click();
+        downloadAnchorNode.remove();
+        URL.revokeObjectURL(url);
+    };
+
+    const handleImport = (file: File | null) => {
+        if (!file) return;
+        const reader = new FileReader();
+        reader.onload = (e) => {
+            try {
+                const content = e.target?.result;
+                if (typeof content === 'string') {
+                    const parsed = JSON.parse(content);
+                    console.log('Imported parsed dashboard data:', parsed);
+                    
+                    if (parsed.title !== undefined && Array.isArray(parsed.rows)) {
+                        setTitle(parsed.title);
+                        setRows(parsed.rows);
+                    } else {
+                        console.error("Invalid dashboard configuration file, parsed object:", parsed);
+                        alert("Invalid dashboard configuration file. Make sure it contains a title and an array of rows.");
+                    }
+                }
+            } catch (error) {
+                console.error("Error parsing JSON file", error);
+                alert("Error parsing JSON file. The file might be corrupted or not valid JSON.");
+            }
+        };
+        reader.readAsText(file);
+    };
+
     return (
         <PanelActionsContext.Provider value={actionsValue}>
             <Box className={classes.grid} mih="89vh">
@@ -103,6 +142,8 @@ export const Dashboard = () => {
                     onTitleChange={setTitle}
                     isEditMode={isEditMode}
                     onToggleEditMode={() => setIsEditMode(prev => !prev)}
+                    onExport={handleExport}
+                    onImport={handleImport}
                 />
 
                 {showPrompt && (
