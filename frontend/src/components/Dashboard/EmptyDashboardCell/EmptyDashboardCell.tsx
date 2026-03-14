@@ -173,7 +173,7 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
                                                     )}
                                                 </AnimatePresence>
 
-                                                <Group justify="space-between" align="start" mb="xs" wrap="nowrap">
+                                                <Group justify="space-between" align="start" mb="3" wrap="nowrap">
                                                     <ThemeIcon
                                                         size={36}
                                                         radius="md"

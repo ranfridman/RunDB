@@ -190,7 +190,7 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                                         size="xs"
                                         radius="md"
                                         color="blue"
-                                        c="white"
+                                        c="var(--mantine-color-body)"
                                         onClick={() => {
                                             try {
                                                 const parsed = JSON.parse(visualValue);
