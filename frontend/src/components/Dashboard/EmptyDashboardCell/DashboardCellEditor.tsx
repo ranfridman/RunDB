@@ -5,6 +5,7 @@ import React, { useState } from 'react';
 import { PromptInput } from '../../PromptInput/PromptInput';
 import { typeToColor } from '../../TypesTheme/TypesTheme';
 import { VisualTypeSelector, VisualType } from './VisualTypeSelector';
+import { executeSQLQuery } from '../../../api/db';
 
 interface DashboardCellEditorProps {
     view: 'ai' | 'sql' | 'visual';
@@ -30,6 +31,7 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
     const theme = useMantineTheme();
     const [step, setStep] = useState<'input' | 'pick-type'>('input');
     const [pendingData, setPendingData] = useState<{ name: string, data?: any[] } | null>(null);
+    const [isExecutingSQL, setIsExecutingSQL] = useState(false);
 
     const handleInputSubmit = (name: string, data?: any[]) => {
         setPendingData({ name, data });
@@ -147,7 +149,19 @@ export const DashboardCellEditor: React.FC<DashboardCellEditorProps> = ({
                                         radius="md"
                                         color={typeToColor.SQL}
                                         c="var(--mantine-color-body)"
-                                        onClick={() => handleInputSubmit('SQL Query')}
+                                        loading={isExecutingSQL}
+                                        onClick={async () => {
+                                            setIsExecutingSQL(true);
+                                            try {
+                                                const res = await executeSQLQuery(sqlValue);
+                                                handleInputSubmit('SQL Query', res.data || []);
+                                            } catch (e) {
+                                                console.error(e);
+                                                handleInputSubmit('SQL Query', []);
+                                            } finally {
+                                                setIsExecutingSQL(false);
+                                            }
+                                        }}
                                     >
                                         Run Query
                                     </Button>

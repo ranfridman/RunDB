@@ -85,10 +85,10 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
                     {view === 'options' ? (
                         <motion.div
                             key="options"
-                            initial={{ opacity: 0, y: 20 }}
+                            initial={{ opacity: 0, y: 10 }}
                             animate={{ opacity: 1, y: 0 }}
-                            exit={{ opacity: 0, y: -20 }}
-                            transition={{ duration: 0.3 }}
+                            exit={{ opacity: 0, y: -10 }}
+                            transition={{ duration: 0.15 }}
                             style={{ width: '100%', display: 'flex', flexDirection: 'column', alignItems: 'center' }}
                         >
                             <Stack align="center" w="100%" p={0}>
@@ -116,8 +116,7 @@ export const EmptyDashboardCell: React.FC<EmptyDashboardCellProps> = ({ panel })
                                             transition={{
                                                 type: "spring",
                                                 stiffness: 300,
-                                                damping: 20,
-                                                delay: index * 0.05
+                                                damping: 20
                                             }}
                                             style={{
                                                 flex: 1,

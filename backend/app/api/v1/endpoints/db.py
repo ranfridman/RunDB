@@ -24,3 +24,13 @@ def get_structure(
     Get the structure of the database.
     """
     return db_service.get_structure(uri=request.uri)
+
+@router.post("/query", response_model=schemas.db.DBQueryResponse)
+def execute_query(
+    *,
+    request: schemas.db.DBQueryRequest,
+) -> Any:
+    """
+    Execute a query on the database.
+    """
+    return db_service.execute_query(uri=request.uri, query=request.query)

@@ -28,3 +28,12 @@ class DBStructureResponse(BaseModel):
     success: bool
     dbName: str
     data: List[DatabaseTreeNodeData] = []
+
+class DBQueryRequest(BaseModel):
+    uri: Optional[str] = None
+    query: str
+
+class DBQueryResponse(BaseModel):
+    success: bool
+    data: List[dict] = []
+    error: Optional[str] = None

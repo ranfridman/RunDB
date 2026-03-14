@@ -82,4 +82,19 @@ class DBService:
             data=mock_tree
         )
 
+    def execute_query(self, uri: str, query: str) -> DBQueryResponse:
+        """
+        Execute a SQL query and return mocked JSON data.
+        """
+        return DBQueryResponse(
+            success=True,
+            data=[
+                { "name": "A", "value": 10, "category": "alpha", "score": 88, "active": True },
+                { "name": "B", "value": 24, "category": "beta", "score": 72, "active": False },
+                { "name": "C", "value": 37, "category": "alpha", "score": 95, "active": True },
+                { "name": "D", "value": 15, "category": "gamma", "score": 61, "active": True },
+                { "name": "E", "value": 52, "category": "beta", "score": 79, "active": False }
+            ]
+        )
+
 db_service = DBService()

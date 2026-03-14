@@ -1,5 +1,5 @@
-import { useState, useEffect, useMemo } from "react"
-import { Box, Text, Group, Stack, Badge, RingProgress } from "@mantine/core"
+import { useState, useEffect, useMemo, useCallback } from "react"
+import { Box, Text, Group, Stack, Badge, RingProgress, Loader, Center } from "@mantine/core"
 import { Database, PieChart, Plus } from "lucide-react"
 import classes from './Dashboard.module.css';
 import { Board } from './Board/Board';
@@ -10,19 +10,33 @@ import { ComplexTable } from '../ComplexTable/ComplexTable';
 import { data } from '../DinamicGraph/mockData';
 import { PromptInput } from "../PromptInput/PromptInput";
 import { EmptyDashboardCell } from "./EmptyDashboardCell/EmptyDashboardCell";
+import { useSQLQuery } from "../../api/db";
 
 const EMPTY_DATA: any[] = [];
+
+const PanelDataWrapper = ({ Component, props }: { Component: any, props: any }) => {
+    const { panel } = props;
+    const query = !panel.data ? panel.sqlQuery : undefined;
+    const { data: queryData } = useSQLQuery(query);
+    const data = panel.data?.length === 0 ? queryData?.data : panel.data;
+    return (
+        <div>
+            {JSON.stringify(panel.sqlQuery)}
+            <Component {...props} data={data} />;
+        </div>
+    )
+};
 
 export const panelRegistry: PanelRegistry = {
     table: {
         label: 'Table',
         icon: <Database size={14} />,
-        component: (props: any) => <ComplexTable {...props} data={props.panel.data || EMPTY_DATA} height="100%" />
+        component: (props: any) => <PanelDataWrapper Component={ComplexTable} props={{ ...props, height: "100%" }} />
     },
     graph: {
         label: 'Graph',
         icon: <PieChart size={14} />,
-        component: (props: any) => <DinamicGraph {...props} data={props.panel.data || EMPTY_DATA} />
+        component: (props: any) => <PanelDataWrapper Component={DinamicGraph} props={props} />
     },
     new: { label: 'New Slot', icon: <Plus size={14} />, component: (props: any) => <EmptyDashboardCell {...props} /> },
 };
@@ -40,7 +54,7 @@ export const Dashboard = () => {
     ]);
     const [showPrompt, setShowPrompt] = useState(false);
 
-    const addPanel = (label: string) => {
+    const addPanel = useCallback((label: string) => {
         const configs: Record<string, Partial<Panel>> = {
             'AI': { type: 'new', initialView: 'ai', name: 'AI Analysis' },
             'SQL': { type: 'new', initialView: 'sql', name: 'SQL Query' },
@@ -61,9 +75,9 @@ export const Dashboard = () => {
                 ...config,
             }]
         }, ...prev]);
-    };
+    }, []);
 
-    const del = (ri: number, pi: number) => setRows(prev => {
+    const del = useCallback((ri: number, pi: number) => setRows(prev => {
         const r = prev[ri];
         if (r.panels.length > 1) {
             const next = [...prev];
@@ -73,9 +87,9 @@ export const Dashboard = () => {
             return next;
         }
         return prev.length > 1 ? prev.filter((_, i) => i !== ri) : prev;
-    });
+    }), []);
 
-    const toggle = (i: number) => setRows(prev => {
+    const toggle = useCallback((i: number) => setRows(prev => {
         const next = [...prev];
         const r = { ...next[i] };
         if (r.panels.length < 4) {
@@ -83,19 +97,29 @@ export const Dashboard = () => {
         }
         next[i] = r;
         return next;
-    });
+    }), []);
 
-    const updatePanel = (id: string, updates: Partial<Panel>) => {
+    const updatePanel = useCallback((id: string, updates: Partial<Panel>) => {
         setRows(prev => prev.map(row => ({
             ...row,
             panels: row.panels.map(p => p.id === id ? { ...p, ...updates } : p)
         })));
-    };
+    }, []);
 
     const actionsValue = useMemo(() => ({ updatePanel, isEditMode }), [updatePanel, isEditMode]);
 
     const handleExport = () => {
-        const jsonString = JSON.stringify({ title, rows }, null, 2);
+        const exportRows = rows.map(row => ({
+            ...row,
+            panels: row.panels.map(panel => {
+                if (panel.sqlQuery) {
+                    const { data, ...rest } = panel;
+                    return rest;
+                }
+                return panel;
+            })
+        }));
+        const jsonString = JSON.stringify({ title, rows: exportRows }, null, 2);
         const blob = new Blob([jsonString], { type: "application/json" });
         const url = URL.createObjectURL(blob);
         const downloadAnchorNode = document.createElement('a');
@@ -116,7 +140,7 @@ export const Dashboard = () => {
                 if (typeof content === 'string') {
                     const parsed = JSON.parse(content);
                     console.log('Imported parsed dashboard data:', parsed);
-                    
+
                     if (parsed.title !== undefined && Array.isArray(parsed.rows)) {
                         setTitle(parsed.title);
                         setRows(parsed.rows);
