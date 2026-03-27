@@ -20,7 +20,7 @@ export const AppLayout: React.FC = () => {
       layout='alt'
       header={{ height: 47 }}
       navbar={{
-        width: 230,
+        width: 270,
         breakpoint: 'sm',
         collapsed: { mobile: !opened },
       }}

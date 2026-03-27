@@ -6,6 +6,7 @@ export interface Tab {
     label: string;
     type: string;
     query?: string;
+    isLoading?: boolean;
 }
 
 
@@ -15,6 +16,7 @@ interface TabsStore {
     activeTab: string | null;
     addTab: (tab: Tab) => void;
     removeTab: (id: string) => void;
+    updateTab: (id: string, updates: Partial<Tab>) => void;
     setActiveTab: (id: string | null) => void;
     openTableTab: (id: string) => void;
 }
@@ -22,13 +24,22 @@ interface TabsStore {
 export const useTabsStore = create<TabsStore>((set) => ({
     tabs: [],
     activeTab: "pluse",
-    addTab: (tab: Tab) => set((state) => ({ tabs: [...state.tabs, tab], activeTab: tab.id })),
+    addTab: (tab: Tab) => set((state) => ({ 
+        tabs: [...state.tabs, { ...tab, isLoading: tab.isLoading ?? false }], 
+        activeTab: tab.id 
+    })),
     removeTab: (id: string) => set((state) => ({ tabs: state.tabs.filter((t) => t.id !== id), activeTab: "pluse" })),
+    updateTab: (id: string, updates: Partial<Tab>) => set((state) => ({
+        tabs: state.tabs.map((t) => (t.id === id ? { ...t, ...updates } : t)),
+    })),
     setActiveTab: (id: string | null) => set((state) => ({ activeTab: id })),
     openTableTab: (id: string) => set((state) => {
         const index = state.tabs.findIndex((t) => t.id === id);
         if (index === -1)
-            return ({ tabs: [...state.tabs, { id, label: "Table", type: "Table" }], activeTab: id });
+            return ({ 
+                tabs: [...state.tabs, { id, label: "Table", type: "Table", isLoading: false }], 
+                activeTab: id 
+            });
         return { activeTab: state.tabs[index].id };
     }),
 }))

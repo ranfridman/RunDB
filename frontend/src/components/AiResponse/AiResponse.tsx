@@ -1,6 +1,7 @@
 import { useStreamAIResponse } from "@/api/stream";
 import { useEffect, useState } from "react";
 import Response from "../Response/Response";
+import { useTabsStore } from "@/stores/useTabs";
 
 export interface Stage {
     title: string;
@@ -9,15 +10,17 @@ export interface Stage {
 }
 
 interface AiResponseProps {
+    id: string;
     mode: "graph" | "analysis";
     prompt: string;
     onStagesUpdate?: (stages: Stage[]) => void;
 }
 
-export const AiResponse = ({ mode, prompt, onStagesUpdate }: AiResponseProps) => {
+export const AiResponse = ({ id, mode, prompt, onStagesUpdate }: AiResponseProps) => {
     const [streamedData, setStreamedData] = useState("");
     const [rawStream, setRawStream] = useState("");
     const t = useStreamAIResponse({ mode: mode, query: prompt, uri: "" })
+    const updateTab = useTabsStore((state) => state.updateTab);
 
     const parseStages = (text: string) => {
         const regex = /```stage\n([\s\S]*?)\n```/g;
@@ -52,6 +55,7 @@ export const AiResponse = ({ mode, prompt, onStagesUpdate }: AiResponseProps) =>
     };
 
     useEffect(() => {
+        updateTab(id, { isLoading: true });
         t.mutate((chunk) => {
             setRawStream((prev) => {
                 const newRaw = prev + chunk;
@@ -64,6 +68,8 @@ export const AiResponse = ({ mode, prompt, onStagesUpdate }: AiResponseProps) =>
                 setStreamedData(cleanText);
                 return newRaw;
             });
+        }, {
+            onSettled: () => updateTab(id, { isLoading: false }),
         });
     }, []);
 

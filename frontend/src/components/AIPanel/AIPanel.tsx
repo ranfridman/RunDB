@@ -63,7 +63,7 @@ export const AIPanel: React.FC<AIPanelProps> = ({ label, type, id, intialQuery }
                         }
                         {
                             panelMode != "setup" && (
-                                <AiResponse mode={type === "Graph" ? "graph" : "analysis"} prompt={query} onStagesUpdate={setStages} />
+                                <AiResponse id={id} mode={type === "Graph" ? "graph" : "analysis"} prompt={query} onStagesUpdate={setStages} />
                             )
                         }
                     </ScrollArea>
