@@ -6,6 +6,7 @@ import { History } from '../History/History';
 import { SidebarOption } from '../SidebarOption/SidebarOption';
 import { Contact, Settings } from 'lucide-react';
 import { AddDatabaseModal } from '../AddDatabaseModal/AddDatabaseModal';
+import { SidebarModesController } from '../SidebarModesController/SidebarModesController';
 
 export const Sidebar = () => {
   return (
@@ -16,11 +17,9 @@ export const Sidebar = () => {
         </Box>
         <Divider />
         <Group gap={0} align="start" justify="space-between" p={0} flex="nowrap">
-          <Box w="20">
-            <Text>T</Text>
-          </Box>
-          <Box w="calc(100% - 20px)">
-            <Flex direction="column" gap="xs" p="sm">
+          <SidebarModesController />
+          <Box w="calc(100% - 3em)">
+            <Flex direction="column" gap="xs" pl={0} p="sm">
               <QuerySection />
               <Divider />
               <DatabaseTreeSection />
